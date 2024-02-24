@@ -4,6 +4,7 @@ import rclpy
 from rclpy.node import Node
 import subprocess
 from ament_index_python.packages import get_package_share_directory
+from os.path import expanduser
 
 class SimLancher(Node):
     def __init__(self):
@@ -15,10 +16,19 @@ class SimLancher(Node):
             usd_path = os.path.join(
                 get_package_share_directory('isaac_ros2_scripts'), 'meshes/USD/default_stage.usd')
 
+        self.declare_parameter('isaac_path', '/isaac-sim')
+        isaac_path = self.get_parameter('isaac_path').get_parameter_value().string_value
+        if os.path.isfile(os.path.join(expanduser("~"), '.local/share/ov/pkg/isaac_sim-2023.1.1', 'python.sh')):
+            isaac_path = os.path.join(expanduser("~"), '.local/share/ov/pkg/isaac_sim-2023.1.1')
+            
         self.proc = None
         
         python_script = os.path.join(
-                    '/isaac-sim', 'python.sh')
+                    isaac_path, 'python.sh')
+        if not os.path.isfile(python_script):
+            self.get_logger().fatal('python.sh not found!!')
+            return
+        
         start_script = os.path.join(
                     get_package_share_directory('isaac_ros2_scripts'), 'start_sim.py')
         command = ["bash", python_script, start_script, usd_path]
