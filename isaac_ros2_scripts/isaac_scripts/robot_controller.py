@@ -61,6 +61,19 @@ def main(urdf_path:str):
     for child in urdf_root.findall('.//ros2_control/joint'):
         urdf_joints.append(child)
 
+    urdf_joint_command_interfaces = []
+    for child in urdf_root.findall('.//ros2_control/joint/command_interface'):
+        urdf_joint_command_interfaces.append(child.attrib["name"])
+
+    urdf_joint_initial_values = []
+    for child in urdf_root.findall('.//ros2_control/joint/state_interface'):
+        if child.attrib["name"] == "position":
+            param_list = child.findall('./param[@name="initial_value"]')
+            if not len(param_list) == 0:
+                urdf_joint_initial_values.append(float(param_list[0].text))
+            else:
+                urdf_joint_initial_values.append(0.0)
+
     joint_name = []
     for joint in urdf_joints:
         joint_name.append(joint.attrib["name"])
@@ -71,6 +84,8 @@ def main(urdf_path:str):
             if child.attrib["name"] == joint.attrib["name"]:
                 if child.attrib["type"] == "continuous":
                     joint_type.append("angular")
+                elif child.attrib["type"] == "revolute":
+                    joint_type.append("angular")
                 elif child.attrib["type"] == "prismatic":
                     joint_type.append("linear")
                 else:
@@ -79,11 +94,9 @@ def main(urdf_path:str):
 
     clsMMap = class_mmap.classMMap(robot_name)
 
-    stage_path = "/World/" + robot_name + "/base_link"
-
     joints_prim_paths = []
     for joint in urdf_joints:
-        joints_prim_paths.append(search_joint_and_link.search_joint_prim_path(kinematics_chain, "/World/" + robot_name + "/", joint.attrib["name"]))
+        joints_prim_paths.append(search_joint_and_link.find_prim_path_by_name(stage_handle.GetPrimAtPath("/World/" + robot_name), joint.attrib["name"]))
 
     drive = []
     for index in range(len(joints_prim_paths)):
@@ -93,19 +106,47 @@ def main(urdf_path:str):
     art = None
 
     async def control_loop(clsMMap, drive, joints_prim_paths, dc, art):
+        while art == None or art == _dynamic_control.INVALID_HANDLE:
+            await omni.kit.app.get_app().next_update_async()
+            art = search_joint_and_link.find_articulation_root(stage_handle.GetPrimAtPath("/World/" + robot_name))
+
+
+        for index in range(len(joints_prim_paths)):
+            clsMMap.WriteFloat(4*index, urdf_joint_initial_values[index])
+            if urdf_joint_command_interfaces[index] == "position":
+                clsMMap.WriteFloat(4*index+1, urdf_joint_initial_values[index])
+            if urdf_joint_command_interfaces[index] == "velocity":
+                clsMMap.WriteFloat(4*index+2, urdf_joint_initial_values[index])
+
+            dof_ptr = dc.find_articulation_dof(art, joint_name[index])
+            if urdf_joint_command_interfaces[index] == "position":
+                drive[index].CreateTargetPositionAttr().Set(urdf_joint_initial_values[index])
+                drive[index].CreateDampingAttr().Set(1000)
+                drive[index].CreateStiffnessAttr().Set(1000000)
+                dc.set_dof_position(dof_ptr, urdf_joint_initial_values[index])
+
+            elif urdf_joint_command_interfaces[index] == "velocity":
+                drive[index].CreateTargetVelocityAttr().Set(urdf_joint_initial_values[index])
+                drive[index].CreateDampingAttr().Set(15000)
+                drive[index].CreateStiffnessAttr().Set(0)
+                dc.set_dof_velocity(dof_ptr, urdf_joint_initial_values[index])
+
         while True:
             await omni.kit.app.get_app().next_update_async()
-            if art == None or art == _dynamic_control.INVALID_HANDLE:
-                art = dc.get_articulation(stage_path)
-            if art == _dynamic_control.INVALID_HANDLE:
-                continue
 
             for index in range(len(joints_prim_paths)):
-                radps = clsMMap.ReadFloat(4*index);
+                if urdf_joint_command_interfaces[index] == "position":
+                    rad = clsMMap.ReadFloat(4*index);
+
+                    drive[index].GetTargetPositionAttr().Set(rad * 180 / math.pi)
+                    drive[index].GetDampingAttr().Set(1000)
+                    drive[index].GetStiffnessAttr().Set(1000000)
+                if urdf_joint_command_interfaces[index] == "velocity":
+                    radps = clsMMap.ReadFloat(4*index);
             
-                drive[index].GetTargetVelocityAttr().Set(radps * 180 / math.pi)
-                drive[index].GetDampingAttr().Set(15000)
-                drive[index].GetStiffnessAttr().Set(0)
+                    drive[index].GetTargetVelocityAttr().Set(radps * 180 / math.pi)
+                    drive[index].GetDampingAttr().Set(15000)
+                    drive[index].GetStiffnessAttr().Set(0)
 
                 dof_ptr = dc.find_articulation_dof(art, joint_name[index])
                 clsMMap.WriteFloat(4*index+1, dc.get_dof_position(dof_ptr))
