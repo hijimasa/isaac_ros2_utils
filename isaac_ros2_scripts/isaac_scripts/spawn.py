@@ -8,7 +8,7 @@ from omni.isaac.core.prims import GeometryPrim
 from omni.isaac.core.materials import PhysicsMaterial
 from omni.importer.urdf import _urdf
 
-def main(urdf_path:str, x=0.0, y=0.0, z=0.0, roll=0.0, pitch=0.0, yaw=90, fixed=False):
+def main(urdf_path:str, x=0.0, y=0.0, z=0.0, roll=0.0, pitch=0.0, yaw=0.0, fixed=False):
     import search_joint_and_link
 
     urdf_interface = _urdf.acquire_urdf_interface()
@@ -51,27 +51,19 @@ def main(urdf_path:str, x=0.0, y=0.0, z=0.0, roll=0.0, pitch=0.0, yaw=90, fixed=
         prim = GeometryPrim(prim_path, collision=True)
         prim.apply_physics_material(material)
     
-    # ステージを取得
     stage = omni.usd.get_context().get_stage()
 
-    # 指定したパスのオブジェクトにアクセス
     obj = stage.GetPrimAtPath(stage_path)
     if obj.IsValid():
-        # オブジェクトの位置を取得
         obj_xform = UsdGeom.Xformable(obj)
         xform_ops = obj_xform.GetOrderedXformOps()
 
-        # オブジェクトの現在の回転をクリア
         obj_xform.ClearXformOpOrder()
 
-        # 回転のXformOpを追加
-        rotate_op = obj_xform.AddRotateXYZOp()
-
-        # 回転を設定（度数法で指定）
-        rotate_op.Set((roll*180.0/math.pi, pitch*180.0/math.pi, yaw*180.0/math.pi))
-
-        # 回転のXformOpを追加
         translate_op = obj_xform.AddTranslateOp()
         translate_op.Set((x, y, z))
+
+        rotate_op = obj_xform.AddRotateXYZOp()
+        rotate_op.Set((roll*180.0/math.pi, pitch*180.0/math.pi, yaw*180.0/math.pi))
 
     return obj
