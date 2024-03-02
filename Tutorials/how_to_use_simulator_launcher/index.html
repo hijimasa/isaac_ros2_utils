@@ -9,10 +9,10 @@
       
       
       
-        <link rel="prev" href="../demo_for_arm_robot/">
+        <link rel="prev" href="../../Demos/demo_for_mobile_robot/">
       
       
-        <link rel="next" href="../../Tutorials/how_to_use_simulator_launcher/">
+        <link rel="next" href="../setup_urdf_for_ros2_control/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -20,7 +20,7 @@
     
     
       
-        <title>Demo For Mobile Robot - ROS 2 utilities for Isaac Sim</title>
+        <title>How to Use Simulation Launcher - ROS 2 utilities for Isaac Sim</title>
       
     
     
@@ -72,7 +72,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#demo-for-mobile-robot" class="md-skip">
+        <a href="#how-to-use-simulation-launcher" class="md-skip">
           Skip to content
         </a>
       
@@ -108,7 +108,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Demo For Mobile Robot
+              How to Use Simulation Launcher
             
           </span>
         </div>
@@ -300,19 +300,17 @@
       
   
   
-    
   
   
-  
     
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
         
           
           <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
@@ -326,7 +324,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             Demos
@@ -340,7 +338,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../demo_for_arm_robot/" class="md-nav__link">
+      <a href="../../Demos/demo_for_arm_robot/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -358,19 +356,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../Demos/demo_for_mobile_robot/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -379,7 +368,6 @@
   
 
       </a>
-      
     </li>
   
 
@@ -396,17 +384,19 @@
       
   
   
+    
   
   
+  
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
         
           
           <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
@@ -420,7 +410,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             Tutorials
@@ -431,10 +421,30 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../Tutorials/how_to_use_simulator_launcher/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    How to Use Simulation Launcher
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -443,6 +453,44 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#use-from-command-line" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use from Command Line
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#use-from-launch-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use from Launch File
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -455,7 +503,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../Tutorials/setup_urdf_for_ros2_control/" class="md-nav__link">
+      <a href="../setup_urdf_for_ros2_control/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -476,7 +524,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../Tutorials/setup_urdf_for_sensors/" class="md-nav__link">
+      <a href="../setup_urdf_for_sensors/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -497,7 +545,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../Tutorials/tutorial/" class="md-nav__link">
+      <a href="../tutorial/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -834,6 +882,32 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#use-from-command-line" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use from Command Line
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#use-from-launch-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use from Launch File
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -847,62 +921,42 @@
                   
 
 
-<h1 id="demo-for-mobile-robot">Demo For Mobile Robot</h1>
-<p><img alt="demo movie" src="../../figs/shm_movie-2023-08-05_13.14.29.gif" /></p>
-<ol>
-<li>
-<p>Install Docker and pull <a href="https://docs.omniverse.nvidia.com/app_isaacsim/app_isaacsim/install_container.html">Isaac Sim Docker Image</a>.</p>
-</li>
-<li>
-<p>Clone the repo to your ros2 workspace<br/>
-   <code>bash
-   git clone https://github.com/hijimasa/isaac-ros2-control-sample.git</code></p>
-</li>
-<li>
-<p>Get git submodules<br/>
-   <code>bash
-   cd isaac-ros2-control-sample
-   git submodule update --init --recursive</code></p>
-</li>
-<li>
-<p>Build a docker image with shell script.<br/>
-   <code>bash
-   cd docker
-   ./build_docker_image.sh</code></p>
-</li>
-<li>
-<p>Launch a docker container<br/>
-   <code>bash
-   ./launch_docker.sh</code></p>
-</li>
-<li>
-<p>Build ros2 source codes<br/>
-   <code>bash
-   colcon build &amp;&amp; source install/setup.bash</code></p>
-</li>
-<li>
-<p>Launch simulator<br/>
-   <code>bash
-   ros2 run isaac_ros2_scripts launcher</code></p>
-</li>
-<li>
-<p>Spawn robot (another terminal)<br/>
-   <code>bash
-   docker exec -it isaac-sim /bin/bash
-   ros2 launch isaac_diffbot_sim diffbot_spawn.launch.py</code></p>
-</li>
-<li>
-<p>Launch teleop_twist_keyboard (another terminal)<br/>
-   <code>bash
-   docker exec -it isaac-sim /bin/bash
-   ros2 run teleop_twist_keyboard teleop_twist_keyboard</code></p>
-</li>
-</ol>
-<blockquote>
-<p>[!NOTE]
-For the first time, launching Isaac Sim takes a very long time.
-Isaac Sim must be fully launched to spawn the robot.</p>
-</blockquote>
+<h1 id="how-to-use-simulation-launcher">How to Use Simulation Launcher</h1>
+<p>Just as Gazebo Classic was able to launch the simulator from the ROS 2 launch file, this repository allows you to launch Isaac Sim using the simulation launcher.</p>
+<h2 id="use-from-command-line">Use from Command Line</h2>
+<p>The simulation launcher can be run with the following command.</p>
+<pre><code class="language-bash">ros2 run isaac_ros2_scripts launcher
+</code></pre>
+<p>This command loads the default environment with the ground plane.</p>
+<h2 id="use-from-launch-file">Use from Launch File</h2>
+<p>The ROS 2 launch file can be used to load and launch any USD file.
+An example of a launch file is shown below.</p>
+<pre><code class="language-python">import os
+
+from launch_ros.actions import Node
+from ament_index_python.packages import get_package_share_directory
+from launch import LaunchDescription
+from launch.substitutions import LaunchConfiguration
+
+def generate_launch_description():
+    core_stage_description_path = os.path.join(
+        get_package_share_directory('stage_description'))
+
+    core_stage_usd_path = os.path.join(stage_description_path,
+                              'meshes', 'USD',
+                              'stage.usd')
+
+    isaac_launcher = Node(
+        package=&quot;isaac_ros2_scripts&quot;,
+        executable=&quot;launcher&quot;,
+        parameters=[{'usd_path': str(core_stage_usd_path)}],
+    )
+
+    return LaunchDescription([
+        isaac_launcher,
+    ])
+</code></pre>
+<p>In the above example, the simulation launcher is launched by reading the file "stage_description/meshes/USD/stage.usd".</p>
 
 
 

@@ -9,25 +9,25 @@
       
       
       
-        <link rel="prev" href="../demo_for_arm_robot/">
+        <link rel="prev" href="../../LICENSE/">
       
       
-        <link rel="next" href="../../Tutorials/how_to_use_simulator_launcher/">
+        <link rel="next" href="../setup_urdf_for_ros2_control/">
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.12">
     
     
       
-        <title>Demo For Mobile Robot - ROS 2 utilities for Isaac Sim</title>
+        <title>シミュレーションランチャーの使い方 - ROS 2 utilities for Isaac Sim</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.7e359304.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.7e359304.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -46,7 +46,7 @@
       
     
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -72,7 +72,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#demo-for-mobile-robot" class="md-skip">
+        <a href="#_1" class="md-skip">
           Skip to content
         </a>
       
@@ -88,7 +88,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="ROS 2 utilities for Isaac Sim" class="md-header__button md-logo" aria-label="ROS 2 utilities for Isaac Sim" data-md-component="logo">
+    <a href="../../.." title="ROS 2 utilities for Isaac Sim" class="md-header__button md-logo" aria-label="ROS 2 utilities for Isaac Sim" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
@@ -108,7 +108,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Demo For Mobile Robot
+              シミュレーションランチャーの使い方
             
           </span>
         </div>
@@ -245,7 +245,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="ROS 2 utilities for Isaac Sim" class="md-nav__button md-logo" aria-label="ROS 2 utilities for Isaac Sim" data-md-component="logo">
+    <a href="../../.." title="ROS 2 utilities for Isaac Sim" class="md-nav__button md-logo" aria-label="ROS 2 utilities for Isaac Sim" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
@@ -263,7 +263,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../.." class="md-nav__link">
+      <a href="../../.." class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -283,7 +283,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../LICENSE/" class="md-nav__link">
+      <a href="../../../LICENSE/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -300,19 +300,17 @@
       
   
   
-    
   
   
-  
     
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
         
           
           <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
@@ -326,7 +324,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             Demos
@@ -340,7 +338,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../demo_for_arm_robot/" class="md-nav__link">
+      <a href="../../../Demos/demo_for_arm_robot/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -358,19 +356,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../../Demos/demo_for_mobile_robot/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -379,7 +368,6 @@
   
 
       </a>
-      
     </li>
   
 
@@ -434,7 +422,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../Tutorials/how_to_use_simulator_launcher/" class="md-nav__link">
+      <a href="../../../Tutorials/how_to_use_simulator_launcher/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -455,7 +443,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../Tutorials/setup_urdf_for_ros2_control/" class="md-nav__link">
+      <a href="../../../Tutorials/setup_urdf_for_ros2_control/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -476,7 +464,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../Tutorials/setup_urdf_for_sensors/" class="md-nav__link">
+      <a href="../../../Tutorials/setup_urdf_for_sensors/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -497,7 +485,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../Tutorials/tutorial/" class="md-nav__link">
+      <a href="../../../Tutorials/tutorial/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -522,17 +510,19 @@
       
   
   
+    
   
   
+  
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
         
           
           <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
@@ -546,7 +536,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             Ja
@@ -560,7 +550,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../ja/" class="md-nav__link">
+      <a href="../../" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -581,7 +571,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../ja/LICENSE/" class="md-nav__link">
+      <a href="../../LICENSE/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -599,17 +589,19 @@
                 
   
   
+    
   
   
+  
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" checked>
         
           
           <label class="md-nav__link" for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
@@ -623,7 +615,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_5_3">
             <span class="md-nav__icon md-icon"></span>
             チュートリアル
@@ -634,10 +626,30 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../ja/%E3%83%81%E3%83%A5%E3%83%BC%E3%83%88%E3%83%AA%E3%82%A2%E3%83%AB/how_to_use_simulator_launcher/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    シミュレーションランチャーの使い方
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -646,6 +658,44 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      コマンドラインからの実行
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#launch" class="md-nav__link">
+    <span class="md-ellipsis">
+      launchファイルからの実行
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -658,7 +708,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../ja/%E3%83%81%E3%83%A5%E3%83%BC%E3%83%88%E3%83%AA%E3%82%A2%E3%83%AB/setup_urdf_for_ros2_control/" class="md-nav__link">
+      <a href="../setup_urdf_for_ros2_control/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -679,7 +729,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../ja/%E3%83%81%E3%83%A5%E3%83%BC%E3%83%88%E3%83%AA%E3%82%A2%E3%83%AB/setup_urdf_for_sensors/" class="md-nav__link">
+      <a href="../setup_urdf_for_sensors/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -700,7 +750,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../ja/%E3%83%81%E3%83%A5%E3%83%BC%E3%83%88%E3%83%AA%E3%82%A2%E3%83%AB/tutorial/" class="md-nav__link">
+      <a href="../tutorial/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -764,7 +814,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../ja/%E3%83%87%E3%83%A2/demo_for_arm_robot/" class="md-nav__link">
+      <a href="../../%E3%83%87%E3%83%A2/demo_for_arm_robot/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -785,7 +835,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../ja/%E3%83%87%E3%83%A2/demo_for_mobile_robot/" class="md-nav__link">
+      <a href="../../%E3%83%87%E3%83%A2/demo_for_mobile_robot/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -834,6 +884,32 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      コマンドラインからの実行
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#launch" class="md-nav__link">
+    <span class="md-ellipsis">
+      launchファイルからの実行
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -847,62 +923,42 @@
                   
 
 
-<h1 id="demo-for-mobile-robot">Demo For Mobile Robot</h1>
-<p><img alt="demo movie" src="../../figs/shm_movie-2023-08-05_13.14.29.gif" /></p>
-<ol>
-<li>
-<p>Install Docker and pull <a href="https://docs.omniverse.nvidia.com/app_isaacsim/app_isaacsim/install_container.html">Isaac Sim Docker Image</a>.</p>
-</li>
-<li>
-<p>Clone the repo to your ros2 workspace<br/>
-   <code>bash
-   git clone https://github.com/hijimasa/isaac-ros2-control-sample.git</code></p>
-</li>
-<li>
-<p>Get git submodules<br/>
-   <code>bash
-   cd isaac-ros2-control-sample
-   git submodule update --init --recursive</code></p>
-</li>
-<li>
-<p>Build a docker image with shell script.<br/>
-   <code>bash
-   cd docker
-   ./build_docker_image.sh</code></p>
-</li>
-<li>
-<p>Launch a docker container<br/>
-   <code>bash
-   ./launch_docker.sh</code></p>
-</li>
-<li>
-<p>Build ros2 source codes<br/>
-   <code>bash
-   colcon build &amp;&amp; source install/setup.bash</code></p>
-</li>
-<li>
-<p>Launch simulator<br/>
-   <code>bash
-   ros2 run isaac_ros2_scripts launcher</code></p>
-</li>
-<li>
-<p>Spawn robot (another terminal)<br/>
-   <code>bash
-   docker exec -it isaac-sim /bin/bash
-   ros2 launch isaac_diffbot_sim diffbot_spawn.launch.py</code></p>
-</li>
-<li>
-<p>Launch teleop_twist_keyboard (another terminal)<br/>
-   <code>bash
-   docker exec -it isaac-sim /bin/bash
-   ros2 run teleop_twist_keyboard teleop_twist_keyboard</code></p>
-</li>
-</ol>
-<blockquote>
-<p>[!NOTE]
-For the first time, launching Isaac Sim takes a very long time.
-Isaac Sim must be fully launched to spawn the robot.</p>
-</blockquote>
+<h1 id="_1">シミュレーションランチャーの使い方</h1>
+<p>Gazebo Classicでも、ROS 2のlaunchファイルからシミュレータを起動できたように、このリポジトリではシミュレーションランチャーを使用してIsaac Simを起動できます。</p>
+<h2 id="_2">コマンドラインからの実行</h2>
+<p>シミュレーションランチャーは以下のコマンドで実行できます。</p>
+<pre><code class="language-bash">ros2 run isaac_ros2_scripts launcher
+</code></pre>
+<p>このコマンドでは、地面のあるデフォルトの環境が読み込まれるようになっています。</p>
+<h2 id="launch">launchファイルからの実行</h2>
+<p>ROS 2のlaunchファイルを使用することで、任意のUSDファイルを読み込んで起動させることが出来ます。
+launchファイルの例を以下に示します。</p>
+<pre><code class="language-python">import os
+
+from launch_ros.actions import Node
+from ament_index_python.packages import get_package_share_directory
+from launch import LaunchDescription
+from launch.substitutions import LaunchConfiguration
+
+def generate_launch_description():
+    core_stage_description_path = os.path.join(
+        get_package_share_directory('stage_description'))
+
+    core_stage_usd_path = os.path.join(stage_description_path,
+                              'meshes', 'USD',
+                              'stage.usd')
+
+    isaac_launcher = Node(
+        package=&quot;isaac_ros2_scripts&quot;,
+        executable=&quot;launcher&quot;,
+        parameters=[{'usd_path': str(core_stage_usd_path)}],
+    )
+
+    return LaunchDescription([
+        isaac_launcher,
+    ])
+</code></pre>
+<p>上記の例では、stage_description/meshes/USD/stage.usdファイルを読み込んで、シミュレーションランチャーを起動しています。</p>
 
 
 
@@ -949,10 +1005,10 @@ Isaac Sim must be fully launched to spawn the robot.</p>
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.c8d2eff1.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.c8d2eff1.min.js"></script>
       
     
   </body>

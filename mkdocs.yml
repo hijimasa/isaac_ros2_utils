@@ -31,9 +31,9 @@ theme:
 extra:
   alternate:
     - name: English
-      link: /
+      link: /isaac_ros2_utils/
       lang: en
     - name: Japanese
-      link: /ja/
+      link: /isaac_ros2_utils/ja/
       lang: ja
 

@@ -4,7 +4,7 @@
 
 - [Set up URDF for Sensors](./setup_urdf_for_sensors.md)
 
-- How to Use Simulator Launcher
+- [How to Use Simulator Launcher](./how_to_use_simulator_launcher.md)
 
 - How to Spawn Robot
 

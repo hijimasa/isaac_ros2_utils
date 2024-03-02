@@ -4,7 +4,7 @@
 
 - [URDFへのセンサ情報の記述方法](./setup_urdf_for_sensors.md)
 
-- シミュレーションランチャーの使い方
+- [シミュレーションランチャーの使い方](./how_to_use_simulator_launcher.md)
 
 - ロボットの生成方法
 
