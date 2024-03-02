@@ -9,25 +9,25 @@
       
       
       
-        <link rel="prev" href="../Tutorials/tutorial/">
+        <link rel="prev" href="../setup_urdf_for_ros2_control/">
       
       
-        <link rel="next" href="LICENSE/">
+        <link rel="next" href="../tutorial/">
       
       
-      <link rel="icon" href="../assets/images/favicon.png">
+      <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.12">
     
     
       
-        <title>はじめに - ROS 2 utilities for Isaac Sim</title>
+        <title>URDFへのセンサ情報の記述方法 - ROS 2 utilities for Isaac Sim</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.7e359304.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.7e359304.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -46,7 +46,7 @@
       
     
     
-    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -72,7 +72,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#_1" class="md-skip">
+        <a href="#urdf" class="md-skip">
           Skip to content
         </a>
       
@@ -88,7 +88,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="ROS 2 utilities for Isaac Sim" class="md-header__button md-logo" aria-label="ROS 2 utilities for Isaac Sim" data-md-component="logo">
+    <a href="../../.." title="ROS 2 utilities for Isaac Sim" class="md-header__button md-logo" aria-label="ROS 2 utilities for Isaac Sim" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
@@ -108,7 +108,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              はじめに
+              URDFへのセンサ情報の記述方法
             
           </span>
         </div>
@@ -245,7 +245,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="ROS 2 utilities for Isaac Sim" class="md-nav__button md-logo" aria-label="ROS 2 utilities for Isaac Sim" data-md-component="logo">
+    <a href="../../.." title="ROS 2 utilities for Isaac Sim" class="md-nav__button md-logo" aria-label="ROS 2 utilities for Isaac Sim" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
@@ -263,7 +263,7 @@
   
   
     <li class="md-nav__item">
-      <a href=".." class="md-nav__link">
+      <a href="../../.." class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -283,7 +283,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../LICENSE/" class="md-nav__link">
+      <a href="../../../LICENSE/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -338,7 +338,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Demos/demo_for_arm_robot/" class="md-nav__link">
+      <a href="../../../Demos/demo_for_arm_robot/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -359,7 +359,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Demos/demo_for_mobile_robot/" class="md-nav__link">
+      <a href="../../../Demos/demo_for_mobile_robot/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -422,7 +422,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Tutorials/setup_urdf_for_ros2_control/" class="md-nav__link">
+      <a href="../../../Tutorials/setup_urdf_for_ros2_control/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -443,7 +443,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Tutorials/setup_urdf_for_sensors/" class="md-nav__link">
+      <a href="../../../Tutorials/setup_urdf_for_sensors/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -464,7 +464,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Tutorials/tutorial/" class="md-nav__link">
+      <a href="../../../Tutorials/tutorial/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -526,6 +526,106 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    はじめに
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../LICENSE/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ライセンス
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    チュートリアル
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_3">
+            <span class="md-nav__icon md-icon"></span>
+            チュートリアル
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../setup_urdf_for_ros2_control/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    URDFへのros2_cotnrolタグの記述方法
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -542,7 +642,7 @@
           
   
   <span class="md-ellipsis">
-    はじめに
+    URDFへのセンサ情報の記述方法
   </span>
   
 
@@ -553,7 +653,7 @@
         
   
   <span class="md-ellipsis">
-    はじめに
+    URDFへのセンサ情報の記述方法
   </span>
   
 
@@ -575,45 +675,27 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#lidar" class="md-nav__link">
+    <span class="md-ellipsis">
+      LiDAR情報の記述
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      カメラ情報の記述
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#_2" class="md-nav__link">
     <span class="md-ellipsis">
-      特徴
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_3" class="md-nav__link">
-    <span class="md-ellipsis">
-      システム要件
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_4" class="md-nav__link">
-    <span class="md-ellipsis">
-      デモ
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_5" class="md-nav__link">
-    <span class="md-ellipsis">
-      使い方
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_6" class="md-nav__link">
-    <span class="md-ellipsis">
-      ライセンス
+      デプスカメラ情報の記述
     </span>
   </a>
   
@@ -635,105 +717,7 @@
   
   
     <li class="md-nav__item">
-      <a href="LICENSE/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    ライセンス
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    
-    
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" >
-        
-          
-          <label class="md-nav__link" for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
-            
-  
-  <span class="md-ellipsis">
-    チュートリアル
-  </span>
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5_3">
-            <span class="md-nav__icon md-icon"></span>
-            チュートリアル
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="%E3%83%81%E3%83%A5%E3%83%BC%E3%83%88%E3%83%AA%E3%82%A2%E3%83%AB/setup_urdf_for_ros2_control/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    URDFへのros2_cotnrolタグの記述方法
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="%E3%83%81%E3%83%A5%E3%83%BC%E3%83%88%E3%83%AA%E3%82%A2%E3%83%AB/setup_urdf_for_sensors/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    URDFへのセンサ情報の記述方法
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="%E3%83%81%E3%83%A5%E3%83%BC%E3%83%88%E3%83%AA%E3%82%A2%E3%83%AB/tutorial/" class="md-nav__link">
+      <a href="../tutorial/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -797,7 +781,7 @@
   
   
     <li class="md-nav__item">
-      <a href="%E3%83%87%E3%83%A2/demo_for_arm_robot/" class="md-nav__link">
+      <a href="../../%E3%83%87%E3%83%A2/demo_for_arm_robot/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -818,7 +802,7 @@
   
   
     <li class="md-nav__item">
-      <a href="%E3%83%87%E3%83%A2/demo_for_mobile_robot/" class="md-nav__link">
+      <a href="../../%E3%83%87%E3%83%A2/demo_for_mobile_robot/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -874,45 +858,27 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#lidar" class="md-nav__link">
+    <span class="md-ellipsis">
+      LiDAR情報の記述
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      カメラ情報の記述
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#_2" class="md-nav__link">
     <span class="md-ellipsis">
-      特徴
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_3" class="md-nav__link">
-    <span class="md-ellipsis">
-      システム要件
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_4" class="md-nav__link">
-    <span class="md-ellipsis">
-      デモ
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_5" class="md-nav__link">
-    <span class="md-ellipsis">
-      使い方
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_6" class="md-nav__link">
-    <span class="md-ellipsis">
-      ライセンス
+      デプスカメラ情報の記述
     </span>
   </a>
   
@@ -933,78 +899,68 @@
                   
 
 
-<h1 id="_1">はじめに</h1>
-<p><img alt="demo movie" src="../figs/shm_movie-2023-06-13_21.52.52.gif" /></p>
-<p><a href="https://github.com/hijimasa/isaac_ros2_utils">このリポジトリ</a>は、<a href="ttps://classic.gazebosim.org/">Gazebo Classic</a>のような使いやすいユーティリティツールを<a href="https://developer.nvidia.com/isaac-sim">Isaac Sim</a>で提供するためのものです。</p>
-<h2 id="_2">特徴</h2>
-<ul>
-<li>URDFモデルを任意のタイミングと位置姿勢で生成できます。</li>
-<li>ros2_controller（例：diff_drive_controller）を使用するためのros2_controlプラグインを提供します。</li>
-<li>位置制御と速度制御を使った回転関節と角柱関節をサポートしています。</li>
-<li>Isaac Simからros2_controlに関節の状態(位置、速度、力)を送信します。</li>
-<li>URDFの記述からセンサを起動します。</li>
-<li>センサとコントローラを任意のタイミングで起動できます。</li>
-</ul>
-<h2 id="_3">システム要件</h2>
-<table>
-<thead>
-<tr>
-<th>要素</th>
-<th>最小スペック</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>OS</td>
-<td>Ubuntu 22.04</td>
-</tr>
-<tr>
-<td>CPU</td>
-<td>Intel Core i7 (7th Generation) <br/> AMD Ryzen 5</td>
-</tr>
-<tr>
-<td>Cores</td>
-<td>4</td>
-</tr>
-<tr>
-<td>RAM</td>
-<td>32GB</td>
-</tr>
-<tr>
-<td>Storage</td>
-<td>50GB SSD</td>
-</tr>
-<tr>
-<td>GPU</td>
-<td>GeForce RTX 2070</td>
-</tr>
-<tr>
-<td>VRAM</td>
-<td>8GB</td>
-</tr>
-<tr>
-<td>ROS 2</td>
-<td>Humble</td>
-</tr>
-</tbody>
-</table>
-<p><a href="https://docs.omniverse.nvidia.com/isaacsim/latest/installation/requirements.html#system-requirements">こちら</a>のIsaac Simのシステム要件を参照してください。</p>
-<h2 id="_4">デモ</h2>
-<p><a href="https://github.com/hijimasa/isaac-ros2-control-sample">サンプルリポジトリ</a>で移動ロボットとアームロボットのデモンストレーションを提供しています。</p>
-<p>使い方は下記のドキュメントを参照ください。</p>
-<ul>
-<li>
-<p><a href="%E3%83%87%E3%83%A2/demo_for_mobile_robot/">移動ロボット向け</a></p>
-</li>
-<li>
-<p><a href="%E3%83%87%E3%83%A2/demo_for_arm_robot/">アームロボット向け</a></p>
-</li>
-</ul>
-<h2 id="_5">使い方</h2>
-<p><a href="%E3%83%81%E3%83%A5%E3%83%BC%E3%83%88%E3%83%AA%E3%82%A2%E3%83%AB/tutorial/">こちら</a>のドキュメントを参照ください。</p>
-<h2 id="_6">ライセンス</h2>
-<p>このリポジトリはMITライセンスで提供されます。
-詳細は<a href="LICENSE/">こちら</a>を参照ください。</p>
+<h1 id="urdf">URDFへのセンサ情報の記述方法</h1>
+<p>このドキュメントではIsaac Sim上で動作するセンサの情報をロボットのURDFに記述する方法を示します。</p>
+<p>Gazebo ClassicではURDFのgazeboタグにセンサ情報を記載することで、シミュレーション上にセンサを生成することが出来ていました。
+そこで、このリポジトリではisaacタグにセンサ情報を記載することで、同様の機能を実現しています。
+以下では、LiDAR、カメラおよびデプスカメラのセンサ情報の記述方法について示します。</p>
+<h2 id="lidar">LiDAR情報の記述</h2>
+<p>以下にLiDAR情報の例を示します。</p>
+<pre><code class="language-xml">&lt;sensor name=&quot;lidar_link&quot; type=&quot;lidar&quot;&gt;
+  &lt;topic&gt;scan&lt;/topic&gt;
+  &lt;sensor_dimension_num&gt;3&lt;/sensor_dimension_num&gt; &lt;!-- 2 or 3 --&gt;
+  &lt;config&gt;Example_Rotary&lt;/config&gt;
+  &lt;!-- Config Example
+  &lt;config&gt;Example_Rotary&lt;/config&gt;
+  &lt;config&gt;slamtec/RPLIDAR_S2E&lt;/config&gt;
+  &lt;config&gt;hokuyo/UST-30LX&lt;/config&gt;
+  --&gt;
+&lt;/sensor&gt;
+</code></pre>
+<p>上記の例にあるように、基本的な記述方法はgazeboタグの際と同じですが、設定値が変わっていることがわかります。
+sensor_dimension_numは取得する点群の次元で、２次元または３次元が設定できます。
+configには、LiDARの設定ファイルを指定できます。
+LiDARの設定ファイルは、Isaac Simの基準ディレクトリ（ネイティブなら"~/.local/share/ov/pkg/isaac-sim_2023.1.1/"、Dockerなら"/isaac-sim"）内の"exts/omni.isaac.sensor/data/lidar_configs"にあります。
+必要の応じて設定ファイルを追加して対応してください。</p>
+<h2 id="_1">カメラ情報の記述</h2>
+<p>以下にカメラ情報の例を示します。</p>
+<pre><code class="language-xml">&lt;sensor name=&quot;camera_link&quot; type=&quot;camera&quot;&gt;
+  &lt;topic&gt;image_raw&lt;/topic&gt;
+  &lt;horizontal_fov_rad&gt;1.3962634&lt;/horizontal_fov_rad&gt;
+  &lt;horizontal_focal_length&gt;30&lt;/horizontal_focal_length&gt; &lt;!-- optical parameter --&gt;
+  &lt;vertical_focal_length&gt;30&lt;/vertical_focal_length&gt; &lt;!-- optical parameter --&gt;
+  &lt;focus_distance&gt;400&lt;/focus_distance&gt; &lt;!-- distance for clear image --&gt;
+  &lt;projection&gt;perspective&lt;/projection&gt; &lt;!-- perspective or orthgonal --&gt;
+  &lt;image&gt;
+     &lt;width&gt;600&lt;/width&gt;
+     &lt;height&gt;600&lt;/height&gt;
+  &lt;/image&gt;
+  &lt;clip&gt;
+    &lt;near&gt;0.02&lt;/near&gt;
+    &lt;far&gt;300&lt;/far&gt;
+  &lt;/clip&gt;
+  &lt;update_rate&gt;10.0&lt;/update_rate&gt;
+&lt;/sensor&gt;
+</code></pre>
+<h2 id="_2">デプスカメラ情報の記述</h2>
+<pre><code class="language-xml">&lt;sensor name=&quot;depth_camera_link&quot; type=&quot;depth_camera&quot;&gt;
+  &lt;topic&gt;image_raw&lt;/topic&gt;
+  &lt;horizontal_fov_rad&gt;1.3962634&lt;/horizontal_fov_rad&gt;
+  &lt;horizontal_focal_length&gt;30&lt;/horizontal_focal_length&gt; &lt;!-- optical parameter --&gt;
+  &lt;vertical_focal_length&gt;30&lt;/vertical_focal_length&gt; &lt;!-- optical parameter --&gt;
+  &lt;focus_distance&gt;400&lt;/focus_distance&gt; &lt;!-- distance for clear image --&gt;
+  &lt;projection&gt;perspective&lt;/projection&gt; &lt;!-- perspective or orthgonal --&gt;
+  &lt;image&gt;
+    &lt;width&gt;320&lt;/width&gt;
+    &lt;height&gt;240&lt;/height&gt;
+  &lt;/image&gt;
+  &lt;clip&gt;
+    &lt;near&gt;0.1&lt;/near&gt;
+    &lt;far&gt;100&lt;/far&gt;
+  &lt;/clip&gt;
+  &lt;update_rate&gt;10&lt;/update_rate&gt;
+&lt;/sensor&gt;
+</code></pre>
 
 
 
@@ -1051,10 +1007,10 @@
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.c8d2eff1.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.c8d2eff1.min.js"></script>
       
     
   </body>
