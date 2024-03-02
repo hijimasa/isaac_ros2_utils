@@ -9,25 +9,25 @@
       
       
       
-        <link rel="prev" href="../setup_urdf_for_ros2_control/">
+        <link rel="prev" href="../../Demos/demo_for_mobile_robot/">
       
       
-        <link rel="next" href="../tutorial/">
+        <link rel="next" href="../how_to_use_simulator_launcher/">
       
       
-      <link rel="icon" href="../../../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.12">
     
     
       
-        <title>URDFへのセンサ情報の記述方法 - ROS 2 utilities for Isaac Sim</title>
+        <title>How to Spawn Robot - ROS 2 utilities for Isaac Sim</title>
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.7e359304.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.7e359304.min.css">
       
         
-        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -46,7 +46,7 @@
       
     
     
-    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -72,7 +72,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#urdf" class="md-skip">
+        <a href="#how-to-spawn-robot" class="md-skip">
           Skip to content
         </a>
       
@@ -88,7 +88,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../../.." title="ROS 2 utilities for Isaac Sim" class="md-header__button md-logo" aria-label="ROS 2 utilities for Isaac Sim" data-md-component="logo">
+    <a href="../.." title="ROS 2 utilities for Isaac Sim" class="md-header__button md-logo" aria-label="ROS 2 utilities for Isaac Sim" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
@@ -108,7 +108,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              URDFへのセンサ情報の記述方法
+              How to Spawn Robot
             
           </span>
         </div>
@@ -245,7 +245,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../.." title="ROS 2 utilities for Isaac Sim" class="md-nav__button md-logo" aria-label="ROS 2 utilities for Isaac Sim" data-md-component="logo">
+    <a href="../.." title="ROS 2 utilities for Isaac Sim" class="md-nav__button md-logo" aria-label="ROS 2 utilities for Isaac Sim" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
@@ -263,7 +263,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../.." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -283,7 +283,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../LICENSE/" class="md-nav__link">
+      <a href="../../LICENSE/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -338,7 +338,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../Demos/demo_for_arm_robot/" class="md-nav__link">
+      <a href="../../Demos/demo_for_arm_robot/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -359,11 +359,236 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../Demos/demo_for_mobile_robot/" class="md-nav__link">
+      <a href="../../Demos/demo_for_mobile_robot/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
     Demo For Mobile Robot
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Tutorials
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    How to Spawn Robot
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    How to Spawn Robot
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#generate-the-physical-model-of-the-robot" class="md-nav__link">
+    <span class="md-ellipsis">
+      Generate the physical model of the robot
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#generate-sensor-model-of-the-robot" class="md-nav__link">
+    <span class="md-ellipsis">
+      Generate sensor model of the robot
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#generate-robot-controllers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Generate robot controllers
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-start-up-a-node" class="md-nav__link">
+    <span class="md-ellipsis">
+      How to start up a node
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../how_to_use_simulator_launcher/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    How to Use Simulation Launcher
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../setup_urdf_for_ros2_control/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Set up URDF for ros2_control
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../setup_urdf_for_sensors/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Set up URDF for Sensors
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorial/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tutorials
   </span>
   
 
@@ -394,156 +619,7 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
-        
-          
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
-            
-  
-  <span class="md-ellipsis">
-    Tutorials
-  </span>
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4">
-            <span class="md-nav__icon md-icon"></span>
-            Tutorials
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../Tutorials/how_to_spawn_robot/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    How to Spawn Robot
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../Tutorials/how_to_use_simulator_launcher/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    How to Use Simulation Launcher
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../Tutorials/setup_urdf_for_ros2_control/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Set up URDF for ros2_control
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../Tutorials/setup_urdf_for_sensors/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Set up URDF for Sensors
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../Tutorials/tutorial/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Tutorials
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-    
-  
-  
-  
-    
-    
-    
-    
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
         
           
           <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
@@ -557,7 +633,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             Ja
@@ -571,7 +647,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../" class="md-nav__link">
+      <a href="../../ja/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -592,7 +668,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../LICENSE/" class="md-nav__link">
+      <a href="../../ja/LICENSE/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -610,19 +686,17 @@
                 
   
   
-    
   
   
-  
     
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" >
         
           
           <label class="md-nav__link" for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
@@ -636,7 +710,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_5_3">
             <span class="md-nav__icon md-icon"></span>
             チュートリアル
@@ -650,7 +724,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../how_to_spawn_robot/" class="md-nav__link">
+      <a href="../../ja/%E3%83%81%E3%83%A5%E3%83%BC%E3%83%88%E3%83%AA%E3%82%A2%E3%83%AB/how_to_spawn_robot/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -671,7 +745,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../how_to_use_simulator_launcher/" class="md-nav__link">
+      <a href="../../ja/%E3%83%81%E3%83%A5%E3%83%BC%E3%83%88%E3%83%AA%E3%82%A2%E3%83%AB/how_to_use_simulator_launcher/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -692,7 +766,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../setup_urdf_for_ros2_control/" class="md-nav__link">
+      <a href="../../ja/%E3%83%81%E3%83%A5%E3%83%BC%E3%83%88%E3%83%AA%E3%82%A2%E3%83%AB/setup_urdf_for_ros2_control/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -710,30 +784,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    URDFへのセンサ情報の記述方法
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../ja/%E3%83%81%E3%83%A5%E3%83%BC%E3%83%88%E3%83%AA%E3%82%A2%E3%83%AB/setup_urdf_for_sensors/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -742,53 +796,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#lidar" class="md-nav__link">
-    <span class="md-ellipsis">
-      LiDAR情報の記述
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      カメラ情報の記述
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_2" class="md-nav__link">
-    <span class="md-ellipsis">
-      デプスカメラ情報の記述
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -801,7 +808,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tutorial/" class="md-nav__link">
+      <a href="../../ja/%E3%83%81%E3%83%A5%E3%83%BC%E3%83%88%E3%83%AA%E3%82%A2%E3%83%AB/tutorial/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -865,7 +872,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../%E3%83%87%E3%83%A2/demo_for_arm_robot/" class="md-nav__link">
+      <a href="../../ja/%E3%83%87%E3%83%A2/demo_for_arm_robot/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -886,7 +893,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../%E3%83%87%E3%83%A2/demo_for_mobile_robot/" class="md-nav__link">
+      <a href="../../ja/%E3%83%87%E3%83%A2/demo_for_mobile_robot/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -942,27 +949,36 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#lidar" class="md-nav__link">
+  <a href="#generate-the-physical-model-of-the-robot" class="md-nav__link">
     <span class="md-ellipsis">
-      LiDAR情報の記述
+      Generate the physical model of the robot
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#_1" class="md-nav__link">
+  <a href="#generate-sensor-model-of-the-robot" class="md-nav__link">
     <span class="md-ellipsis">
-      カメラ情報の記述
+      Generate sensor model of the robot
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#_2" class="md-nav__link">
+  <a href="#generate-robot-controllers" class="md-nav__link">
     <span class="md-ellipsis">
-      デプスカメラ情報の記述
+      Generate robot controllers
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-start-up-a-node" class="md-nav__link">
+    <span class="md-ellipsis">
+      How to start up a node
     </span>
   </a>
   
@@ -983,67 +999,86 @@
                   
 
 
-<h1 id="urdf">URDFへのセンサ情報の記述方法</h1>
-<p>このドキュメントではIsaac Sim上で動作するセンサの情報をロボットのURDFに記述する方法を示します。</p>
-<p>Gazebo ClassicではURDFのgazeboタグにセンサ情報を記載することで、シミュレーション上にセンサを生成することが出来ていました。
-そこで、このリポジトリではisaacタグにセンサ情報を記載することで、同様の機能を実現しています。
-以下では、LiDAR、カメラおよびデプスカメラのセンサ情報の記述方法について示します。</p>
-<h2 id="lidar">LiDAR情報の記述</h2>
-<p>以下にLiDAR情報の例を示します。</p>
-<pre><code class="language-xml">&lt;sensor name=&quot;lidar_link&quot; type=&quot;lidar&quot;&gt;
-  &lt;topic&gt;scan&lt;/topic&gt;
-  &lt;sensor_dimension_num&gt;3&lt;/sensor_dimension_num&gt; &lt;!-- 2 or 3 --&gt;
-  &lt;config&gt;Example_Rotary&lt;/config&gt;
-  &lt;!-- Config Example
-  &lt;config&gt;Example_Rotary&lt;/config&gt;
-  &lt;config&gt;slamtec/RPLIDAR_S2E&lt;/config&gt;
-  &lt;config&gt;hokuyo/UST-30LX&lt;/config&gt;
-  --&gt;
-&lt;/sensor&gt;
+<h1 id="how-to-spawn-robot">How to Spawn Robot</h1>
+<p>This document describes the procedure for generating a robot on the simulator.
+The generation of a robot model can be divided into the following three major steps: 1.</p>
+<ol>
+<li>generation of the physical model of the robot</li>
+<li>generation of the robot's sensor model</li>
+<li>generation of the robot controller</li>
+</ol>
+<p>The three steps are described in detail below.</p>
+<h2 id="generate-the-physical-model-of-the-robot">Generate the physical model of the robot</h2>
+<p>The following is an example of creating a node to generate a physical model of a robot.</p>
+<pre><code class="language-python">    isaac_diffbot_description_path = os.path.join(
+        get_package_share_directory('diffbot_description'))
+
+    xacro_file = os.path.join(isaac_diffbot_description_path,
+                              'robots',
+                              'diffbot.urdf.xacro')
+    urdf_path = os.path.join(isaac_diffbot_description_path, 'robots', 'diffbot.urdf')
+
+    doc = xacro.process_file(xacro_file, mappings={'use_sim' : 'true'})
+
+    robot_desc = doc.toprettyxml(indent='  ')
+    f = open(urdf_path, 'w')
+    f.write(robot_desc)
+    f.close()
+
+    isaac_spawn_robot = Node(
+        package=&quot;isaac_ros2_scripts&quot;,
+        executable=&quot;spawn_robot&quot;,
+        parameters=[{'urdf_path': str(urdf_path),
+                    'x' : 0.0,
+                    'y' : 0.0,
+                    'z' : 0.0,
+                    'R' : 0.0,
+                    'P' : 0.0,
+                    'Y' : 1.57,
+                    'fixed' : False,
+                    }],
+    )
 </code></pre>
-<p>上記の例にあるように、基本的な記述方法はgazeboタグの際と同じですが、設定値が変わっていることがわかります。
-sensor_dimension_numは取得する点群の次元で、２次元または３次元が設定できます。
-configには、LiDARの設定ファイルを指定できます。
-LiDARの設定ファイルは、Isaac Simの基準ディレクトリ（ネイティブなら"~/.local/share/ov/pkg/isaac-sim_2023.1.1/"、Dockerなら"/isaac-sim"）内の"exts/omni.isaac.sensor/data/lidar_configs"にあります。
-必要の応じて設定ファイルを追加して対応してください。</p>
-<h2 id="_1">カメラ情報の記述</h2>
-<p>以下にカメラ情報の例を示します。</p>
-<pre><code class="language-xml">&lt;sensor name=&quot;camera_link&quot; type=&quot;camera&quot;&gt;
-  &lt;topic&gt;image_raw&lt;/topic&gt;
-  &lt;horizontal_fov_rad&gt;1.3962634&lt;/horizontal_fov_rad&gt;
-  &lt;horizontal_focal_length&gt;30&lt;/horizontal_focal_length&gt; &lt;!-- optical parameter --&gt;
-  &lt;vertical_focal_length&gt;30&lt;/vertical_focal_length&gt; &lt;!-- optical parameter --&gt;
-  &lt;focus_distance&gt;400&lt;/focus_distance&gt; &lt;!-- distance for clear image --&gt;
-  &lt;projection&gt;perspective&lt;/projection&gt; &lt;!-- perspective or orthgonal --&gt;
-  &lt;image&gt;
-     &lt;width&gt;600&lt;/width&gt;
-     &lt;height&gt;600&lt;/height&gt;
-  &lt;/image&gt;
-  &lt;clip&gt;
-    &lt;near&gt;0.02&lt;/near&gt;
-    &lt;far&gt;300&lt;/far&gt;
-  &lt;/clip&gt;
-  &lt;update_rate&gt;10.0&lt;/update_rate&gt;
-&lt;/sensor&gt;
+<p>As shown in the example above, spawn_robot from the isaac_ros2_scripts package is used to generate the physical model.
+spawn_robot requires as arguments the URDF file of the robot to be generated, its position (X,Y,Z) and orientation (Roll,Pitch,Yaw), and whether the robot is fixed or not.
+The argument if the robot is fixed or not is used if the arm robot is fixed to the environment.</p>
+<h2 id="generate-sensor-model-of-the-robot">Generate sensor model of the robot</h2>
+<p>The following is an example of creating a node to generate a sensor model of a robot.</p>
+<pre><code class="language-python">    isaac_prepare_sensors = Node(
+        package=&quot;isaac_ros2_scripts&quot;,
+        executable=&quot;prepare_sensors&quot;,
+        parameters=[{'urdf_path': str(urdf_path)}],
+    )
 </code></pre>
-<h2 id="_2">デプスカメラ情報の記述</h2>
-<pre><code class="language-xml">&lt;sensor name=&quot;depth_camera_link&quot; type=&quot;depth_camera&quot;&gt;
-  &lt;topic&gt;image_raw&lt;/topic&gt;
-  &lt;horizontal_fov_rad&gt;1.3962634&lt;/horizontal_fov_rad&gt;
-  &lt;horizontal_focal_length&gt;30&lt;/horizontal_focal_length&gt; &lt;!-- optical parameter --&gt;
-  &lt;vertical_focal_length&gt;30&lt;/vertical_focal_length&gt; &lt;!-- optical parameter --&gt;
-  &lt;focus_distance&gt;400&lt;/focus_distance&gt; &lt;!-- distance for clear image --&gt;
-  &lt;projection&gt;perspective&lt;/projection&gt; &lt;!-- perspective or orthgonal --&gt;
-  &lt;image&gt;
-    &lt;width&gt;320&lt;/width&gt;
-    &lt;height&gt;240&lt;/height&gt;
-  &lt;/image&gt;
-  &lt;clip&gt;
-    &lt;near&gt;0.1&lt;/near&gt;
-    &lt;far&gt;100&lt;/far&gt;
-  &lt;/clip&gt;
-  &lt;update_rate&gt;10&lt;/update_rate&gt;
-&lt;/sensor&gt;
+<p>Since the generation of the robot's sensor model requires the information in the isaac tag in the URDF file, prepare_sensors requires the URDF file of the robot to be generated as an argument.</p>
+<h2 id="generate-robot-controllers">Generate robot controllers</h2>
+<p>The following is an example of creating a node to generate a controller for a robot.
+The controller here refers to the internal controller that drives the robot on the simulator based on shared memory values, not ros2_controller.</p>
+<pre><code class="language-python">    isaac_prepare_robot_controller = Node(
+        package=&quot;isaac_ros2_scripts&quot;,
+        executable=&quot;prepare_robot_controller&quot;,
+        parameters=[{'urdf_path': str(urdf_path)}],
+    )
+</code></pre>
+<p>The information in the ros2_control tag in the URDF file is needed to generate the robot's controller, so prepare_robot_controller requires the URDF file of the robot to be generated as an argument.</p>
+<h2 id="how-to-start-up-a-node">How to start up a node</h2>
+<p>To generate additional robot models for Isaac Sim once it is up and running, this repository uses the Python REPL extension for Isaac Sim.
+This extension cannot be given multiple processes at the same time, so when launching a node, use RegisterEventHandler to process the nodes in order.</p>
+<pre><code class="language-python">    return LaunchDescription([
+        RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=isaac_spawn_robot,
+                on_exit=[isaac_prepare_sensors],
+            )
+        ),
+        RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=isaac_prepare_sensors,
+                on_exit=[isaac_prepare_robot_controller],
+            )
+        ),
+        isaac_spawn_robot,
+    ])
 </code></pre>
 
 
@@ -1091,10 +1126,10 @@ LiDARの設定ファイルは、Isaac Simの基準ディレクトリ（ネイテ
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.c8d2eff1.min.js"></script>
+      <script src="../../assets/javascripts/bundle.c8d2eff1.min.js"></script>
       
     
   </body>

@@ -6,8 +6,4 @@
 
 - [How to Use Simulator Launcher](./how_to_use_simulator_launcher.md)
 
-- How to Spawn Robot
-
-- How to Launch ros2_control
-
-- How to Launch Sensors
+- [How to Spawn Robot](./how_to_spawn_robot.md)

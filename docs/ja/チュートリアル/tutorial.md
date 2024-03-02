@@ -6,8 +6,4 @@
 
 - [シミュレーションランチャーの使い方](./how_to_use_simulator_launcher.md)
 
-- ロボットの生成方法
-
-- ros2_controlの立ち上げ方
-
-- センサの立ち上げ方
+- [ロボットの生成方法](./how_to_spawn_robot.md)

@@ -9,10 +9,10 @@
       
       
       
-        <link rel="prev" href="../setup_urdf_for_ros2_control/">
+        <link rel="prev" href="../../LICENSE/">
       
       
-        <link rel="next" href="../tutorial/">
+        <link rel="next" href="../how_to_use_simulator_launcher/">
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
@@ -20,7 +20,7 @@
     
     
       
-        <title>URDFへのセンサ情報の記述方法 - ROS 2 utilities for Isaac Sim</title>
+        <title>ロボットの生成方法 - ROS 2 utilities for Isaac Sim</title>
       
     
     
@@ -72,7 +72,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#urdf" class="md-skip">
+        <a href="#_1" class="md-skip">
           Skip to content
         </a>
       
@@ -108,7 +108,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              URDFへのセンサ情報の記述方法
+              ロボットの生成方法
             
           </span>
         </div>
@@ -647,10 +647,30 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../how_to_spawn_robot/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    ロボットの生成方法
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -659,6 +679,62 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      ロボットの物理モデルの生成
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      ロボットのセンサモデルの生成
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      ロボットコントローラの生成
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      ノードの立ち上げ方について
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -710,30 +786,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    URDFへのセンサ情報の記述方法
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../setup_urdf_for_sensors/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -742,53 +798,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#lidar" class="md-nav__link">
-    <span class="md-ellipsis">
-      LiDAR情報の記述
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      カメラ情報の記述
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_2" class="md-nav__link">
-    <span class="md-ellipsis">
-      デプスカメラ情報の記述
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -942,27 +951,36 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#lidar" class="md-nav__link">
-    <span class="md-ellipsis">
-      LiDAR情報の記述
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      カメラ情報の記述
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#_2" class="md-nav__link">
     <span class="md-ellipsis">
-      デプスカメラ情報の記述
+      ロボットの物理モデルの生成
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      ロボットのセンサモデルの生成
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      ロボットコントローラの生成
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      ノードの立ち上げ方について
     </span>
   </a>
   
@@ -983,67 +1001,86 @@
                   
 
 
-<h1 id="urdf">URDFへのセンサ情報の記述方法</h1>
-<p>このドキュメントではIsaac Sim上で動作するセンサの情報をロボットのURDFに記述する方法を示します。</p>
-<p>Gazebo ClassicではURDFのgazeboタグにセンサ情報を記載することで、シミュレーション上にセンサを生成することが出来ていました。
-そこで、このリポジトリではisaacタグにセンサ情報を記載することで、同様の機能を実現しています。
-以下では、LiDAR、カメラおよびデプスカメラのセンサ情報の記述方法について示します。</p>
-<h2 id="lidar">LiDAR情報の記述</h2>
-<p>以下にLiDAR情報の例を示します。</p>
-<pre><code class="language-xml">&lt;sensor name=&quot;lidar_link&quot; type=&quot;lidar&quot;&gt;
-  &lt;topic&gt;scan&lt;/topic&gt;
-  &lt;sensor_dimension_num&gt;3&lt;/sensor_dimension_num&gt; &lt;!-- 2 or 3 --&gt;
-  &lt;config&gt;Example_Rotary&lt;/config&gt;
-  &lt;!-- Config Example
-  &lt;config&gt;Example_Rotary&lt;/config&gt;
-  &lt;config&gt;slamtec/RPLIDAR_S2E&lt;/config&gt;
-  &lt;config&gt;hokuyo/UST-30LX&lt;/config&gt;
-  --&gt;
-&lt;/sensor&gt;
+<h1 id="_1">ロボットの生成方法</h1>
+<p>このドキュメントでは、シミュレータ上にロボットを生成する手順について説明します。
+ロボットモデルの生成は、大きく分けて以下の３つの手順に分けられます。</p>
+<ol>
+<li>ロボットの物理モデルの生成</li>
+<li>ロボットのセンサモデルの生成</li>
+<li>ロボットコントローラの生成</li>
+</ol>
+<p>以下では３つの手順の詳細を説明します。</p>
+<h2 id="_2">ロボットの物理モデルの生成</h2>
+<p>ロボットの物理モデルを生成するノードを作成する例を以下に示します。</p>
+<pre><code class="language-python">    isaac_diffbot_description_path = os.path.join(
+        get_package_share_directory('diffbot_description'))
+
+    xacro_file = os.path.join(isaac_diffbot_description_path,
+                              'robots',
+                              'diffbot.urdf.xacro')
+    urdf_path = os.path.join(isaac_diffbot_description_path, 'robots', 'diffbot.urdf')
+    # xacroをロード
+    doc = xacro.process_file(xacro_file, mappings={'use_sim' : 'true'})
+    # xacroを展開してURDFを生成
+    robot_desc = doc.toprettyxml(indent='  ')
+    f = open(urdf_path, 'w')
+    f.write(robot_desc)
+    f.close()
+
+    isaac_spawn_robot = Node(
+        package=&quot;isaac_ros2_scripts&quot;,
+        executable=&quot;spawn_robot&quot;,
+        parameters=[{'urdf_path': str(urdf_path),
+                    'x' : 0.0,
+                    'y' : 0.0,
+                    'z' : 0.0,
+                    'R' : 0.0,
+                    'P' : 0.0,
+                    'Y' : 1.57,
+                    'fixed' : False,
+                    }],
+    )
 </code></pre>
-<p>上記の例にあるように、基本的な記述方法はgazeboタグの際と同じですが、設定値が変わっていることがわかります。
-sensor_dimension_numは取得する点群の次元で、２次元または３次元が設定できます。
-configには、LiDARの設定ファイルを指定できます。
-LiDARの設定ファイルは、Isaac Simの基準ディレクトリ（ネイティブなら"~/.local/share/ov/pkg/isaac-sim_2023.1.1/"、Dockerなら"/isaac-sim"）内の"exts/omni.isaac.sensor/data/lidar_configs"にあります。
-必要の応じて設定ファイルを追加して対応してください。</p>
-<h2 id="_1">カメラ情報の記述</h2>
-<p>以下にカメラ情報の例を示します。</p>
-<pre><code class="language-xml">&lt;sensor name=&quot;camera_link&quot; type=&quot;camera&quot;&gt;
-  &lt;topic&gt;image_raw&lt;/topic&gt;
-  &lt;horizontal_fov_rad&gt;1.3962634&lt;/horizontal_fov_rad&gt;
-  &lt;horizontal_focal_length&gt;30&lt;/horizontal_focal_length&gt; &lt;!-- optical parameter --&gt;
-  &lt;vertical_focal_length&gt;30&lt;/vertical_focal_length&gt; &lt;!-- optical parameter --&gt;
-  &lt;focus_distance&gt;400&lt;/focus_distance&gt; &lt;!-- distance for clear image --&gt;
-  &lt;projection&gt;perspective&lt;/projection&gt; &lt;!-- perspective or orthgonal --&gt;
-  &lt;image&gt;
-     &lt;width&gt;600&lt;/width&gt;
-     &lt;height&gt;600&lt;/height&gt;
-  &lt;/image&gt;
-  &lt;clip&gt;
-    &lt;near&gt;0.02&lt;/near&gt;
-    &lt;far&gt;300&lt;/far&gt;
-  &lt;/clip&gt;
-  &lt;update_rate&gt;10.0&lt;/update_rate&gt;
-&lt;/sensor&gt;
+<p>上記の例にあるように、物理モデルの生成には、isaac_ros2_scriptsパッケージのspawn_robotを使用します。
+spawn_robotは引数として、生成するロボットのURDFファイル、位置（X,Y,Z）と姿勢(Roll,Pitch,Yaw)とロボットが固定されているかどうかを与える必要があります。
+ロボットが固定されているかどうかの引数は、アームロボットが環境に固定されている場合に使用されます。</p>
+<h2 id="_3">ロボットのセンサモデルの生成</h2>
+<p>ロボットのセンサモデルを生成するノードを作成する例を以下に示します。</p>
+<pre><code class="language-python">    isaac_prepare_sensors = Node(
+        package=&quot;isaac_ros2_scripts&quot;,
+        executable=&quot;prepare_sensors&quot;,
+        parameters=[{'urdf_path': str(urdf_path)}],
+    )
 </code></pre>
-<h2 id="_2">デプスカメラ情報の記述</h2>
-<pre><code class="language-xml">&lt;sensor name=&quot;depth_camera_link&quot; type=&quot;depth_camera&quot;&gt;
-  &lt;topic&gt;image_raw&lt;/topic&gt;
-  &lt;horizontal_fov_rad&gt;1.3962634&lt;/horizontal_fov_rad&gt;
-  &lt;horizontal_focal_length&gt;30&lt;/horizontal_focal_length&gt; &lt;!-- optical parameter --&gt;
-  &lt;vertical_focal_length&gt;30&lt;/vertical_focal_length&gt; &lt;!-- optical parameter --&gt;
-  &lt;focus_distance&gt;400&lt;/focus_distance&gt; &lt;!-- distance for clear image --&gt;
-  &lt;projection&gt;perspective&lt;/projection&gt; &lt;!-- perspective or orthgonal --&gt;
-  &lt;image&gt;
-    &lt;width&gt;320&lt;/width&gt;
-    &lt;height&gt;240&lt;/height&gt;
-  &lt;/image&gt;
-  &lt;clip&gt;
-    &lt;near&gt;0.1&lt;/near&gt;
-    &lt;far&gt;100&lt;/far&gt;
-  &lt;/clip&gt;
-  &lt;update_rate&gt;10&lt;/update_rate&gt;
-&lt;/sensor&gt;
+<p>ロボットのセンサモデルの生成には、URDFファイル内のisaacタグ内の情報が必要なので、prepare_sensorsは引数として生成するロボットのURDFファイルが必要です。</p>
+<h2 id="_4">ロボットコントローラの生成</h2>
+<p>ロボットのコントローラを生成するノードを作成する例を以下に示します。
+ここでいうコントローラは、ros2_controllerではなく共有メモリの値をもとにシミュレータ上のロボットを駆動させる内部コントローラを指します。</p>
+<pre><code class="language-python">    isaac_prepare_robot_controller = Node(
+        package=&quot;isaac_ros2_scripts&quot;,
+        executable=&quot;prepare_robot_controller&quot;,
+        parameters=[{'urdf_path': str(urdf_path)}],
+    )
+</code></pre>
+<p>ロボットのコントローラの生成には、URDFファイル内のros2_controlタグ内の情報が必要なので、prepare_robot_controllerには引数として生成するロボットのURDFファイルが必要です。</p>
+<h2 id="_5">ノードの立ち上げ方について</h2>
+<p>一度起動しているIsaac Simに追加でロボットモデルを生成する方法として、このリポジトリではIsaac SimのPython REPLエクステンションを利用しています。
+このエクステンションは同時に複数の処理を与えることが出来ないので、ノードを起動する際にはRegisterEventHandlerを使用して順番にノードを処理するようにしてください。</p>
+<pre><code class="language-python">    return LaunchDescription([
+        RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=isaac_spawn_robot,
+                on_exit=[isaac_prepare_sensors],
+            )
+        ),
+        RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=isaac_prepare_sensors,
+                on_exit=[isaac_prepare_robot_controller],
+            )
+        ),
+        isaac_spawn_robot,
+    ])
 </code></pre>
 
 
