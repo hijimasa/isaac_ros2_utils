@@ -1,6 +1,6 @@
 # Tutorials
 
-- Set up URDF for ros2_control
+- [Set up URDF for ros2_control](./setup_urdf_for_ros2_control.md)
 
 - Set up URDF for Sensors
 
