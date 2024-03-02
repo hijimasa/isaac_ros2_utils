@@ -42,7 +42,7 @@ Please check following documents.
 
 Check [this tutorial](./Tutorials/tutorial.md).
         
-## LICENCE
+## LICENSE
 
-This repository is provided with MIT licence.
-Please refer to [this](./LICENCE.md).
+This repository is provided with MIT license.
+Please refer to [this](./LICENSE.md).
