@@ -62,18 +62,15 @@ def main(urdf_path:str):
             )
 
             hydra_texture = rep.create.render_product(my_lidar.GetPath(), [1, 1], name=child.attrib["name"])
-            #_, render_product_path = create_hydra_texture([1, 1], my_lidar.GetPath().pathString)
 
             if int(child.find("sensor_dimension_num").text) == 2:
                 writer = rep.writers.get("RtxLidar" + "ROS2PublishLaserScan")
                 writer.initialize(topicName=prim_path + "/" + child.find("topic").text, frameId=child.attrib["name"])
                 writer.attach([hydra_texture])
-                #writer.attach([render_product_path])
             else:
                 writer = rep.writers.get("RtxLidar" + "ROS2PublishPointCloud")
                 writer.initialize(topicName=prim_path + "/" + child.find("topic").text, frameId=child.attrib["name"])
                 writer.attach([hydra_texture])
-                #writer.attach([render_product_path])
 
         if child.attrib["type"] == "camera":
             image_height = int(child.find("image/height").text)
@@ -188,7 +185,7 @@ def main(urdf_path:str):
 
             prim_path = search_joint_and_link.search_link_prim_path(kinematics_chain, "/World/" + robot_name + "/", child.attrib["name"])
 
-            camera_prim = UsdGeom.Camera(omni.usd.get_context().get_stage().DefinePrim(prim_path + "/Camera", "Camera"))
+            camera_prim = UsdGeom.Camera(omni.usd.get_context().get_stage().DefinePrim(prim_path + "/DepthCamera", "Camera"))
             xform_api = UsdGeom.XformCommonAPI(camera_prim)
             xform_api.SetTranslate(Gf.Vec3d(0, 0, 0))
             xform_api.SetRotate((90, 0, -90), UsdGeom.XformCommonAPI.RotationOrderXYZ)
@@ -203,7 +200,7 @@ def main(urdf_path:str):
             keys = og.Controller.Keys
             (ros_camera_graph, _, _, _) = og.Controller.edit(
                 {
-                    "graph_path": prim_path + "/Camera_Graph",
+                    "graph_path": prim_path + "/Depth_Camera_Graph",
                     "evaluator_name": "push",
                     "pipeline_stage": og.GraphPipelineStage.GRAPH_PIPELINE_STAGE_ONDEMAND,
                 },
@@ -243,14 +240,14 @@ def main(urdf_path:str):
             viewportId += 1
 
             set_targets(
-                prim=stage.get_current_stage().GetPrimAtPath(prim_path + "/Camera_Graph" + "/setCamera"),
+                prim=stage.get_current_stage().GetPrimAtPath(prim_path + "/Depth_Camera_Graph" + "/setCamera"),
                 attribute="inputs:cameraPrim",
-                target_prim_paths=[prim_path + "/Camera"],
+                target_prim_paths=[prim_path + "/DepthCamera"],
             )
 
             og.Controller.evaluate_sync(ros_camera_graph)
 
-            viewport_api = get_viewport_from_window_name(prim_path + "/Viewport")
+            viewport_api = get_viewport_from_window_name(prim_path + "/DepthViewport")
             viewport_api.set_texture_resolution((image_width, image_height))
 
             if viewport_api is not None:
@@ -275,3 +272,4 @@ def main(urdf_path:str):
                 # omni.graph.core._impl.errors.OmniGraphError: Failed trying to look up attribute with
                 #og.Controller.attribute(depth_camera_gate_path + ".inputs:step").set(depth_step_size)
                 #og.Controller.attribute(camera_info_gate_path + ".inputs:step").set(info_step_size)
+
