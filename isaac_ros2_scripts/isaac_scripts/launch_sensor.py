@@ -226,7 +226,7 @@ def main(urdf_path:str):
                     ],
                     keys.SET_VALUES: [
                         ("createViewport.inputs:viewportId", viewportId),
-                        ("createViewport.inputs:name", prim_path + "/Viewport"),
+                        ("createViewport.inputs:name", prim_path + "/DepthViewport"),
                         ("cameraHelperInfo.inputs:frameId", child.attrib["name"]),
                         ("cameraHelperInfo.inputs:topicName", prim_path + "/camera_info"),
                         ("cameraHelperInfo.inputs:type", "camera_info"),

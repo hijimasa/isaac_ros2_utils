@@ -3,7 +3,7 @@ import xml.etree.ElementTree as ET
 import omni
 import omni.kit.commands
 import omni.usd
-from pxr import UsdGeom, Gf
+from pxr import UsdGeom, Gf, UsdPhysics
 from omni.isaac.core.prims import GeometryPrim
 from omni.isaac.core.materials import PhysicsMaterial
 from omni.importer.urdf import _urdf
@@ -32,6 +32,8 @@ def main(urdf_path:str, x=0.0, y=0.0, z=0.0, roll=0.0, pitch=0.0, yaw=0.0, fixed
 
     status, urdf = omni.kit.commands.execute("URDFParseFile", urdf_path=urdf_path, import_config=import_config, )
     kinematics_chain = urdf_interface.get_kinematic_chain(urdf)
+
+    stage_handle = omni.usd.get_context().get_stage()
 
     urdf_root = ET.parse(urdf_path).getroot()
     robot_name = None
@@ -65,5 +67,32 @@ def main(urdf_path:str, x=0.0, y=0.0, z=0.0, roll=0.0, pitch=0.0, yaw=0.0, fixed
 
         rotate_op = obj_xform.AddRotateXYZOp()
         rotate_op.Set((roll*180.0/math.pi, pitch*180.0/math.pi, yaw*180.0/math.pi))
+
+    urdf_joints = []
+    joint_type = []
+    for child in urdf_root.findall('./joint'):
+        if child.attrib["type"] == "continuous":
+            urdf_joints.append(child)
+            joint_type.append("angular")
+        elif child.attrib["type"] == "revolute":
+            urdf_joints.append(child)
+            joint_type.append("angular")
+        elif child.attrib["type"] == "prismatic":
+            urdf_joints.append(child)
+            joint_type.append("linear")
+
+    joints_prim_paths = []
+    for joint in urdf_joints:
+        joints_prim_paths.append(search_joint_and_link.find_prim_path_by_name(stage_handle.GetPrimAtPath("/World/" + robot_name), joint.attrib["name"]))
+
+    drive = []
+    for index in range(len(joints_prim_paths)):
+        drive.append(UsdPhysics.DriveAPI.Get(stage_handle.GetPrimAtPath(joints_prim_paths[index]), joint_type[index]))
+        api_list = urdf_joints[index].findall('./isaac_drive_api')
+        if not len(api_list) == 0:
+            if "damping" in api_list[0].attrib:
+                drive[index].CreateDampingAttr().Set(float(api_list[0].attrib["damping"]))
+            if "stiffness" in api_list[0].attrib:
+                drive[index].CreateStiffnessAttr().Set(float(api_list[0].attrib["stiffness"]))
 
     return obj

@@ -124,8 +124,8 @@ def main(urdf_path:str):
                 if joint_type[index] == "angular":
                     command = command *180 / math.pi
                 drive[index].CreateTargetPositionAttr().Set(command)
-                drive[index].CreateDampingAttr().Set(0)
-                drive[index].CreateStiffnessAttr().Set(100000000)
+                if drive[index].GetStiffnessAttr().Get() == 0:
+                    drive[index].CreateStiffnessAttr().Set(100000000)
                 dc.set_dof_position(dof_ptr, urdf_joint_initial_values[index])
 
             elif urdf_joint_command_interfaces[index] == "velocity":
@@ -133,8 +133,8 @@ def main(urdf_path:str):
                 if joint_type[index] == "angular":
                     command = command *180 / math.pi
                 drive[index].CreateTargetVelocityAttr().Set(command)
-                drive[index].CreateDampingAttr().Set(15000)
-                drive[index].CreateStiffnessAttr().Set(0)
+                if drive[index].GetDampingAttr().Get() == 0:
+                    drive[index].CreateDampingAttr().Set(15000)
                 dc.set_dof_velocity(dof_ptr, urdf_joint_initial_values[index])
 
         while True:
@@ -147,16 +147,12 @@ def main(urdf_path:str):
                         command = command *180 / math.pi
 
                     drive[index].GetTargetPositionAttr().Set(command)
-                    drive[index].GetDampingAttr().Set(0)
-                    drive[index].GetStiffnessAttr().Set(100000000)
                 if urdf_joint_command_interfaces[index] == "velocity":
                     command = clsMMap.ReadFloat(4*index)
                     if joint_type[index] == "angular":
                         command = command *180 / math.pi
             
                     drive[index].GetTargetVelocityAttr().Set(command)
-                    drive[index].GetDampingAttr().Set(15000)
-                    drive[index].GetStiffnessAttr().Set(0)
 
                 dof_ptr = dc.find_articulation_dof(art, joint_name[index])
                 clsMMap.WriteFloat(4*index+1, dc.get_dof_position(dof_ptr))
