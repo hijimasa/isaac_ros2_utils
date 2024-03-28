@@ -7,15 +7,17 @@
 ros2_controlは開発者に共通のAPIを提供し、起動時の引数を変更するだけで、様々なタイプのロボットや内蔵センサを切り替えることができます。例えば、pandaのros2_control.xacroを見てみると、use_fake_hardwareというフラグを使って、シミュレーションか物理ロボットへの接続かを切り替えていることがわかります。
 
 ```xml
-<hardware>
-  <xacro:if value="${use_fake_hardware}">
-    <plugin>mock_components/GenericSystem</plugin>
-  </xacro:if>
-  <xacro:unless value="${use_fake_hardware}">
-    <plugin>franka_hardware/FrankaHardwareInterface</plugin>
-    <param name="robot_ip">${robot_ip}</param>
-  </xacro:unless>
-</hardware>
+<ros2_control>
+  <hardware>
+    <xacro:if value="${use_fake_hardware}">
+      <plugin>mock_components/GenericSystem</plugin>
+    </xacro:if>
+    <xacro:unless value="${use_fake_hardware}">
+      <plugin>franka_hardware/FrankaHardwareInterface</plugin>
+      <param name="robot_ip">${robot_ip}</param>
+    </xacro:unless>
+  </hardware>
+</ros2_control>
 ```
 
 ハードウェア・コンポーネントには様々なタイプがありますが、プラグイン "mock_components/GenericSystem "は、入力されたcommand_interfaceの値を、関節の追跡されたstate_interfaceに転送する（つまり、シミュレートされた関節を完璧に制御する）非常にシンプルなシステムです。
@@ -27,14 +29,16 @@ isaac_ros2_controlは、ロボットタグのname属性に関連付けられた�
 以下にisaac_ros2_controlの導入例を示します。
 
 ```xml
-<hardware>
-  <xacro:if value="${use_fake_hardware}">
-    <plugin>fake_components/GenericSystem</plugin>
-  </xacro:if>
-  <xacro:if value="${use_sim}">
-    <plugin>isaac_ros2_control/IsaacSystem</plugin>
-  </xacro:if>
-</hardware>
+<ros2_control>
+  <hardware>
+    <xacro:if value="${use_fake_hardware}">
+      <plugin>fake_components/GenericSystem</plugin>
+    </xacro:if>
+    <xacro:if value="${use_sim}">
+      <plugin>isaac_ros2_control/IsaacSystem</plugin>
+    </xacro:if>
+  </hardware>
+</ros2_control>
 ```
 
 ## ジョイント情報の設定
@@ -43,15 +47,40 @@ URDFのros2_controlタグ内には、使用するros2_controlプラグインの�
 以下はジョイント情報の設定の例です。
 
 ```xml
-<joint name="${prefix}left_wheel_joint">
-  <command_interface name="velocity">
-    <param name="min">-1</param>
-    <param name="max"> 1</param>
-  </command_interface>
-  <state_interface name="position"/>
-  <state_interface name="velocity"/>
-  <state_interface name="effort"/>
-</joint>
+<ros2_control>
+  <joint>
+    <command_interface name="velocity">
+      <param name="min">-1</param>
+      <param name="max"> 1</param>
+    </command_interface>
+    <state_interface name="position"/>
+    <state_interface name="velocity"/>
+    <state_interface name="effort"/>
+  </joint>
+</ros2_control>
 ```
 
 ここで、isaac_ros2_controlで使用するジョイント情報は、command_interfaceを一つ（位置か速度）とstate_interfaceを３つ（位置、速度、力）含んでいる必要があることに注意してください。
+
+## ジョイントの剛性、ダンパ係数の設定
+
+Isaac Simでは、ジョイントが発生させる力は以下の式で与えられる。
+```
+force=stiffness*(position－targetposition)+damping*(velocity－targetvelocity)
+```
+
+剛性(stiffness)とダンパ係数(damping)は通常のURDFでは記述できない。
+本パッケージでは、以下の記述のようにjointタグ内にisaac_drive_apiというタグを用意し、その中に記述するようにしている。
+
+```
+<robot>
+  <joint>
+    <isaac_drive_api stiffness="0" damping="150000"/>
+  </joint>
+</robot>
+```
+
+isaac_drive_apiタグが含まれるjointタグは、ros2_controlタグ内ではないことに気をつけてください。
+
+isaac_drive_apiを含まないジョイントでは、剛性とダンパ係数は0に設定されます。
+

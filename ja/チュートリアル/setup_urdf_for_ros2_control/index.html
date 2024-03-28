@@ -16,7 +16,7 @@
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.12">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.15">
     
     
       
@@ -755,6 +755,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      ジョイントの剛性、ダンパ係数の設定
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -950,6 +959,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      ジョイントの剛性、ダンパ係数の設定
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -969,15 +987,17 @@
 <p>このドキュメントではIsaac Sim上でros2_controlで制御できるロボットのURDFを記述する方法を示します。</p>
 <h2 id="ros2_control">ros2_controlの導入</h2>
 <p>ros2_controlは開発者に共通のAPIを提供し、起動時の引数を変更するだけで、様々なタイプのロボットや内蔵センサを切り替えることができます。例えば、pandaのros2_control.xacroを見てみると、use_fake_hardwareというフラグを使って、シミュレーションか物理ロボットへの接続かを切り替えていることがわかります。</p>
-<pre><code class="language-xml">&lt;hardware&gt;
-  &lt;xacro:if value=&quot;${use_fake_hardware}&quot;&gt;
-    &lt;plugin&gt;mock_components/GenericSystem&lt;/plugin&gt;
-  &lt;/xacro:if&gt;
-  &lt;xacro:unless value=&quot;${use_fake_hardware}&quot;&gt;
-    &lt;plugin&gt;franka_hardware/FrankaHardwareInterface&lt;/plugin&gt;
-    &lt;param name=&quot;robot_ip&quot;&gt;${robot_ip}&lt;/param&gt;
-  &lt;/xacro:unless&gt;
-&lt;/hardware&gt;
+<pre><code class="language-xml">&lt;ros2_control&gt;
+  &lt;hardware&gt;
+    &lt;xacro:if value=&quot;${use_fake_hardware}&quot;&gt;
+      &lt;plugin&gt;mock_components/GenericSystem&lt;/plugin&gt;
+    &lt;/xacro:if&gt;
+    &lt;xacro:unless value=&quot;${use_fake_hardware}&quot;&gt;
+      &lt;plugin&gt;franka_hardware/FrankaHardwareInterface&lt;/plugin&gt;
+      &lt;param name=&quot;robot_ip&quot;&gt;${robot_ip}&lt;/param&gt;
+    &lt;/xacro:unless&gt;
+  &lt;/hardware&gt;
+&lt;/ros2_control&gt;
 </code></pre>
 <p>ハードウェア・コンポーネントには様々なタイプがありますが、プラグイン "mock_components/GenericSystem "は、入力されたcommand_interfaceの値を、関節の追跡されたstate_interfaceに転送する（つまり、シミュレートされた関節を完璧に制御する）非常にシンプルなシステムです。</p>
 <p>Isaac Simでros2_controlを使用するには、isaac_ros2_controlを導入する必要があります。このハードウェアインターフェースは、共有メモリから関節の状態やコマンドを読み書きするシステムです。
@@ -985,29 +1005,47 @@
 isaac_ros2_controlは、ロボットタグのname属性に関連付けられた共有メモリを取得し、関節に関する情報を読み書きします。
 そのため、複数のロボットを操作する場合は、読み込むURDFのロボットタグのname属性値を変更する必要があります。
 以下にisaac_ros2_controlの導入例を示します。</p>
-<pre><code class="language-xml">&lt;hardware&gt;
-  &lt;xacro:if value=&quot;${use_fake_hardware}&quot;&gt;
-    &lt;plugin&gt;fake_components/GenericSystem&lt;/plugin&gt;
-  &lt;/xacro:if&gt;
-  &lt;xacro:if value=&quot;${use_sim}&quot;&gt;
-    &lt;plugin&gt;isaac_ros2_control/IsaacSystem&lt;/plugin&gt;
-  &lt;/xacro:if&gt;
-&lt;/hardware&gt;
+<pre><code class="language-xml">&lt;ros2_control&gt;
+  &lt;hardware&gt;
+    &lt;xacro:if value=&quot;${use_fake_hardware}&quot;&gt;
+      &lt;plugin&gt;fake_components/GenericSystem&lt;/plugin&gt;
+    &lt;/xacro:if&gt;
+    &lt;xacro:if value=&quot;${use_sim}&quot;&gt;
+      &lt;plugin&gt;isaac_ros2_control/IsaacSystem&lt;/plugin&gt;
+    &lt;/xacro:if&gt;
+  &lt;/hardware&gt;
+&lt;/ros2_control&gt;
 </code></pre>
 <h2 id="_1">ジョイント情報の設定</h2>
 <p>URDFのros2_controlタグ内には、使用するros2_controlプラグインの情報に加えて、ジョイントの情報を記載する必要があります。
 以下はジョイント情報の設定の例です。</p>
-<pre><code class="language-xml">&lt;joint name=&quot;${prefix}left_wheel_joint&quot;&gt;
-  &lt;command_interface name=&quot;velocity&quot;&gt;
-    &lt;param name=&quot;min&quot;&gt;-1&lt;/param&gt;
-    &lt;param name=&quot;max&quot;&gt; 1&lt;/param&gt;
-  &lt;/command_interface&gt;
-  &lt;state_interface name=&quot;position&quot;/&gt;
-  &lt;state_interface name=&quot;velocity&quot;/&gt;
-  &lt;state_interface name=&quot;effort&quot;/&gt;
-&lt;/joint&gt;
+<pre><code class="language-xml">&lt;ros2_control&gt;
+  &lt;joint&gt;
+    &lt;command_interface name=&quot;velocity&quot;&gt;
+      &lt;param name=&quot;min&quot;&gt;-1&lt;/param&gt;
+      &lt;param name=&quot;max&quot;&gt; 1&lt;/param&gt;
+    &lt;/command_interface&gt;
+    &lt;state_interface name=&quot;position&quot;/&gt;
+    &lt;state_interface name=&quot;velocity&quot;/&gt;
+    &lt;state_interface name=&quot;effort&quot;/&gt;
+  &lt;/joint&gt;
+&lt;/ros2_control&gt;
 </code></pre>
 <p>ここで、isaac_ros2_controlで使用するジョイント情報は、command_interfaceを一つ（位置か速度）とstate_interfaceを３つ（位置、速度、力）含んでいる必要があることに注意してください。</p>
+<h2 id="_2">ジョイントの剛性、ダンパ係数の設定</h2>
+<p>Isaac Simでは、ジョイントが発生させる力は以下の式で与えられる。</p>
+<pre><code>force=stiffness*(position－targetposition)+damping*(velocity－targetvelocity)
+</code></pre>
+<p>剛性(stiffness)とダンパ係数(damping)は通常のURDFでは記述できない。
+本パッケージでは、以下の記述のようにjointタグ内にisaac_drive_apiというタグを用意し、その中に記述するようにしている。</p>
+<pre><code>&lt;robot&gt;
+  &lt;joint&gt;
+    &lt;isaac_drive_api stiffness=&quot;0&quot; damping=&quot;150000&quot;/&gt;
+  &lt;/joint&gt;
+&lt;/robot&gt;
+</code></pre>
+<p>isaac_drive_apiタグが含まれるjointタグは、ros2_controlタグ内ではないことに気をつけてください。</p>
+<p>isaac_drive_apiを含まないジョイントでは、剛性とダンパ係数は0に設定されます。</p>
 
 
 
@@ -1057,7 +1095,7 @@ isaac_ros2_controlは、ロボットタグのname属性に関連付けられた�
     <script id="__config" type="application/json">{"base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.c8d2eff1.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.bd41221c.min.js"></script>
       
     
   </body>
