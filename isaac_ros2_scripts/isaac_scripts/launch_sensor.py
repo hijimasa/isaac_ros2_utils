@@ -15,8 +15,6 @@ from omni.isaac.core.utils.prims import set_targets
 
 import nest_asyncio
 
-Frame_per_Second = 60.0
-
 nest_asyncio.apply()
 
 def main(urdf_path:str):
@@ -107,26 +105,22 @@ def main(urdf_path:str):
                 {
                     keys.CREATE_NODES: [
                         ("OnTick", "omni.graph.action.OnTick"),
-                        ("createViewport", "omni.isaac.core_nodes.IsaacCreateViewport"),
-                        ("getRenderProduct", "omni.isaac.core_nodes.IsaacGetViewportRenderProduct"),
-                        ("setCamera", "omni.isaac.core_nodes.IsaacSetCameraOnRenderProduct"),
+                        ("createRenderProduct", "omni.isaac.core_nodes.IsaacCreateRenderProduct"),
                         ("cameraHelperRgb", "omni.isaac.ros2_bridge.ROS2CameraHelper"),
                         ("cameraHelperInfo", "omni.isaac.ros2_bridge.ROS2CameraHelper"),
                     ],
                     keys.CONNECT: [
-                        ("OnTick.outputs:tick", "createViewport.inputs:execIn"),
-                        ("createViewport.outputs:execOut", "getRenderProduct.inputs:execIn"),
-                        ("createViewport.outputs:viewport", "getRenderProduct.inputs:viewport"),
-                        ("getRenderProduct.outputs:execOut", "setCamera.inputs:execIn"),
-                        ("getRenderProduct.outputs:renderProductPath", "setCamera.inputs:renderProductPath"),
-                        ("setCamera.outputs:execOut", "cameraHelperRgb.inputs:execIn"),
-                        ("setCamera.outputs:execOut", "cameraHelperInfo.inputs:execIn"),
-                        ("getRenderProduct.outputs:renderProductPath", "cameraHelperRgb.inputs:renderProductPath"),
-                        ("getRenderProduct.outputs:renderProductPath", "cameraHelperInfo.inputs:renderProductPath"),
+                        ("OnTick.outputs:tick", "createRenderProduct.inputs:execIn"),
+                        ("createRenderProduct.outputs:execOut", "cameraHelperRgb.inputs:execIn"),
+                        ("createRenderProduct.outputs:execOut", "cameraHelperInfo.inputs:execIn"),
+                        ("createRenderProduct.outputs:renderProductPath", "cameraHelperRgb.inputs:renderProductPath"),
+                        ("createRenderProduct.outputs:renderProductPath", "cameraHelperInfo.inputs:renderProductPath"),
                     ],
                     keys.SET_VALUES: [
-                        ("createViewport.inputs:viewportId", viewportId),
-                        ("createViewport.inputs:name", prim_path + "/Viewport"),
+                        ("createRenderProduct.inputs:cameraPrim", prim_path + "/Camera"),
+                        ("createRenderProduct.inputs:enabled", True),
+                        ("createRenderProduct.inputs:height", image_height),
+                        ("createRenderProduct.inputs:width", image_width),
                         ("cameraHelperRgb.inputs:frameId", child.attrib["name"]),
                         ("cameraHelperRgb.inputs:topicName", prim_path + "/" + child.find("topic").text),
                         ("cameraHelperRgb.inputs:type", "rgb"),
@@ -137,39 +131,7 @@ def main(urdf_path:str):
                 },
             )
 
-            viewportId += 1
-
-            set_targets(
-                prim=stage.get_current_stage().GetPrimAtPath(prim_path + "/Camera_Graph" + "/setCamera"),
-                attribute="inputs:cameraPrim",
-                target_prim_paths=[prim_path + "/Camera"],
-            )
-
             og.Controller.evaluate_sync(ros_camera_graph)
-
-            viewport_api = get_viewport_from_window_name(prim_path + "/Viewport")
-            viewport_api.set_texture_resolution((image_width, image_height))
-
-            if viewport_api is not None:
-                import omni.syntheticdata._syntheticdata as sd
-
-                rv_rgb = omni.syntheticdata.SyntheticData.convert_sensor_type_to_rendervar(sd.SensorType.Rgb.name)
-
-                rgb_camera_gate_path = omni.syntheticdata.SyntheticData._get_node_path(
-                    rv_rgb + "IsaacSimulationGate", viewport_api.get_render_product_path()
-                )
-
-                camera_info_gate_path = omni.syntheticdata.SyntheticData._get_node_path(
-                    "PostProcessDispatch" + "IsaacSimulationGate", viewport_api.get_render_product_path()
-                )
-
-                rgb_step_size = int(Frame_per_Second / float(child.find("update_rate").text))
-
-                info_step_size = 1
-
-                # omni.graph.core._impl.errors.OmniGraphError: Failed trying to look up attribute with
-                #og.Controller.attribute(rgb_camera_gate_path + ".inputs:step").set(rgb_step_size)
-                #og.Controller.attribute(camera_info_gate_path + ".inputs:step").set(info_step_size)
 
         if child.attrib["type"] == "depth_camera":
             image_height = int(child.find("image/height").text)
@@ -207,69 +169,31 @@ def main(urdf_path:str):
                 {
                     keys.CREATE_NODES: [
                         ("OnTick", "omni.graph.action.OnTick"),
-                        ("createViewport", "omni.isaac.core_nodes.IsaacCreateViewport"),
-                        ("getRenderProduct", "omni.isaac.core_nodes.IsaacGetViewportRenderProduct"),
-                        ("setCamera", "omni.isaac.core_nodes.IsaacSetCameraOnRenderProduct"),
-                        ("cameraHelperInfo", "omni.isaac.ros2_bridge.ROS2CameraHelper"),
+                        ("createRenderProduct", "omni.isaac.core_nodes.IsaacCreateRenderProduct"),
                         ("cameraHelperDepth", "omni.isaac.ros2_bridge.ROS2CameraHelper"),
+                        ("cameraHelperInfo", "omni.isaac.ros2_bridge.ROS2CameraHelper"),
                     ],
                     keys.CONNECT: [
-                        ("OnTick.outputs:tick", "createViewport.inputs:execIn"),
-                        ("createViewport.outputs:execOut", "getRenderProduct.inputs:execIn"),
-                        ("createViewport.outputs:viewport", "getRenderProduct.inputs:viewport"),
-                        ("getRenderProduct.outputs:execOut", "setCamera.inputs:execIn"),
-                        ("getRenderProduct.outputs:renderProductPath", "setCamera.inputs:renderProductPath"),
-                        ("setCamera.outputs:execOut", "cameraHelperInfo.inputs:execIn"),
-                        ("setCamera.outputs:execOut", "cameraHelperDepth.inputs:execIn"),
-                        ("getRenderProduct.outputs:renderProductPath", "cameraHelperInfo.inputs:renderProductPath"),
-                        ("getRenderProduct.outputs:renderProductPath", "cameraHelperDepth.inputs:renderProductPath"),
+                        ("OnTick.outputs:tick", "createRenderProduct.inputs:execIn"),
+                        ("createRenderProduct.outputs:execOut", "cameraHelperDepth.inputs:execIn"),
+                        ("createRenderProduct.outputs:execOut", "cameraHelperInfo.inputs:execIn"),
+                        ("createRenderProduct.outputs:renderProductPath", "cameraHelperDepth.inputs:renderProductPath"),
+                        ("createRenderProduct.outputs:renderProductPath", "cameraHelperInfo.inputs:renderProductPath"),
                     ],
                     keys.SET_VALUES: [
-                        ("createViewport.inputs:viewportId", viewportId),
-                        ("createViewport.inputs:name", prim_path + "/DepthViewport"),
-                        ("cameraHelperInfo.inputs:frameId", child.attrib["name"]),
-                        ("cameraHelperInfo.inputs:topicName", prim_path + "/camera_info"),
-                        ("cameraHelperInfo.inputs:type", "camera_info"),
+                        ("createRenderProduct.inputs:cameraPrim", prim_path + "/DepthCamera"),
+                        ("createRenderProduct.inputs:enabled", True),
+                        ("createRenderProduct.inputs:height", image_height),
+                        ("createRenderProduct.inputs:width", image_width),
                         ("cameraHelperDepth.inputs:frameId", child.attrib["name"]),
                         ("cameraHelperDepth.inputs:topicName", prim_path + "/" + child.find("topic").text),
                         ("cameraHelperDepth.inputs:type", "depth"),
-                        ],
+                        ("cameraHelperInfo.inputs:frameId", child.attrib["name"]),
+                        ("cameraHelperInfo.inputs:topicName", prim_path + "/camera_info"),
+                        ("cameraHelperInfo.inputs:type", "camera_info"),
+                    ],
                 },
             )
 
-            viewportId += 1
-
-            set_targets(
-                prim=stage.get_current_stage().GetPrimAtPath(prim_path + "/Depth_Camera_Graph" + "/setCamera"),
-                attribute="inputs:cameraPrim",
-                target_prim_paths=[prim_path + "/DepthCamera"],
-            )
-
             og.Controller.evaluate_sync(ros_camera_graph)
-
-            viewport_api = get_viewport_from_window_name(prim_path + "/DepthViewport")
-            viewport_api.set_texture_resolution((image_width, image_height))
-
-            if viewport_api is not None:
-                import omni.syntheticdata._syntheticdata as sd
-
-                rv_depth = omni.syntheticdata.SyntheticData.convert_sensor_type_to_rendervar(
-                    sd.SensorType.DistanceToImagePlane.name
-                )
-
-                depth_camera_gate_path = omni.syntheticdata.SyntheticData._get_node_path(
-                    rv_depth + "IsaacSimulationGate", viewport_api.get_render_product_path()
-                )
-
-                camera_info_gate_path = omni.syntheticdata.SyntheticData._get_node_path(
-                    "PostProcessDispatch" + "IsaacSimulationGate", viewport_api.get_render_product_path()
-                )
-
-                depth_step_size = int(Frame_per_Second / float(child.find("update_rate").text))
-
-                info_step_size = 1
-
-                # omni.graph.core._impl.errors.OmniGraphError: Failed trying to look up attribute with
-                #og.Controller.attribute(depth_camera_gate_path + ".inputs:step").set(depth_step_size)
-                #og.Controller.attribute(camera_info_gate_path + ".inputs:step").set(info_step_size)
 
