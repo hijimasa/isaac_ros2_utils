@@ -31,7 +31,7 @@ class SimLancher(Node):
         
         start_script = os.path.join(
                     get_package_share_directory('isaac_ros2_scripts'), 'start_sim.py')
-        command = ["bash", python_script, start_script, usd_path]
+        command = ["bash", python_script, start_script, usd_path, "15", "120"]
         print(command)
         os.environ["FASTRTPS_DEFAULT_PROFILES_FILE"]=os.path.join(
                 get_package_share_directory('isaac_ros2_scripts'), 'config/fastdds.xml')

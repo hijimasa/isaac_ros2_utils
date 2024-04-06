@@ -205,7 +205,7 @@ def main(urdf_path:str):
                 sensor = ContactSensor(
                     prim_path = prim_path + "/Contact_Sensor",
                     name = "Contact_Sensor",
-                    frequency = 60,
+                    frequency = 15,
                     translation = np.array([0, 0, 0]),
                     min_threshold = 0.0001,
                     max_threshold = 10000000,

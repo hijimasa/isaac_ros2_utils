@@ -1,11 +1,31 @@
 import sys
+import time
+import signal
 from omni.isaac.kit import SimulationApp
 
-Frame_per_Second = 60.0
+frame_per_second = 30.0
+time_steps_per_second = 360
+kit = None
+is_processing = False
+
+def scheduler(signum, frame):
+    global kit
+    global is_processing
+    if is_processing == False:
+        is_processing = True
+        kit.update()
+        is_processing = False
+
 
 def main():
+    global kit
+
     args = sys.argv
     usd_path = args[1]
+    if len(args) >= 3:
+        frame_per_second = float(args[2])
+    if len(args) >= 4:
+        time_steps_per_second = float(args[3])
     
     # URDF import, configuration and simulation sample
     kit = SimulationApp({"renderer": "RayTracedLighting", "headless": False, "open_usd": usd_path})
@@ -18,7 +38,7 @@ def main():
     kit.update()
     enable_extension("omni.isaac.repl")
     
-    my_world = World(stage_units_in_meters=1.0)
+    my_world = World(stage_units_in_meters = 1.0, physics_dt = 1.0 / frame_per_second, rendering_dt = 1.0 / frame_per_second)
 
     import omni.kit.commands
     from pxr import Sdf, Gf, UsdPhysics, PhysxSchema
@@ -41,16 +61,17 @@ def main():
     # Refer to https://forums.developer.nvidia.com/t/wheeled-robot-incorrect-behavior/245133
     #physxSceneAPI.CreateSolverTypeAttr("TGS")
     physxSceneAPI.CreateSolverTypeAttr("PGS")
-    physxSceneAPI.CreateTimeStepsPerSecondAttr(600)
-
-    simulation_context = SimulationContext(physics_dt=1.0 / Frame_per_Second, rendering_dt=1.0 / Frame_per_Second, stage_units_in_meters=1.0)
+    physxSceneAPI.CreateTimeStepsPerSecondAttr(120)
 
     # Start simulation
     #omni.timeline.get_timeline_interface().play()
 
+    signal.signal(signal.SIGALRM, scheduler)
+    signal.setitimer(signal.ITIMER_REAL, 1/frame_per_second, 1/frame_per_second)
+
     try:
         while True:
-            kit.update()
+            time.sleep(1)
     except KeyboardInterrupt:
         # Shutdown and exit
         omni.timeline.get_timeline_interface().stop()
