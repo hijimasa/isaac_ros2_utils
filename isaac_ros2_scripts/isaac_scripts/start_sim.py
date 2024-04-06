@@ -3,7 +3,7 @@ import time
 import signal
 from omni.isaac.kit import SimulationApp
 
-frame_per_second = 30.0
+frame_per_second = 60.0
 time_steps_per_second = 360
 kit = None
 is_processing = False
@@ -61,7 +61,7 @@ def main():
     # Refer to https://forums.developer.nvidia.com/t/wheeled-robot-incorrect-behavior/245133
     #physxSceneAPI.CreateSolverTypeAttr("TGS")
     physxSceneAPI.CreateSolverTypeAttr("PGS")
-    physxSceneAPI.CreateTimeStepsPerSecondAttr(120)
+    physxSceneAPI.CreateTimeStepsPerSecondAttr(time_steps_per_second)
 
     # Start simulation
     #omni.timeline.get_timeline_interface().play()
