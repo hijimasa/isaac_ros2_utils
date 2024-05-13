@@ -12,7 +12,8 @@ import time
 import signal
 from omni.isaac.kit import SimulationApp
 
-frame_per_second = 60.0
+real_frame_per_second = 0.0
+internal_frame_per_second = 60.0
 time_steps_per_second = 360
 kit = None
 is_processing = False
@@ -32,10 +33,14 @@ def main():
     args = sys.argv
     usd_path = args[1]
     if len(args) >= 3:
-        frame_per_second = float(args[2])
+        internal_frame_per_second = float(args[2])
     if len(args) >= 4:
         time_steps_per_second = float(args[3])
-    
+    if len(args) >= 5:
+        real_frame_per_second = float(args[4])
+    else:
+        real_frame_per_second = internal_frame_per_second
+
     # URDF import, configuration and simulation sample
     kit = SimulationApp({"renderer": "RayTracedLighting", "headless": False, "open_usd": usd_path})
 
@@ -47,7 +52,7 @@ def main():
     kit.update()
     enable_extension("omni.isaac.repl")
     
-    my_world = World(stage_units_in_meters = 1.0, physics_dt = 1.0 / frame_per_second, rendering_dt = 1.0 / frame_per_second)
+    my_world = World(stage_units_in_meters = 1.0, physics_dt = 1.0 / internal_frame_per_second, rendering_dt = 1.0 / internal_frame_per_second)
 
     import omni.kit.commands
     from pxr import Sdf, Gf, UsdPhysics, PhysxSchema
@@ -76,7 +81,7 @@ def main():
     #omni.timeline.get_timeline_interface().play()
 
     signal.signal(signal.SIGALRM, scheduler)
-    signal.setitimer(signal.ITIMER_REAL, 1/frame_per_second, 1/frame_per_second)
+    signal.setitimer(signal.ITIMER_REAL, 1/real_frame_per_second, 1/real_frame_per_second)
 
     try:
         while True:

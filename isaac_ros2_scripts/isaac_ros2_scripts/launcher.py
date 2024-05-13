@@ -17,6 +17,10 @@ class SimLancher(Node):
                 get_package_share_directory('isaac_ros2_scripts'), 'meshes/USD/default_stage.usd')
         self.declare_parameter('fps', 60.0)
         fps = self.get_parameter('fps').get_parameter_value().double_value
+        self.declare_parameter('real_fps', 0.0)
+        real_fps = self.get_parameter('real_fps').get_parameter_value().double_value
+        if real_fps == 0.0:
+            real_fps = fps
         self.declare_parameter('time_steps_per_second', 600.0)
         time_steps_per_second = self.get_parameter('time_steps_per_second').get_parameter_value().double_value
 
@@ -35,7 +39,7 @@ class SimLancher(Node):
         
         start_script = os.path.join(
                     get_package_share_directory('isaac_ros2_scripts'), 'start_sim.py')
-        command = ["bash", python_script, start_script, usd_path, str(fps), str(time_steps_per_second)]
+        command = ["bash", python_script, start_script, usd_path, str(fps), str(time_steps_per_second), str(real_fps)]
         print(command)
         os.environ["FASTRTPS_DEFAULT_PROFILES_FILE"]=os.path.join(
                 get_package_share_directory('isaac_ros2_scripts'), 'config/fastdds.xml')
