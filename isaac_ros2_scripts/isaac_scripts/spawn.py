@@ -12,10 +12,12 @@ import xml.etree.ElementTree as ET
 import omni
 import omni.kit.commands
 import omni.usd
-from pxr import UsdGeom, Gf, UsdPhysics
+from pxr import UsdGeom, Gf, UsdPhysics, PhysxSchema
 from omni.isaac.core.prims import GeometryPrim
 from omni.isaac.core.materials import PhysicsMaterial
 from omni.importer.urdf import _urdf
+from omni.physx import utils
+from omni.physx.scripts import physicsUtils
 
 def main(urdf_path:str, x=0.0, y=0.0, z=0.0, roll=0.0, pitch=0.0, yaw=0.0, fixed=False):
     import search_joint_and_link
@@ -50,20 +52,28 @@ def main(urdf_path:str, x=0.0, y=0.0, z=0.0, roll=0.0, pitch=0.0, yaw=0.0, fixed
         robot_name = child.attrib["name"]
         break
 
-    # create a rigid body physical material
-    #material = PhysicsMaterial(
-    #    prim_path="/World/physics_material/urdf_default_material",  # path to the material prim to create
-    #    dynamic_friction=0.4,
-    #    static_friction=1.1,
-    #    restitution=0.0
-    #)
-    #prim_path_list = search_joint_and_link.get_link_prim_path_list(kinematics_chain, "/World/" + robot_name + "/")
-    #for prim_path in prim_path_list:
-    #    prim = GeometryPrim(prim_path, collision=True)
-    #    prim.apply_physics_material(material)
-    
     stage = omni.usd.get_context().get_stage()
 
+    for child in urdf_root.findall('./material'):
+        dynamic_friction = 0.0
+        static_friction = 0.0
+        rigid_body_list = child.findall('./isaac_rigid_body')
+        if not len(rigid_body_list) == 0:
+            if "dynamic_friction" in rigid_body_list[0].attrib:
+                dynamic_friction = float(rigid_body_list[0].attrib["dynamic_friction"])
+            if "static_friction" in rigid_body_list[0].attrib:
+                static_friction = float(rigid_body_list[0].attrib["static_friction"])
+        utils.addRigidBodyMaterial(stage, "/World/" + robot_name + "/Looks/material_" + child.attrib["name"], density=None, staticFriction=static_friction, dynamicFriction=dynamic_friction, restitution=0.0)
+        
+    for link in urdf_root.findall("./link"):
+        joint_prim_path = search_joint_and_link.find_prim_path_by_name(stage_handle.GetPrimAtPath("/World/" + robot_name), link.attrib["name"])
+
+        collision_list = link.findall('./collision')
+        material_list = link.findall('./visual/material')
+        if not len(collision_list) == 0 and  not len(material_list) == 0:
+            prim = stage_handle.GetPrimAtPath(joint_prim_path + "/collisions")
+            physicsUtils.add_physics_material_to_prim(stage_handle, prim, "/World/" + robot_name + "/Looks/material_" + material_list[0].attrib["name"])
+    
     obj = stage.GetPrimAtPath(stage_path)
     if obj.IsValid():
         obj_xform = UsdGeom.Xformable(obj)
@@ -92,16 +102,21 @@ def main(urdf_path:str, x=0.0, y=0.0, z=0.0, roll=0.0, pitch=0.0, yaw=0.0, fixed
 
     joints_prim_paths = []
     for joint in urdf_joints:
-        joints_prim_paths.append(search_joint_and_link.find_prim_path_by_name(stage_handle.GetPrimAtPath("/World/" + robot_name), joint.attrib["name"]))
+        joint_prim_path = search_joint_and_link.find_prim_path_by_name(stage_handle.GetPrimAtPath("/World/" + robot_name), joint.attrib["name"])
+        joints_prim_paths.append(joint_prim_path)
 
     drive = []
+    joint_api = []
     for index in range(len(joints_prim_paths)):
         drive.append(UsdPhysics.DriveAPI.Get(stage_handle.GetPrimAtPath(joints_prim_paths[index]), joint_type[index]))
+        joint_api.append(PhysxSchema.PhysxJointAPI(stage_handle.GetPrimAtPath(joints_prim_paths[index])))
         api_list = urdf_joints[index].findall('./isaac_drive_api')
         if not len(api_list) == 0:
             if "damping" in api_list[0].attrib:
                 drive[index].CreateDampingAttr().Set(float(api_list[0].attrib["damping"]))
             if "stiffness" in api_list[0].attrib:
                 drive[index].CreateStiffnessAttr().Set(float(api_list[0].attrib["stiffness"]))
+            if "joint_friction" in api_list[0].attrib:
+                joint_api[index].CreateJointFrictionAttr().Set(float(api_list[0].attrib["joint_friction"]))
 
     return obj
