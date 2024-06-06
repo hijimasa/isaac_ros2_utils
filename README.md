@@ -10,6 +10,7 @@ This repository provides utilities to use [Isaac Sim](https://developer.nvidia.c
 - This sends joint status (position, velocity and effort) to ros2_control from Isaac Sim.
 - This launches sensors from URDF description.
 - This launchs sensors and controller at the desired timing.
+- This sets stiffness, damping and friction from URDF description.
 
 ## System Requirements
 
