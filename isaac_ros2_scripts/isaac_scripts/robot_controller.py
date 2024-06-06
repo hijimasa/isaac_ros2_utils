@@ -40,7 +40,6 @@ import nest_asyncio
 nest_asyncio.apply()
 
 def main(urdf_path:str):
-    import class_mmap
     import search_joint_and_link
 
     urdf_interface = _urdf.acquire_urdf_interface()
@@ -101,8 +100,6 @@ def main(urdf_path:str):
                     joint_type.append(child.attrib["type"])
                 break
 
-    clsMMap = class_mmap.classMMap(robot_name)
-
     joints_prim_paths = []
     for joint in urdf_joints:
         joints_prim_paths.append(search_joint_and_link.find_prim_path_by_name(stage_handle.GetPrimAtPath("/World/" + robot_name), joint.attrib["name"]))
@@ -111,68 +108,56 @@ def main(urdf_path:str):
     for index in range(len(joints_prim_paths)):
         drive.append(UsdPhysics.DriveAPI.Get(stage_handle.GetPrimAtPath(joints_prim_paths[index]), joint_type[index]))
 
-    dc = _dynamic_control.acquire_dynamic_control_interface()
-    art = None
+    for index in range(len(joints_prim_paths)):
+        if urdf_joint_command_interfaces[index] == "position":
+            command = urdf_joint_initial_values[index]
+            if joint_type[index] == "angular":
+                command = command *180 / math.pi
+            drive[index].CreateTargetPositionAttr().Set(command)
+            if drive[index].GetStiffnessAttr().Get() == 0:
+                drive[index].CreateStiffnessAttr().Set(100000000)
 
-    async def control_loop(clsMMap, drive, joints_prim_paths, dc, art):
-        while art == None or art == _dynamic_control.INVALID_HANDLE:
-            await omni.kit.app.get_app().next_update_async()
-            art = search_joint_and_link.find_articulation_root(stage_handle.GetPrimAtPath("/World/" + robot_name))
+        elif urdf_joint_command_interfaces[index] == "velocity":
+            command = urdf_joint_initial_values[index]
+            if joint_type[index] == "angular":
+                command = command *180 / math.pi
+            drive[index].CreateTargetVelocityAttr().Set(command)
+            if drive[index].GetDampingAttr().Get() == 0:
+                drive[index].CreateDampingAttr().Set(15000)
 
+    import omni.graph.core as og
 
-        for index in range(len(joints_prim_paths)):
-            clsMMap.WriteFloat(4*index, urdf_joint_initial_values[index])
-            if urdf_joint_command_interfaces[index] == "position":
-                clsMMap.WriteFloat(4*index+1, urdf_joint_initial_values[index])
-            if urdf_joint_command_interfaces[index] == "velocity":
-                clsMMap.WriteFloat(4*index+2, urdf_joint_initial_values[index])
+    (ros_control_graph, _, _, _) = og.Controller.edit(
+        {"graph_path": "/World/" + robot_name + "/ActionGraph", "evaluator_name": "execution"},
+        {
+            og.Controller.Keys.CREATE_NODES: [
+                ("OnPlaybackTick", "omni.graph.action.OnPlaybackTick"),
+                ("PublishJointState", "omni.isaac.ros2_bridge.ROS2PublishJointState"),
+                ("SubscribeJointState", "omni.isaac.ros2_bridge.ROS2SubscribeJointState"),
+                ("ArticulationController", "omni.isaac.core_nodes.IsaacArticulationController"),
+                ("ReadSimTime", "omni.isaac.core_nodes.IsaacReadSimulationTime"),
+            ],
+            og.Controller.Keys.CONNECT: [
+                ("OnPlaybackTick.outputs:tick", "PublishJointState.inputs:execIn"),
+                ("OnPlaybackTick.outputs:tick", "SubscribeJointState.inputs:execIn"),
+                ("OnPlaybackTick.outputs:tick", "ArticulationController.inputs:execIn"),
 
-            dof_ptr = dc.find_articulation_dof(art, joint_name[index])
-            if urdf_joint_command_interfaces[index] == "position":
-                command = urdf_joint_initial_values[index]
-                if joint_type[index] == "angular":
-                    command = command *180 / math.pi
-                drive[index].CreateTargetPositionAttr().Set(command)
-                if drive[index].GetStiffnessAttr().Get() == 0:
-                    drive[index].CreateStiffnessAttr().Set(100000000)
-                dc.set_dof_position(dof_ptr, urdf_joint_initial_values[index])
+                ("ReadSimTime.outputs:simulationTime", "PublishJointState.inputs:timeStamp"),
 
-            elif urdf_joint_command_interfaces[index] == "velocity":
-                command = urdf_joint_initial_values[index]
-                if joint_type[index] == "angular":
-                    command = command *180 / math.pi
-                drive[index].CreateTargetVelocityAttr().Set(command)
-                if drive[index].GetDampingAttr().Get() == 0:
-                    drive[index].CreateDampingAttr().Set(15000)
-                dc.set_dof_velocity(dof_ptr, urdf_joint_initial_values[index])
+                ("SubscribeJointState.outputs:jointNames", "ArticulationController.inputs:jointNames"),
+                ("SubscribeJointState.outputs:positionCommand", "ArticulationController.inputs:positionCommand"),
+                ("SubscribeJointState.outputs:velocityCommand", "ArticulationController.inputs:velocityCommand"),
+                ("SubscribeJointState.outputs:effortCommand", "ArticulationController.inputs:effortCommand"),
+            ],
+            og.Controller.Keys.SET_VALUES: [
+                # Providing path to /panda robot to Articulation Controller node
+                # Providing the robot path is equivalent to setting the targetPrim in Articulation Controller node
+                # ("ArticulationController.inputs:usePath", True),      # if you are using an older version of Isaac Sim, you may need to uncomment this line
+                ("ArticulationController.inputs:robotPath", "/World/" + robot_name + "/base_link"),
+                ("PublishJointState.inputs:targetPrim", "/World/" + robot_name + "/base_link")
+            ],
+        },
+    )
+    
+    og.Controller.evaluate_sync(ros_control_graph)
 
-        while True:
-            await omni.kit.app.get_app().next_update_async()
-
-            for index in range(len(joints_prim_paths)):
-                if urdf_joint_command_interfaces[index] == "position":
-                    command = clsMMap.ReadFloat(4*index)
-                    if joint_type[index] == "angular":
-                        command = command *180 / math.pi
-
-                    drive[index].GetTargetPositionAttr().Set(command)
-                if urdf_joint_command_interfaces[index] == "velocity":
-                    command = clsMMap.ReadFloat(4*index)
-                    if joint_type[index] == "angular":
-                        command = command *180 / math.pi
-            
-                    drive[index].GetTargetVelocityAttr().Set(command)
-
-                dof_ptr = dc.find_articulation_dof(art, joint_name[index])
-                clsMMap.WriteFloat(4*index+1, dc.get_dof_position(dof_ptr))
-                clsMMap.WriteFloat(4*index+2, dc.get_dof_velocity(dof_ptr))
-                clsMMap.WriteFloat(4*index+3, dc.get_dof_effort(dof_ptr))
-
-    def loop_in_thread(loop):
-        asyncio.set_event_loop(loop)
-        loop.run_until_complete(control_loop(clsMMap, drive, joints_prim_paths, dc, art))
-
-    loop = asyncio.get_event_loop()
-    import threading
-    t = threading.Thread(target=loop_in_thread, args=(loop,))
-    t.start()
