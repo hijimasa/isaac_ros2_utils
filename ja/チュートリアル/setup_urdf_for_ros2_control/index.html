@@ -16,7 +16,7 @@
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.15">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.12">
     
     
       
@@ -758,7 +758,16 @@
         <li class="md-nav__item">
   <a href="#_2" class="md-nav__link">
     <span class="md-ellipsis">
-      ジョイントの剛性、ダンパ係数の設定
+      ジョイントの剛性、ダンパ係数、関節摩擦の設定
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      リンクの摩擦の設定
     </span>
   </a>
   
@@ -962,7 +971,16 @@
         <li class="md-nav__item">
   <a href="#_2" class="md-nav__link">
     <span class="md-ellipsis">
-      ジョイントの剛性、ダンパ係数の設定
+      ジョイントの剛性、ダンパ係数、関節摩擦の設定
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      リンクの摩擦の設定
     </span>
   </a>
   
@@ -1032,20 +1050,57 @@ isaac_ros2_controlは、ロボットタグのname属性に関連付けられた�
 &lt;/ros2_control&gt;
 </code></pre>
 <p>ここで、isaac_ros2_controlで使用するジョイント情報は、command_interfaceを一つ（位置か速度）とstate_interfaceを３つ（位置、速度、力）含んでいる必要があることに注意してください。</p>
-<h2 id="_2">ジョイントの剛性、ダンパ係数の設定</h2>
+<h2 id="_2">ジョイントの剛性、ダンパ係数、関節摩擦の設定</h2>
 <p>Isaac Simでは、ジョイントが発生させる力は以下の式で与えられる。</p>
 <pre><code>force=stiffness*(position－targetposition)+damping*(velocity－targetvelocity)
 </code></pre>
-<p>剛性(stiffness)とダンパ係数(damping)は通常のURDFでは記述できない。
+<p>剛性(stiffness)とダンパ係数(damping)、関節摩擦(joint friction)は通常のURDFでは記述できない。
 本パッケージでは、以下の記述のようにjointタグ内にisaac_drive_apiというタグを用意し、その中に記述するようにしている。</p>
 <pre><code>&lt;robot&gt;
   &lt;joint&gt;
-    &lt;isaac_drive_api stiffness=&quot;0&quot; damping=&quot;150000&quot;/&gt;
+    &lt;isaac_drive_api stiffness=&quot;0&quot; damping=&quot;150000&quot; joint_friction=&quot;1000&quot;/&gt;
   &lt;/joint&gt;
 &lt;/robot&gt;
 </code></pre>
 <p>isaac_drive_apiタグが含まれるjointタグは、ros2_controlタグ内ではないことに気をつけてください。</p>
 <p>isaac_drive_apiを含まないジョイントでは、剛性とダンパ係数は0に設定されます。</p>
+<h2 id="_3">リンクの摩擦の設定</h2>
+<p>Isaac SimではGazeboと異なり、静止摩擦係数と動摩擦係数を設定することができます。
+これらのパラメータはマテリアルに紐付けられるため、URDFでは通常色を設定するために利用されていたmaterialタグに摩擦の情報を付与するようにしました。
+以下が摩擦を設定したマテリアルの記述の例です。</p>
+<pre><code>&lt;robot&gt;
+  &lt;material name=&quot;white&quot;&gt;
+    &lt;color rgba=&quot;1.0 1.0 1.0 1.0&quot;/&gt;
+    &lt;isaac_rigid_body static_friction=&quot;1.0&quot; dynamic_friction=&quot;1.0&quot;/&gt;
+  &lt;/material&gt;
+&lt;/robot&gt;
+</code></pre>
+<p>通常のURDFと同様に、visualタグにマテリアルを設定することで、リンクに摩擦を設定することができます。
+例：</p>
+<pre><code>&lt;robot&gt;
+  &lt;link name=&quot;body_link&quot;&gt;
+    &lt;inertial&gt;
+      &lt;origin xyz=&quot;0 0 0&quot; rpy=&quot;0 0 0&quot;/&gt;
+      &lt;mass value=&quot;1.0&quot;/&gt;
+      &lt;inertia ixx=&quot;0.001&quot; ixy=&quot;0.0&quot; ixz=&quot;0.0&quot; iyy=&quot;0.001&quot; iyz=&quot;0.0&quot; izz=&quot;0.001&quot;/&gt;
+    &lt;/inertial&gt;
+    &lt;visual&gt;
+      &lt;origin xyz=&quot;0 0 0&quot; rpy=&quot;0 0 0&quot; /&gt;
+      &lt;geometry&gt;
+        &lt;box size=&quot;0.24 0.18 0.06&quot; /&gt;
+      &lt;/geometry&gt;
+      &lt;material name=&quot;white&quot; /&gt;
+    &lt;/visual&gt;
+    &lt;collision&gt;
+      &lt;origin xyz=&quot;0 0 0&quot; rpy=&quot;0 0 0&quot; /&gt;
+      &lt;geometry&gt;
+        &lt;box size=&quot;0.24 0.178 0.06&quot; /&gt;
+      &lt;/geometry&gt;
+    &lt;/collision&gt;
+  &lt;/link&gt;
+&lt;/robot&gt;
+</code></pre>
+<p>collisionタグに重複してマテリアルを記述しなくて良いことに気をつけてください。</p>
 
 
 
@@ -1095,7 +1150,7 @@ isaac_ros2_controlは、ロボットタグのname属性に関連付けられた�
     <script id="__config" type="application/json">{"base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.bd41221c.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.c8d2eff1.min.js"></script>
       
     
   </body>

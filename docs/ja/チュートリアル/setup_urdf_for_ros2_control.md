@@ -62,20 +62,20 @@ URDFのros2_controlタグ内には、使用するros2_controlプラグインの�
 
 ここで、isaac_ros2_controlで使用するジョイント情報は、command_interfaceを一つ（位置か速度）とstate_interfaceを３つ（位置、速度、力）含んでいる必要があることに注意してください。
 
-## ジョイントの剛性、ダンパ係数の設定
+## ジョイントの剛性、ダンパ係数、関節摩擦の設定
 
 Isaac Simでは、ジョイントが発生させる力は以下の式で与えられる。
 ```
 force=stiffness*(position－targetposition)+damping*(velocity－targetvelocity)
 ```
 
-剛性(stiffness)とダンパ係数(damping)は通常のURDFでは記述できない。
+剛性(stiffness)とダンパ係数(damping)、関節摩擦(joint friction)は通常のURDFでは記述できない。
 本パッケージでは、以下の記述のようにjointタグ内にisaac_drive_apiというタグを用意し、その中に記述するようにしている。
 
 ```
 <robot>
   <joint>
-    <isaac_drive_api stiffness="0" damping="150000"/>
+    <isaac_drive_api stiffness="0" damping="150000" joint_friction="1000"/>
   </joint>
 </robot>
 ```
@@ -83,4 +83,49 @@ force=stiffness*(position－targetposition)+damping*(velocity－targetvelocity)
 isaac_drive_apiタグが含まれるjointタグは、ros2_controlタグ内ではないことに気をつけてください。
 
 isaac_drive_apiを含まないジョイントでは、剛性とダンパ係数は0に設定されます。
+
+## リンクの摩擦の設定
+
+Isaac SimではGazeboと異なり、静止摩擦係数と動摩擦係数を設定することができます。
+これらのパラメータはマテリアルに紐付けられるため、URDFでは通常色を設定するために利用されていたmaterialタグに摩擦の情報を付与するようにしました。
+以下が摩擦を設定したマテリアルの記述の例です。
+
+```
+<robot>
+  <material name="white">
+    <color rgba="1.0 1.0 1.0 1.0"/>
+    <isaac_rigid_body static_friction="1.0" dynamic_friction="1.0"/>
+  </material>
+</robot>
+```
+
+通常のURDFと同様に、visualタグにマテリアルを設定することで、リンクに摩擦を設定することができます。
+例：
+
+```
+<robot>
+  <link name="body_link">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="1.0"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.24 0.18 0.06" />
+      </geometry>
+      <material name="white" />
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.24 0.178 0.06" />
+      </geometry>
+    </collision>
+  </link>
+</robot>
+```
+
+collisionタグに重複してマテリアルを記述しなくて良いことに気をつけてください。
 

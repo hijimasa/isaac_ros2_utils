@@ -60,20 +60,20 @@ The following is an example of description of joint information.
 
 Note that the joint information used in isaac_ros2_control must contain one command_interface (position or velocity) and three state_interface (position and velocity and effort).
 
-## Set up Joint Stiffness and Damping
+## Set up Joint Stiffness, Damping and Joint Friction
 
 In Isaac Sim, the force output by the joint is given by
 ```
 force=stiffness*(position－targetposition)+damping*(velocity－targetvelocity)
 ```
 
-The stiffness and damping are not defined in default URDF.
+The stiffness, damping and joint friction are not defined in default URDF.
 In this package, they are defined in isaac_drive_api tag in joint tag like below.
 
 ```
 <robot>
   <joint>
-    <isaac_drive_api stiffness="0" damping="150000"/>
+    <isaac_drive_api stiffness="0" damping="150000" joint_friction="1000"/>
   </joint>
 </robot>
 ```
@@ -82,3 +82,47 @@ Note that the joint tag that include the isaac_drive_api tag is not exist in ros
 
 In default behaviour, the stiffness and damping are set zero.
 
+## Set up Friction of Link
+
+Unlike Gazebo, Isaac Sim allows the user to set the static and dynamic friction coefficients.
+Since these parameters are tied to the material, URDF adds friction information to the material tag, which is normally used to set the color.
+The following is an example of a description of a material with friction set:
+
+```
+<robot>
+  <material name="white">
+    <color rgba="1.0 1.0 1.0 1.0"/>
+    <isaac_rigid_body static_friction="1.0" dynamic_friction="1.0"/>
+  </material>
+</robot>
+```
+
+As with regular URDF, you can set friction on the link by setting the material in the visual tag.
+Example:
+
+```
+<robot>
+  <link name="body_link">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="1.0"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.24 0.18 0.06" />
+      </geometry>
+      <material name="white" />
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.24 0.178 0.06" />
+      </geometry>
+    </collision>
+  </link>
+</robot>
+```
+
+Note that there is no need to duplicate the material in the collision tag.
