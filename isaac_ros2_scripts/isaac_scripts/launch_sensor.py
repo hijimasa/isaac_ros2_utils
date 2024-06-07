@@ -68,7 +68,7 @@ def main(urdf_path:str):
                 parent=prim_path,
                 config=child.find("config").text,
                 translation=(0.0, 0, 0.0),
-                orientation=Gf.Quatd(0.5, 0.5, -0.5, -0.5),
+                orientation=Gf.Quatd(1.0, 0.0, 0.0, 0.0),
             )
 
             hydra_texture = rep.create.render_product(my_lidar.GetPath(), [1, 1], name=child.attrib["name"])
