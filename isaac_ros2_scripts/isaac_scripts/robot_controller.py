@@ -125,39 +125,99 @@ def main(urdf_path:str):
             if drive[index].GetDampingAttr().Get() == 0:
                 drive[index].CreateDampingAttr().Set(15000)
 
-    import omni.graph.core as og
+    async def control_loop():
+        art = None
+        art_path = ""
+        while art == None or art == _dynamic_control.INVALID_HANDLE:
+            await omni.kit.app.get_app().next_update_async()
+            ret = search_joint_and_link.find_articulation_root(stage_handle.GetPrimAtPath("/World/" + robot_name))
+            if not ret == None:
+                (art, art_path) = ret
 
-    (ros_control_graph, _, _, _) = og.Controller.edit(
-        {"graph_path": "/World/" + robot_name + "/ActionGraph", "evaluator_name": "execution"},
-        {
-            og.Controller.Keys.CREATE_NODES: [
-                ("OnPlaybackTick", "omni.graph.action.OnPlaybackTick"),
-                ("PublishJointState", "omni.isaac.ros2_bridge.ROS2PublishJointState"),
-                ("SubscribeJointState", "omni.isaac.ros2_bridge.ROS2SubscribeJointState"),
-                ("ArticulationController", "omni.isaac.core_nodes.IsaacArticulationController"),
-                ("ReadSimTime", "omni.isaac.core_nodes.IsaacReadSimulationTime"),
-            ],
-            og.Controller.Keys.CONNECT: [
-                ("OnPlaybackTick.outputs:tick", "PublishJointState.inputs:execIn"),
-                ("OnPlaybackTick.outputs:tick", "SubscribeJointState.inputs:execIn"),
-                ("OnPlaybackTick.outputs:tick", "ArticulationController.inputs:execIn"),
-
-                ("ReadSimTime.outputs:simulationTime", "PublishJointState.inputs:timeStamp"),
-
-                ("SubscribeJointState.outputs:jointNames", "ArticulationController.inputs:jointNames"),
-                ("SubscribeJointState.outputs:positionCommand", "ArticulationController.inputs:positionCommand"),
-                ("SubscribeJointState.outputs:velocityCommand", "ArticulationController.inputs:velocityCommand"),
-                ("SubscribeJointState.outputs:effortCommand", "ArticulationController.inputs:effortCommand"),
-            ],
-            og.Controller.Keys.SET_VALUES: [
-                # Providing path to /panda robot to Articulation Controller node
-                # Providing the robot path is equivalent to setting the targetPrim in Articulation Controller node
-                # ("ArticulationController.inputs:usePath", True),      # if you are using an older version of Isaac Sim, you may need to uncomment this line
-                ("ArticulationController.inputs:robotPath", "/World/" + robot_name + "/base_link"),
-                ("PublishJointState.inputs:targetPrim", "/World/" + robot_name + "/base_link")
-            ],
-        },
-    )
+        import omni.graph.core as og
     
-    og.Controller.evaluate_sync(ros_control_graph)
+        (ros_control_graph, _, _, _) = og.Controller.edit(
+            {"graph_path": "/World/" + robot_name + "/ActionGraph", "evaluator_name": "execution"},
+            {
+                og.Controller.Keys.CREATE_NODES: [
+                    ("OnPlaybackTick", "omni.graph.action.OnPlaybackTick"),
+                    ("PublishJointState", "omni.isaac.ros2_bridge.ROS2PublishJointState"),
+                    ("SubscribeJointState", "omni.isaac.ros2_bridge.ROS2SubscribeJointState"),
+                    ("ArticulationController", "omni.isaac.core_nodes.IsaacArticulationController"),
+                    ("ReadSimTime", "omni.isaac.core_nodes.IsaacReadSimulationTime"),
+                    ("GetArrayIndex", "omni.graph.nodes.ArrayIndex"),
+                    ("Compare", "omni.graph.nodes.Compare"),
+                    ("SelectIf", "omni.graph.nodes.SelectIf"),
+                    ("VelocityGetArrayIndex", "omni.graph.nodes.ArrayIndex"),
+                    ("VelocityCompare", "omni.graph.nodes.Compare"),
+                    ("VelocitySelectIf", "omni.graph.nodes.SelectIf"),
+                    ("GetArraySize", "omni.graph.nodes.ArrayGetSize"),
+                    ("ResizeArray", "omni.graph.nodes.ArrayResize"),
+                    ("VelocityResizeArray", "omni.graph.nodes.ArrayResize"),
+                    ("ConstantInt", "omni.graph.nodes.ConstantInt"),
+                    ("ConstantDouble", "omni.graph.nodes.ConstantDouble"),
+                ],
+                og.Controller.Keys.CONNECT: [
+                    ("OnPlaybackTick.outputs:tick", "PublishJointState.inputs:execIn"),
+                    ("OnPlaybackTick.outputs:tick", "SubscribeJointState.inputs:execIn"),
+                    ("OnPlaybackTick.outputs:tick", "ArticulationController.inputs:execIn"),
+    
+                    ("ReadSimTime.outputs:simulationTime", "PublishJointState.inputs:timeStamp"),
+    
+                    ("SubscribeJointState.outputs:jointNames", "ArticulationController.inputs:jointNames"),
+                    ("SubscribeJointState.outputs:effortCommand", "ArticulationController.inputs:effortCommand"),
+    
+                    ("SubscribeJointState.outputs:velocityCommand", "GetArrayIndex.inputs:array"),
+                    ("SubscribeJointState.outputs:effortCommand", "VelocityGetArrayIndex.inputs:array"),
+    
+                    ("GetArrayIndex.outputs:value", "Compare.inputs:a"),
+                    ("ConstantDouble.inputs:value", "Compare.inputs:b"),
+                    ("Compare.outputs:result", "SelectIf.inputs:condition"),
+    
+                    ("VelocityGetArrayIndex.outputs:value", "VelocityCompare.inputs:a"),
+                    ("ConstantDouble.inputs:value", "VelocityCompare.inputs:b"),
+                    ("VelocityCompare.outputs:result", "VelocitySelectIf.inputs:condition"),
+    
+                    ("SubscribeJointState.outputs:jointNames", "GetArraySize.inputs:array"),
+    
+                    ("GetArraySize.outputs:size", "SelectIf.inputs:ifTrue"),
+                    ("ConstantInt.inputs:value", "SelectIf.inputs:ifFalse"),
+                    ("SelectIf.outputs:result", "ResizeArray.inputs:newSize"),
+    
+                    ("GetArraySize.outputs:size", "VelocitySelectIf.inputs:ifTrue"),
+                    ("ConstantInt.inputs:value", "VelocitySelectIf.inputs:ifFalse"),
+                    ("VelocitySelectIf.outputs:result", "VelocityResizeArray.inputs:newSize"),
+    
+                    ("SubscribeJointState.outputs:positionCommand", "ResizeArray.inputs:array"),
+                    ("ResizeArray.outputs:array", "ArticulationController.inputs:positionCommand"),
+    
+                    ("SubscribeJointState.outputs:velocityCommand", "VelocityResizeArray.inputs:array"),
+                    ("VelocityResizeArray.outputs:array", "ArticulationController.inputs:velocityCommand"),
+                ],
+                og.Controller.Keys.SET_VALUES: [
+                    # Providing path to /panda robot to Articulation Controller node
+                    # Providing the robot path is equivalent to setting the targetPrim in Articulation Controller node
+                    # ("ArticulationController.inputs:usePath", True),      # if you are using an older version of Isaac Sim, you may need to uncomment this line
+                    ("ArticulationController.inputs:robotPath", art_path),
+                    ("PublishJointState.inputs:targetPrim", art_path),
+                    ("Compare.inputs:operation", "<="),
+                    ("VelocityCompare.inputs:operation", "<="),
+                ],
+            },
+        )
+
+        og.Controller.attribute("/World/" + robot_name + "/ActionGraph/ConstantInt.inputs:value").set(0)
+        og.Controller.attribute("/World/" + robot_name + "/ActionGraph/ConstantDouble.inputs:value").set(-3.402823e+38)
+    
+        og.Controller.evaluate_sync(ros_control_graph)
+
+    def loop_in_thread(loop):
+        asyncio.set_event_loop(loop)
+        loop.run_until_complete(control_loop())
+
+    loop = asyncio.get_event_loop()
+    import threading
+    t = threading.Thread(target=loop_in_thread, args=(loop,))
+    t.start()
+    
 

@@ -49,10 +49,10 @@ def find_articulation_root(start_stage):
     for prim in start_stage.GetAllChildren():
         art = dc.get_articulation(prim.GetPath().pathString)
         if not art == _dynamic_control.INVALID_HANDLE:
-            return art
+            return (art, prim.GetPath().pathString)
         else:
             ret = find_articulation_root(prim)
             if not ret == None:
                 return ret
-    
+
     return None
