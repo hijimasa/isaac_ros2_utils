@@ -55,10 +55,7 @@ def main(urdf_path:str):
         robot_name = child.attrib["name"]
         break
 
-    viewportId = 1
     for child in urdf_root.findall('.//isaac/sensor'):
-        from omni.kit.viewport.utility import get_viewport_from_window_name
-
         if child.attrib["type"] == "lidar":
             prim_path = search_joint_and_link.search_link_prim_path(kinematics_chain, "/World/" + robot_name + "/", child.attrib["name"])
 
