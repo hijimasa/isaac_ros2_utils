@@ -82,6 +82,14 @@ def main(urdf_path:str):
             else:
                 urdf_joint_initial_values.append(0.0)
 
+    joint_commands_topic_name = ""
+    joint_states_topic_name = ""
+    for child in urdf_root.findall('.//ros2_control/hardware/param'):
+        if child.attrib["name"] == "joint_commands_topic":
+            joint_commands_topic_name = child.text
+        if child.attrib["name"] == "joint_states_topic":
+            joint_states_topic_name = child.text
+
     joint_name = []
     for joint in urdf_joints:
         joint_name.append(joint.attrib["name"])
@@ -159,10 +167,10 @@ def main(urdf_path:str):
                     # ("ArticulationController.inputs:usePath", True),      # if you are using an older version of Isaac Sim, you may need to uncomment this line
                     ("ArticulationController.inputs:robotPath", art_path),
                     ("PublishJointState.inputs:targetPrim", art_path),
-                    ("PublishJointState.inputs:topicName", "joint_states"),
+                    ("PublishJointState.inputs:topicName", joint_states_topic_name),
                     ("SubscribeJointState.inputs:messageName", "JointState"),
                     ("SubscribeJointState.inputs:messagePackage", "sensor_msgs"),
-                    ("SubscribeJointState.inputs:topicName", "joint_command"),
+                    ("SubscribeJointState.inputs:topicName", joint_commands_topic_name),
                 ],
             },
         )
