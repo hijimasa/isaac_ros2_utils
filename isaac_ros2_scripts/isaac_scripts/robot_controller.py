@@ -29,7 +29,7 @@ import omni.kit.viewport.utility
 import omni.replicator.core as rep
 #from omni.isaac.sensor import LidarRtx, Camera
 #import omni.isaac.core.utils.numpy.rotations as rot_utils
-#import numpy as np
+import numpy as np
 from pxr import Gf, UsdGeom, Usd
 import omni.graph.core as og
 from omni.isaac.core.utils.prims import set_targets
@@ -115,6 +115,87 @@ def main(urdf_path:str):
     drive = []
     for index in range(len(joints_prim_paths)):
         drive.append(UsdPhysics.DriveAPI.Get(stage_handle.GetPrimAtPath(joints_prim_paths[index]), joint_type[index]))
+
+    for child in urdf_root.findall('.//isaac/surface_gripper'):
+        offset_x = float(child.find("offset_x").text)
+        offset_y = float(child.find("offset_y").text)
+        offset_z = float(child.find("offset_z").text)
+        axis = child.find("axis").text
+        grip_threshold = float(child.find("grip_threshold").text)
+        force_limit = float(child.find("force_limit").text)
+        torque_limit = float(child.find("torque_limit").text)
+        bend_angle = float(child.find("bend_angle").text)
+        stiffness = float(child.find("stiffness").text)
+        damping = float(child.find("damping").text)
+        if child.find("retry_close").text == "False" or child.find("retry_close").text == "false" or child.find("retry_close").text == "0":
+            retry_close = False
+        else:
+            retry_close = True
+
+        prim_path = search_joint_and_link.search_link_prim_path(kinematics_chain, "/World/" + robot_name + "/", child.attrib["name"])
+
+        xform_prim = UsdGeom.Xform.Define(omni.usd.get_context().get_stage(), prim_path + "/VacuumPoint")
+        xform_api = UsdGeom.XformCommonAPI(xform_prim)
+        xform_api.SetTranslate(Gf.Vec3d(offset_x, offset_y, offset_z))
+        if axis == "1 0 0":
+            xform_api.SetRotate((0, 0, 0), UsdGeom.XformCommonAPI.RotationOrderXYZ)
+        if axis == "-1 0 0":
+            xform_api.SetRotate((0, 0, 180), UsdGeom.XformCommonAPI.RotationOrderXYZ)
+        if axis == "0 1 0":
+            xform_api.SetRotate((0, 0, -90), UsdGeom.XformCommonAPI.RotationOrderXYZ)
+        if axis == "0 -1 0":
+            xform_api.SetRotate((0, 0, 90), UsdGeom.XformCommonAPI.RotationOrderXYZ)
+        if axis == "0 0 1":
+            xform_api.SetRotate((0, 90, 0), UsdGeom.XformCommonAPI.RotationOrderXYZ)
+        if axis == "0 0 -1":
+            xform_api.SetRotate((0, -90, 0), UsdGeom.XformCommonAPI.RotationOrderXYZ)
+
+        keys = og.Controller.Keys
+        (ros_surface_gripper_graph, _, _, _) = og.Controller.edit(
+            {
+                "graph_path": prim_path + "/SurfaceGripper_Graph",
+                "evaluator_name": "execution",
+            },
+            {
+                keys.CREATE_NODES: [
+                    ("OnTick", "omni.graph.action.OnPlaybackTick"),
+                    ("SubscribeClose", "omni.isaac.ros2_bridge.ROS2Subscriber"),
+                    ("SubscribeOpen", "omni.isaac.ros2_bridge.ROS2Subscriber"),
+                    ("SurfaceGripper", "omni.isaac.surface_gripper.SurfaceGripper"),
+                    ("SendCloseEvent", "omni.graph.action.SendCustomEvent"),
+                    ("SendOpenEvent", "omni.graph.action.SendCustomEvent"),
+                ],
+                keys.CONNECT: [
+                    ("OnTick.outputs:tick", "SubscribeClose.inputs:execIn"),
+                    ("OnTick.outputs:tick", "SubscribeOpen.inputs:execIn"),
+                    ("OnTick.outputs:tick", "SurfaceGripper.inputs:onStep"),
+                    ("SubscribeClose.outputs:execOut", "SendCloseEvent.inputs:execIn"),
+                    ("SendCloseEvent.outputs:execOut", "SurfaceGripper.inputs:Close"),
+                    ("SubscribeOpen.outputs:execOut", "SendOpenEvent.inputs:execIn"),
+                    ("SendOpenEvent.outputs:execOut", "SurfaceGripper.inputs:Open"),
+                ],
+                keys.SET_VALUES: [
+                    ("SubscribeClose.inputs:messageName", "Bool"),
+                    ("SubscribeClose.inputs:messagePackage", "std_msgs"),
+                    ("SubscribeClose.inputs:topicName", prim_path + "/close"),
+                    ("SubscribeOpen.inputs:messageName", "Bool"),
+                    ("SubscribeOpen.inputs:messagePackage", "std_msgs"),
+                    ("SubscribeOpen.inputs:topicName", prim_path + "/open"),
+                    ("SurfaceGripper.inputs:ParentRigidBody", prim_path),
+                    ("SurfaceGripper.inputs:GripPosition", prim_path + "/VacuumPoint"),
+                    ("SurfaceGripper.inputs:GripThreshold", grip_threshold),
+                    ("SurfaceGripper.inputs:ForceLimit", force_limit),
+                    ("SurfaceGripper.inputs:BendAngle", bend_angle * 180 / np.pi),
+                    ("SurfaceGripper.inputs:Stiffness", stiffness),
+                    ("SurfaceGripper.inputs:Damping", damping),
+                    ("SurfaceGripper.inputs:RetryClose", retry_close),
+                    ("SendCloseEvent.inputs:eventName", "close"),
+                    ("SendOpenEvent.inputs:eventName", "open"),
+                ],
+            },
+        )
+
+        og.Controller.evaluate_sync(ros_surface_gripper_graph)
 
     for index in range(len(joints_prim_paths)):
         if urdf_joint_command_interfaces[index] == "position":
