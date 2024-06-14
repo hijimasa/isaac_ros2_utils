@@ -230,24 +230,29 @@ def main(urdf_path:str):
             {
                 og.Controller.Keys.CREATE_NODES: [
                     ("OnPlaybackTick", "omni.graph.action.OnPlaybackTick"),
-                    ("PublishJointState", "omni.isaac.ros2_bridge.ROS2PublishJointState"),
+                    ("PublishJointState", "omni.isaac.ros2_bridge.ROS2Publisher"),
+                    ("ArticulationState", "omni.isaac.core_nodes.IsaacArticulationState"),
                     ("SubscribeJointState", "omni.isaac.ros2_bridge.ROS2Subscriber"),
                     ("ArticulationController", "omni.isaac.core_nodes.IsaacArticulationController"),
                     ("ReadSimTime", "omni.isaac.core_nodes.IsaacReadSimulationTime"),
+                    ("TimeSplitter", "omni.isaac.core_nodes.IsaacTimeSplitter"),
                 ],
                 og.Controller.Keys.CONNECT: [
                     ("OnPlaybackTick.outputs:tick", "PublishJointState.inputs:execIn"),
+                    ("OnPlaybackTick.outputs:tick", "ArticulationState.inputs:execIn"),
                     ("OnPlaybackTick.outputs:tick", "SubscribeJointState.inputs:execIn"),
                     ("OnPlaybackTick.outputs:tick", "ArticulationController.inputs:execIn"),
     
-                    ("ReadSimTime.outputs:simulationTime", "PublishJointState.inputs:timeStamp"),
+                    ("ReadSimTime.outputs:simulationTime", "TimeSplitter.inputs:time"),
                 ],
                 og.Controller.Keys.SET_VALUES: [
                     # Providing path to /panda robot to Articulation Controller node
                     # Providing the robot path is equivalent to setting the targetPrim in Articulation Controller node
                     # ("ArticulationController.inputs:usePath", True),      # if you are using an older version of Isaac Sim, you may need to uncomment this line
-                    ("ArticulationController.inputs:robotPath", art_path),
-                    ("PublishJointState.inputs:targetPrim", art_path),
+                    ("ArticulationController.inputs:targetPrim", art_path),
+                    ("ArticulationState.inputs:targetPrim", art_path),
+                    ("PublishJointState.inputs:messageName", "JointState"),
+                    ("PublishJointState.inputs:messagePackage", "sensor_msgs"),
                     ("PublishJointState.inputs:topicName", joint_states_topic_name),
                     ("SubscribeJointState.inputs:messageName", "JointState"),
                     ("SubscribeJointState.inputs:messagePackage", "sensor_msgs"),
@@ -261,6 +266,13 @@ def main(urdf_path:str):
         og.Controller.connect("/World/" + robot_name + "/ActionGraph/SubscribeJointState.outputs:velocity", "/World/" + robot_name + "/ActionGraph/ArticulationController.inputs:velocityCommand")
         og.Controller.connect("/World/" + robot_name + "/ActionGraph/SubscribeJointState.outputs:effort", "/World/" + robot_name + "/ActionGraph/ArticulationController.inputs:effortCommand")
 
+        og.Controller.connect("/World/" + robot_name + "/ActionGraph/TimeSplitter.outputs:seconds", "/World/" + robot_name + "/ActionGraph/PublishJointState.inputs:header:stamp:sec")
+        og.Controller.connect("/World/" + robot_name + "/ActionGraph/TimeSplitter.outputs:nanoseconds", "/World/" + robot_name + "/ActionGraph/PublishJointState.inputs:header:stamp:nanosec")
+        og.Controller.connect("/World/" + robot_name + "/ActionGraph/ArticulationState.outputs:jointNames", "/World/" + robot_name + "/ActionGraph/PublishJointState.inputs:name")
+        og.Controller.connect("/World/" + robot_name + "/ActionGraph/ArticulationState.outputs:jointPositions", "/World/" + robot_name + "/ActionGraph/PublishJointState.inputs:position")
+        og.Controller.connect("/World/" + robot_name + "/ActionGraph/ArticulationState.outputs:jointVelocities", "/World/" + robot_name + "/ActionGraph/PublishJointState.inputs:velocity")
+        og.Controller.connect("/World/" + robot_name + "/ActionGraph/ArticulationState.outputs:measuredJointEfforts", "/World/" + robot_name + "/ActionGraph/PublishJointState.inputs:effort")
+        
         og.Controller.evaluate_sync(ros_control_graph)
 
     def loop_in_thread(loop):
