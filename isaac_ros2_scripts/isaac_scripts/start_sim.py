@@ -11,6 +11,7 @@ import sys
 import time
 import signal
 from omni.isaac.kit import SimulationApp
+from distutils.util import strtobool
 
 real_frame_per_second = 0.0
 internal_frame_per_second = 60.0
@@ -40,9 +41,15 @@ def main():
         real_frame_per_second = float(args[4])
     else:
         real_frame_per_second = internal_frame_per_second
+    is_headless_mode = False
+    if len(args) >= 6:
+        is_headless_mode = bool(strtobool(args[5]))
 
     # URDF import, configuration and simulation sample
-    kit = SimulationApp({"renderer": "RayTracedLighting", "headless": False, "open_usd": usd_path})
+    if is_headless_mode:
+        kit = SimulationApp({"renderer": "RayTracedLighting", "headless": True, "hide_ui": False, "open_usd": usd_path})
+    else:
+        kit = SimulationApp({"renderer": "RayTracedLighting", "headless": False, "open_usd": usd_path})
 
     import omni
     from omni.isaac.core.utils.extensions import enable_extension, disable_extension
@@ -51,15 +58,21 @@ def main():
     enable_extension("omni.isaac.ros2_bridge")    
     kit.update()
     enable_extension("omni.isaac.repl")
+    if is_headless_mode:
+        kit.update()
+        enable_extension("omni.isaac.sim.headless.native")
     
     my_world = World(stage_units_in_meters = 1.0, physics_dt = 1.0 / internal_frame_per_second, rendering_dt = 1.0 / internal_frame_per_second)
 
     import omni.kit.commands
     from pxr import Sdf, Gf, UsdPhysics, PhysxSchema
     
+    if is_headless_mode:
+        omni.usd.get_context().open_stage(usd_path)
+
     # Get stage handle
     stage_handle = omni.usd.get_context().get_stage()
-
+    
     # Enable physics
     scene = UsdPhysics.Scene.Define(stage_handle, Sdf.Path("/physicsScene"))
     # Set gravity
