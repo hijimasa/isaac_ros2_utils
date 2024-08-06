@@ -19,7 +19,7 @@ from omni.isaac.core.utils import stage
 from omni.isaac.core.utils.render_product import create_hydra_texture
 import omni.kit.viewport.utility
 import omni.replicator.core as rep
-from pxr import UsdGeom
+from pxr import UsdGeom, PhysxSchema
 import omni.graph.core as og
 from omni.isaac.core.utils.prims import set_targets
 from omni.isaac.sensor import ContactSensor
@@ -207,64 +207,43 @@ def main(urdf_path:str):
         if child.attrib["type"] == "contact":
             prim_path = search_joint_and_link.search_link_prim_path(kinematics_chain, "/World/" + robot_name + "/", child.attrib["name"])
 
-            async def launch_contact_sensor(prim_path, topic_name):
-                sensor = ContactSensor(
-                    prim_path = prim_path + "/Contact_Sensor",
-                    name = "Contact_Sensor",
-                    frequency = 15,
-                    translation = np.array([0, 0, 0]),
-                    min_threshold = 0.0001,
-                    max_threshold = 10000000,
-                    radius = -1
-                )
+            PhysxSchema.PhysxContactReportAPI.Apply(stage_handle.GetPrimAtPath(prim_path))
+
+            sensor = ContactSensor(
+                prim_path = prim_path + "/Contact_Sensor",
+                name = "Contact_Sensor",
+                frequency = 15,
+                translation = np.array([0, 0, 0]),
+                min_threshold = 0.0001,
+                max_threshold = 10000000,
+                radius = -1
+            )
                 
-                await omni.kit.app.get_app().next_update_async()
-                
-                keys = og.Controller.Keys
-                (ros_contact_graph, _, _, _) = og.Controller.edit(
-                    {
-                        "graph_path": prim_path + "/Contact_Graph",
-                        "evaluator_name": "execution",
-                    },
-                    {
-                        keys.CREATE_NODES: [
-                            ("OnTick", "omni.graph.action.OnPlaybackTick"),
-                            ("readContactSensor", "omni.isaac.sensor.IsaacReadContactSensor"),
-                            ("selectIf", "omni.graph.nodes.SelectIf"),
-                            ("falseValue", "omni.graph.nodes.ConstantUChar"),
-                            ("trueValue", "omni.graph.nodes.ConstantUChar"),
-                            ("makeArray", "omni.graph.nodes.ConstructArray"),
-                            ("publishSensorValue", "omni.isaac.ros2_bridge.ROS2PublishImage"),
-                        ],
-                        keys.CONNECT: [
-                            ("OnTick.outputs:tick", "readContactSensor.inputs:execIn"),
-                            ("readContactSensor.outputs:execOut", "publishSensorValue.inputs:execIn"),
-                            ("readContactSensor.outputs:inContact", "selectIf.inputs:condition"),
-                            ("falseValue.inputs:value", "selectIf.inputs:ifFalse"),
-                            ("trueValue.inputs:value", "selectIf.inputs:ifTrue"),
-                            ("selectIf.outputs:result", "makeArray.inputs:input0"),
-                            ("makeArray.outputs:array", "publishSensorValue.inputs:data"),
-                        ],
-                        keys.SET_VALUES: [
-                            ("readContactSensor.inputs:csPrim", prim_path + "/Contact_Sensor"),
-                            ("falseValue.inputs:value", 0),
-                            ("trueValue.inputs:value", 255),
-                            ("makeArray.inputs:arraySize", 3),
-                            ("publishSensorValue.inputs:height", 1),
-                            ("publishSensorValue.inputs:width", 1),
-                            ("publishSensorValue.inputs:topicName", prim_path + "/" + topic_name),
-                        ],
-                    },
-                )
+            keys = og.Controller.Keys
+            (ros_contact_graph, _, _, _) = og.Controller.edit(
+                {
+                    "graph_path": prim_path + "/Contact_Graph",
+                    "evaluator_name": "execution",
+                },
+                {
+                    keys.CREATE_NODES: [
+                        ("OnTick", "omni.graph.action.OnPlaybackTick"),
+                        ("readContactSensor", "omni.isaac.sensor.IsaacReadContactSensor"),
+                        ("publishSensorValue", "omni.isaac.ros2_bridge.ROS2Publisher"),
+                    ],
+                    keys.CONNECT: [
+                        ("OnTick.outputs:tick", "readContactSensor.inputs:execIn"),
+                        ("readContactSensor.outputs:execOut", "publishSensorValue.inputs:execIn"),
+                    ],
+                    keys.SET_VALUES: [
+                        ("readContactSensor.inputs:csPrim", prim_path + "/Contact_Sensor"),
+                        ("publishSensorValue.inputs:messageName", "Bool"),
+                        ("publishSensorValue.inputs:messagePackage", "std_msgs"),
+                        ("publishSensorValue.inputs:topicName", prim_path + "/" + child.find("topic").text),
+                    ],
+                },
+            )
+            og.Controller.connect(prim_path + "/Contact_Graph/readContactSensor.outputs:inContact", prim_path + "/Contact_Graph/publishSensorValue.inputs:data")
 
-                og.Controller.evaluate_sync(ros_contact_graph)
-
-            def loop_in_thread(loop):
-                asyncio.set_event_loop(loop)
-                loop.run_until_complete(launch_contact_sensor(prim_path, child.find("topic").text))
-
-            loop = asyncio.get_event_loop()
-            import threading
-            contact_sensor_thread = threading.Thread(target=loop_in_thread, args=(loop,))
-            contact_sensor_thread.start()
+            og.Controller.evaluate_sync(ros_contact_graph)
 
