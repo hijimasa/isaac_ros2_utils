@@ -14,15 +14,19 @@ license agreement from NVIDIA CORPORATION is strictly prohibited.</license>
             <transport_id>UdpTransport</transport_id>
             <type>UDPv4</type>
         </transport_descriptor>
+        <transport_descriptor>
+            <transport_id>shm_transport</transport_id>
+            <type>SHM</type>
+        </transport_descriptor>
     </transport_descriptors>
 
-    <participant profile_name="udp_transport_profile" is_default_profile="true">
+    <participant profile_name="udp_shm_transport_profile" is_default_profile="true">
         <rtps>
             <userTransports>
                 <transport_id>UdpTransport</transport_id>
+                <transport_id>shm_transport</transport_id>
             </userTransports>
             <useBuiltinTransports>false</useBuiltinTransports>
         </rtps>
     </participant>
 </profiles>
-
