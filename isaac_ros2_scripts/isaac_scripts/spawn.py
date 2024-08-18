@@ -57,13 +57,16 @@ def main(urdf_path:str, x=0.0, y=0.0, z=0.0, roll=0.0, pitch=0.0, yaw=0.0, fixed
     for child in urdf_root.findall('./material'):
         dynamic_friction = 0.0
         static_friction = 0.0
+        restitution = 0.0
         rigid_body_list = child.findall('./isaac_rigid_body')
         if not len(rigid_body_list) == 0:
             if "dynamic_friction" in rigid_body_list[0].attrib:
                 dynamic_friction = float(rigid_body_list[0].attrib["dynamic_friction"])
             if "static_friction" in rigid_body_list[0].attrib:
                 static_friction = float(rigid_body_list[0].attrib["static_friction"])
-        utils.addRigidBodyMaterial(stage, "/World/" + robot_name + "/Looks/material_" + child.attrib["name"], density=None, staticFriction=static_friction, dynamicFriction=dynamic_friction, restitution=0.0)
+            if "restitution" in rigid_body_list[0].attrib:
+                restitution = float(rigid_body_list[0].attrib["restitution"])
+        utils.addRigidBodyMaterial(stage, "/World/" + robot_name + "/Looks/material_" + child.attrib["name"], density=None, staticFriction=static_friction, dynamicFriction=dynamic_friction, restitution=restitution)
         
     for link in urdf_root.findall("./link"):
         joint_prim_path = search_joint_and_link.find_prim_path_by_name(stage_handle.GetPrimAtPath("/World/" + robot_name), link.attrib["name"])

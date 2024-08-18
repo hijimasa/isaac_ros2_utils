@@ -27,8 +27,7 @@ from omni.isaac.core.utils import stage, extensions, nucleus
 from omni.isaac.core.utils.render_product import create_hydra_texture
 import omni.kit.viewport.utility
 import omni.replicator.core as rep
-#from omni.isaac.sensor import LidarRtx, Camera
-#import omni.isaac.core.utils.numpy.rotations as rot_utils
+from omni.isaac.core.utils.prims import get_articulation_root_api_prim_path
 import numpy as np
 from pxr import Gf, UsdGeom, Usd
 import omni.graph.core as og
@@ -214,74 +213,57 @@ def main(urdf_path:str):
             if drive[index].GetDampingAttr().Get() == 0:
                 drive[index].CreateDampingAttr().Set(15000)
 
-    async def control_loop():
-        art = None
-        art_path = ""
-        while art == None or art == _dynamic_control.INVALID_HANDLE:
-            await omni.kit.app.get_app().next_update_async()
-            ret = search_joint_and_link.find_articulation_root(stage_handle.GetPrimAtPath("/World/" + robot_name))
-            if not ret == None:
-                (art, art_path) = ret
+    art_path = get_articulation_root_api_prim_path("/World/" + robot_name)
 
-        import omni.graph.core as og
-    
-        (ros_control_graph, _, _, _) = og.Controller.edit(
-            {"graph_path": "/World/" + robot_name + "/ActionGraph", "evaluator_name": "execution"},
-            {
-                og.Controller.Keys.CREATE_NODES: [
-                    ("OnPlaybackTick", "omni.graph.action.OnPlaybackTick"),
-                    ("PublishJointState", "omni.isaac.ros2_bridge.ROS2Publisher"),
-                    ("ArticulationState", "omni.isaac.core_nodes.IsaacArticulationState"),
-                    ("SubscribeJointState", "omni.isaac.ros2_bridge.ROS2Subscriber"),
-                    ("ArticulationController", "omni.isaac.core_nodes.IsaacArticulationController"),
-                    ("ReadSimTime", "omni.isaac.core_nodes.IsaacReadSimulationTime"),
-                    ("TimeSplitter", "omni.isaac.core_nodes.IsaacTimeSplitter"),
-                ],
-                og.Controller.Keys.CONNECT: [
-                    ("OnPlaybackTick.outputs:tick", "PublishJointState.inputs:execIn"),
-                    ("OnPlaybackTick.outputs:tick", "ArticulationState.inputs:execIn"),
-                    ("OnPlaybackTick.outputs:tick", "SubscribeJointState.inputs:execIn"),
-                    ("OnPlaybackTick.outputs:tick", "ArticulationController.inputs:execIn"),
-    
-                    ("ReadSimTime.outputs:simulationTime", "TimeSplitter.inputs:time"),
-                ],
-                og.Controller.Keys.SET_VALUES: [
-                    # Providing path to /panda robot to Articulation Controller node
-                    # Providing the robot path is equivalent to setting the targetPrim in Articulation Controller node
-                    # ("ArticulationController.inputs:usePath", True),      # if you are using an older version of Isaac Sim, you may need to uncomment this line
-                    ("ArticulationController.inputs:targetPrim", art_path),
-                    ("ArticulationState.inputs:targetPrim", art_path),
-                    ("PublishJointState.inputs:messageName", "JointState"),
-                    ("PublishJointState.inputs:messagePackage", "sensor_msgs"),
-                    ("PublishJointState.inputs:topicName", joint_states_topic_name),
-                    ("SubscribeJointState.inputs:messageName", "JointState"),
-                    ("SubscribeJointState.inputs:messagePackage", "sensor_msgs"),
-                    ("SubscribeJointState.inputs:topicName", joint_commands_topic_name),
-                ],
-            },
-        )
+    import omni.graph.core as og
+
+    (ros_control_graph, _, _, _) = og.Controller.edit(
+        {"graph_path": "/World/" + robot_name + "/ActionGraph", "evaluator_name": "execution"},
+        {
+            og.Controller.Keys.CREATE_NODES: [
+                ("OnPlaybackTick", "omni.graph.action.OnPlaybackTick"),
+                ("PublishJointState", "omni.isaac.ros2_bridge.ROS2Publisher"),
+                ("ArticulationState", "omni.isaac.core_nodes.IsaacArticulationState"),
+                ("SubscribeJointState", "omni.isaac.ros2_bridge.ROS2Subscriber"),
+                ("ArticulationController", "omni.isaac.core_nodes.IsaacArticulationController"),
+                ("ReadSimTime", "omni.isaac.core_nodes.IsaacReadSimulationTime"),
+                ("TimeSplitter", "omni.isaac.core_nodes.IsaacTimeSplitter"),
+            ],
+            og.Controller.Keys.CONNECT: [
+                ("OnPlaybackTick.outputs:tick", "PublishJointState.inputs:execIn"),
+                ("OnPlaybackTick.outputs:tick", "ArticulationState.inputs:execIn"),
+                ("OnPlaybackTick.outputs:tick", "SubscribeJointState.inputs:execIn"),
+                ("OnPlaybackTick.outputs:tick", "ArticulationController.inputs:execIn"),
+
+                ("ReadSimTime.outputs:simulationTime", "TimeSplitter.inputs:time"),
+            ],
+            og.Controller.Keys.SET_VALUES: [
+                # Providing path to /panda robot to Articulation Controller node
+                # Providing the robot path is equivalent to setting the targetPrim in Articulation Controller node
+                # ("ArticulationController.inputs:usePath", True),      # if you are using an older version of Isaac Sim, you may need to uncomment this line
+                ("ArticulationController.inputs:targetPrim", art_path),
+                ("ArticulationState.inputs:targetPrim", art_path),
+                ("PublishJointState.inputs:messageName", "JointState"),
+                ("PublishJointState.inputs:messagePackage", "sensor_msgs"),
+                ("PublishJointState.inputs:topicName", joint_states_topic_name),
+                ("SubscribeJointState.inputs:messageName", "JointState"),
+                ("SubscribeJointState.inputs:messagePackage", "sensor_msgs"),
+                ("SubscribeJointState.inputs:topicName", joint_commands_topic_name),
+            ],
+        },
+    )
         
-        og.Controller.connect("/World/" + robot_name + "/ActionGraph/SubscribeJointState.outputs:name", "/World/" + robot_name + "/ActionGraph/ArticulationController.inputs:jointNames")
-        og.Controller.connect("/World/" + robot_name + "/ActionGraph/SubscribeJointState.outputs:position", "/World/" + robot_name + "/ActionGraph/ArticulationController.inputs:positionCommand")
-        og.Controller.connect("/World/" + robot_name + "/ActionGraph/SubscribeJointState.outputs:velocity", "/World/" + robot_name + "/ActionGraph/ArticulationController.inputs:velocityCommand")
-        og.Controller.connect("/World/" + robot_name + "/ActionGraph/SubscribeJointState.outputs:effort", "/World/" + robot_name + "/ActionGraph/ArticulationController.inputs:effortCommand")
+    og.Controller.connect("/World/" + robot_name + "/ActionGraph/SubscribeJointState.outputs:name", "/World/" + robot_name + "/ActionGraph/ArticulationController.inputs:jointNames")
+    og.Controller.connect("/World/" + robot_name + "/ActionGraph/SubscribeJointState.outputs:position", "/World/" + robot_name + "/ActionGraph/ArticulationController.inputs:positionCommand")
+    og.Controller.connect("/World/" + robot_name + "/ActionGraph/SubscribeJointState.outputs:velocity", "/World/" + robot_name + "/ActionGraph/ArticulationController.inputs:velocityCommand")
+    og.Controller.connect("/World/" + robot_name + "/ActionGraph/SubscribeJointState.outputs:effort", "/World/" + robot_name + "/ActionGraph/ArticulationController.inputs:effortCommand")
 
-        og.Controller.connect("/World/" + robot_name + "/ActionGraph/TimeSplitter.outputs:seconds", "/World/" + robot_name + "/ActionGraph/PublishJointState.inputs:header:stamp:sec")
-        og.Controller.connect("/World/" + robot_name + "/ActionGraph/TimeSplitter.outputs:nanoseconds", "/World/" + robot_name + "/ActionGraph/PublishJointState.inputs:header:stamp:nanosec")
-        og.Controller.connect("/World/" + robot_name + "/ActionGraph/ArticulationState.outputs:jointNames", "/World/" + robot_name + "/ActionGraph/PublishJointState.inputs:name")
-        og.Controller.connect("/World/" + robot_name + "/ActionGraph/ArticulationState.outputs:jointPositions", "/World/" + robot_name + "/ActionGraph/PublishJointState.inputs:position")
-        og.Controller.connect("/World/" + robot_name + "/ActionGraph/ArticulationState.outputs:jointVelocities", "/World/" + robot_name + "/ActionGraph/PublishJointState.inputs:velocity")
-        og.Controller.connect("/World/" + robot_name + "/ActionGraph/ArticulationState.outputs:measuredJointEfforts", "/World/" + robot_name + "/ActionGraph/PublishJointState.inputs:effort")
+    og.Controller.connect("/World/" + robot_name + "/ActionGraph/TimeSplitter.outputs:seconds", "/World/" + robot_name + "/ActionGraph/PublishJointState.inputs:header:stamp:sec")
+    og.Controller.connect("/World/" + robot_name + "/ActionGraph/TimeSplitter.outputs:nanoseconds", "/World/" + robot_name + "/ActionGraph/PublishJointState.inputs:header:stamp:nanosec")
+    og.Controller.connect("/World/" + robot_name + "/ActionGraph/ArticulationState.outputs:jointNames", "/World/" + robot_name + "/ActionGraph/PublishJointState.inputs:name")
+    og.Controller.connect("/World/" + robot_name + "/ActionGraph/ArticulationState.outputs:jointPositions", "/World/" + robot_name + "/ActionGraph/PublishJointState.inputs:position")
+    og.Controller.connect("/World/" + robot_name + "/ActionGraph/ArticulationState.outputs:jointVelocities", "/World/" + robot_name + "/ActionGraph/PublishJointState.inputs:velocity")
+    og.Controller.connect("/World/" + robot_name + "/ActionGraph/ArticulationState.outputs:measuredJointEfforts", "/World/" + robot_name + "/ActionGraph/PublishJointState.inputs:effort")
         
-        og.Controller.evaluate_sync(ros_control_graph)
-
-    def loop_in_thread(loop):
-        asyncio.set_event_loop(loop)
-        loop.run_until_complete(control_loop())
-
-    loop = asyncio.get_event_loop()
-    import threading
-    t = threading.Thread(target=loop_in_thread, args=(loop,))
-    t.start()
-    
+    og.Controller.evaluate_sync(ros_control_graph)    
 

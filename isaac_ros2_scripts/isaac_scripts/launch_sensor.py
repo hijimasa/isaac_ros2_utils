@@ -21,6 +21,7 @@ import omni.kit.viewport.utility
 import omni.replicator.core as rep
 from pxr import UsdGeom, PhysxSchema
 import omni.graph.core as og
+from omni.graph.core import GraphPipelineStage
 from omni.isaac.core.utils.prims import set_targets
 from omni.isaac.sensor import ContactSensor
 import numpy as np
@@ -207,14 +208,15 @@ def main(urdf_path:str):
         if child.attrib["type"] == "contact":
             prim_path = search_joint_and_link.search_link_prim_path(kinematics_chain, "/World/" + robot_name + "/", child.attrib["name"])
 
-            PhysxSchema.PhysxContactReportAPI.Apply(stage_handle.GetPrimAtPath(prim_path))
+            contact_report_api = PhysxSchema.PhysxContactReportAPI.Apply(stage_handle.GetPrimAtPath(prim_path))
+            contact_report_api.CreateThresholdAttr(0.0)
 
             sensor = ContactSensor(
                 prim_path = prim_path + "/Contact_Sensor",
                 name = "Contact_Sensor",
-                frequency = 15,
+                frequency = 60,
                 translation = np.array([0, 0, 0]),
-                min_threshold = 0.0001,
+                min_threshold = 0.0,
                 max_threshold = 10000000,
                 radius = -1
             )
@@ -224,15 +226,16 @@ def main(urdf_path:str):
                 {
                     "graph_path": prim_path + "/Contact_Graph",
                     "evaluator_name": "execution",
+                    "pipeline_stage": GraphPipelineStage.GRAPH_PIPELINE_STAGE_ONDEMAND,
                 },
                 {
                     keys.CREATE_NODES: [
-                        ("OnTick", "omni.graph.action.OnPlaybackTick"),
+                        ("OnPhysicsStep", "omni.isaac.core_nodes.OnPhysicsStep"),
                         ("readContactSensor", "omni.isaac.sensor.IsaacReadContactSensor"),
                         ("publishSensorValue", "omni.isaac.ros2_bridge.ROS2Publisher"),
                     ],
                     keys.CONNECT: [
-                        ("OnTick.outputs:tick", "readContactSensor.inputs:execIn"),
+                        ("OnPhysicsStep.outputs:step", "readContactSensor.inputs:execIn"),
                         ("readContactSensor.outputs:execOut", "publishSensorValue.inputs:execIn"),
                     ],
                     keys.SET_VALUES: [
