@@ -31,6 +31,7 @@ from omni.isaac.core.utils.prims import get_articulation_root_api_prim_path
 import numpy as np
 from pxr import Gf, UsdGeom, Usd
 import omni.graph.core as og
+from omni.graph.core import GraphPipelineStage
 from omni.isaac.core.utils.prims import set_targets
 
 import asyncio
@@ -218,10 +219,10 @@ def main(urdf_path:str):
     import omni.graph.core as og
 
     (ros_control_graph, _, _, _) = og.Controller.edit(
-        {"graph_path": "/World/" + robot_name + "/ActionGraph", "evaluator_name": "execution"},
+        {"graph_path": "/World/" + robot_name + "/ActionGraph", "evaluator_name": "execution", "pipeline_stage": GraphPipelineStage.GRAPH_PIPELINE_STAGE_ONDEMAND},
         {
             og.Controller.Keys.CREATE_NODES: [
-                ("OnPlaybackTick", "omni.graph.action.OnPlaybackTick"),
+                ("OnPhysicsStep", "omni.isaac.core_nodes.OnPhysicsStep"),
                 ("PublishJointState", "omni.isaac.ros2_bridge.ROS2Publisher"),
                 ("ArticulationState", "omni.isaac.core_nodes.IsaacArticulationState"),
                 ("SubscribeJointState", "omni.isaac.ros2_bridge.ROS2Subscriber"),
@@ -230,10 +231,10 @@ def main(urdf_path:str):
                 ("TimeSplitter", "omni.isaac.core_nodes.IsaacTimeSplitter"),
             ],
             og.Controller.Keys.CONNECT: [
-                ("OnPlaybackTick.outputs:tick", "PublishJointState.inputs:execIn"),
-                ("OnPlaybackTick.outputs:tick", "ArticulationState.inputs:execIn"),
-                ("OnPlaybackTick.outputs:tick", "SubscribeJointState.inputs:execIn"),
-                ("OnPlaybackTick.outputs:tick", "ArticulationController.inputs:execIn"),
+                ("OnPhysicsStep.outputs:step", "PublishJointState.inputs:execIn"),
+                ("OnPhysicsStep.outputs:step", "ArticulationState.inputs:execIn"),
+                ("OnPhysicsStep.outputs:step", "SubscribeJointState.inputs:execIn"),
+                ("OnPhysicsStep.outputs:step", "ArticulationController.inputs:execIn"),
 
                 ("ReadSimTime.outputs:simulationTime", "TimeSplitter.inputs:time"),
             ],
