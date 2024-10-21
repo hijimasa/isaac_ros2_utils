@@ -199,6 +199,79 @@ def main(urdf_path:str):
 
         og.Controller.evaluate_sync(ros_surface_gripper_graph)
 
+    for child in urdf_root.findall('.//isaac/thruster'):
+        prim_path = search_joint_and_link.search_link_prim_path(kinematics_chain, "/World/" + robot_name + "/", child.attrib["name"])
+        
+        script_string = """
+from omni.isaac.dynamic_control import _dynamic_control
+
+dc = None
+art = None
+
+def setup(db: og.Database):
+    global dc
+    global art
+    
+    dc = _dynamic_control.acquire_dynamic_control_interface()
+    art = dc.get_rigid_body(db.inputs.target_path)
+    
+
+def cleanup(db: og.Database):
+    pass
+
+
+def compute(db: og.Database):
+    global dc
+    global art
+
+    dc.apply_body_force(art, [0.0, 0.0, db.inputs.force], [0.0, 0.0, 0.0], False)
+    return True
+        """
+
+        import omni.graph.core as og
+
+        keys = og.Controller.Keys
+        (ros_surface_gripper_graph, (_, _, script_node), _, _) = og.Controller.edit(
+            {
+                "graph_path": prim_path + "/Thruster_Graph",
+                "evaluator_name": "execution",
+            },
+            {
+                keys.CREATE_NODES: [
+                    ("OnTick", "omni.graph.action.OnPlaybackTick"),
+                    ("SubscribeForce", "omni.isaac.ros2_bridge.ROS2Subscriber"),
+                    ("ScriptNode", "omni.graph.scriptnode.ScriptNode"),
+                ],
+                keys.CONNECT: [
+                    ("OnTick.outputs:tick", "SubscribeForce.inputs:execIn"),
+                    ("OnTick.outputs:tick", "ScriptNode.inputs:execIn"),
+                ],
+                keys.SET_VALUES: [
+                    ("SubscribeForce.inputs:messageName", "Float64"),
+                    ("SubscribeForce.inputs:messagePackage", "std_msgs"),
+                    ("SubscribeForce.inputs:topicName", prim_path + "/force"),
+                ],
+            },
+        )
+        og.Controller.create_attribute(
+            script_node,
+            "inputs:force",
+            og.Type(og.BaseDataType.DOUBLE, 1, 0, og.AttributeRole.NONE),
+            og.AttributePortType.ATTRIBUTE_PORT_TYPE_INPUT,
+        )
+        og.Controller.create_attribute(
+            script_node,
+            "inputs:target_path",
+            og.Type(og.BaseDataType.TOKEN, 1, 0, og.AttributeRole.NONE),
+            og.AttributePortType.ATTRIBUTE_PORT_TYPE_INPUT,
+        )
+        script_node.get_attribute("inputs:target_path").set(prim_path)
+        script_node.get_attribute("inputs:script").set(script_string)
+        
+        og.Controller.connect(prim_path + "/Thruster_Graph/SubscribeForce.outputs:data", prim_path + "/Thruster_Graph/ScriptNode.inputs:force")
+
+        og.Controller.evaluate_sync(ros_surface_gripper_graph)
+
     for index in range(len(joints_prim_paths)):
         if urdf_joint_command_interfaces[index] == "position":
             command = urdf_joint_initial_values[index]
