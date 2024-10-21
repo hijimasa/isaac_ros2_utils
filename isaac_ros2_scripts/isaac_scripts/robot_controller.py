@@ -142,13 +142,15 @@ def main(urdf_path:str):
         if axis == "-1 0 0":
             xform_api.SetRotate((0, 0, 180), UsdGeom.XformCommonAPI.RotationOrderXYZ)
         if axis == "0 1 0":
-            xform_api.SetRotate((0, 0, -90), UsdGeom.XformCommonAPI.RotationOrderXYZ)
-        if axis == "0 -1 0":
             xform_api.SetRotate((0, 0, 90), UsdGeom.XformCommonAPI.RotationOrderXYZ)
+        if axis == "0 -1 0":
+            xform_api.SetRotate((0, 0, -90), UsdGeom.XformCommonAPI.RotationOrderXYZ)
         if axis == "0 0 1":
-            xform_api.SetRotate((0, 90, 0), UsdGeom.XformCommonAPI.RotationOrderXYZ)
-        if axis == "0 0 -1":
             xform_api.SetRotate((0, -90, 0), UsdGeom.XformCommonAPI.RotationOrderXYZ)
+        if axis == "0 0 -1":
+            xform_api.SetRotate((0, 90, 0), UsdGeom.XformCommonAPI.RotationOrderXYZ)
+
+        import omni.graph.core as og
 
         keys = og.Controller.Keys
         (ros_surface_gripper_graph, _, _, _) = og.Controller.edit(
