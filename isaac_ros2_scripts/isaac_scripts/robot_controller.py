@@ -204,6 +204,7 @@ def main(urdf_path:str):
         
         script_string = """
 from omni.isaac.dynamic_control import _dynamic_control
+import carb
 
 dc = None
 art = None
@@ -224,7 +225,7 @@ def compute(db: og.Database):
     global dc
     global art
 
-    dc.apply_body_force(art, [0.0, 0.0, db.inputs.force], [0.0, 0.0, 0.0], False)
+    dc.apply_body_force(art, carb._carb.Float3(0.0, 0.0, db.inputs.force), carb._carb.Float3(0.0, 0.0, 0.0), False)
     return True
         """
 
@@ -235,16 +236,17 @@ def compute(db: og.Database):
             {
                 "graph_path": prim_path + "/Thruster_Graph",
                 "evaluator_name": "execution",
+                "pipeline_stage": GraphPipelineStage.GRAPH_PIPELINE_STAGE_ONDEMAND,
             },
             {
                 keys.CREATE_NODES: [
-                    ("OnTick", "omni.graph.action.OnPlaybackTick"),
+                    ("OnPhysicsStep", "omni.isaac.core_nodes.OnPhysicsStep"),
                     ("SubscribeForce", "omni.isaac.ros2_bridge.ROS2Subscriber"),
                     ("ScriptNode", "omni.graph.scriptnode.ScriptNode"),
                 ],
                 keys.CONNECT: [
-                    ("OnTick.outputs:tick", "SubscribeForce.inputs:execIn"),
-                    ("OnTick.outputs:tick", "ScriptNode.inputs:execIn"),
+                    ("OnPhysicsStep.outputs:step", "SubscribeForce.inputs:execIn"),
+                    ("OnPhysicsStep.outputs:step", "ScriptNode.inputs:execIn"),
                 ],
                 keys.SET_VALUES: [
                     ("SubscribeForce.inputs:messageName", "Float64"),
