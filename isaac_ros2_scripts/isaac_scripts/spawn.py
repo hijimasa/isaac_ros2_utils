@@ -19,6 +19,9 @@ from omni.importer.urdf import _urdf
 from omni.physx import utils
 from omni.physx.scripts import physicsUtils
 
+DEFAULT_CONVEX_DECOMPOSITON_COLLISION_SHRINK_WARP = True
+DEFAULT_CONVEX_DECOMPOSITON_COLLISION_MAX_CONVEX_HULLS = 32
+
 def main(urdf_path:str, x=0.0, y=0.0, z=0.0, roll=0.0, pitch=0.0, yaw=0.0, fixed=False):
     import search_joint_and_link
 
@@ -67,15 +70,31 @@ def main(urdf_path:str, x=0.0, y=0.0, z=0.0, roll=0.0, pitch=0.0, yaw=0.0, fixed
             if "restitution" in rigid_body_list[0].attrib:
                 restitution = float(rigid_body_list[0].attrib["restitution"])
         utils.addRigidBodyMaterial(stage, "/World/" + robot_name + "/Looks/material_" + child.attrib["name"], density=None, staticFriction=static_friction, dynamicFriction=dynamic_friction, restitution=restitution)
-        
+
     for link in urdf_root.findall("./link"):
         joint_prim_path = search_joint_and_link.find_prim_path_by_name(stage_handle.GetPrimAtPath("/World/" + robot_name), link.attrib["name"])
 
         collision_list = link.findall('./collision')
-        material_list = link.findall('./visual/material')
-        if not len(collision_list) == 0 and  not len(material_list) == 0:
+        if not len(collision_list) == 0:
             prim = stage_handle.GetPrimAtPath(joint_prim_path + "/collisions")
-            physicsUtils.add_physics_material_to_prim(stage_handle, prim, "/World/" + robot_name + "/Looks/material_" + material_list[0].attrib["name"])
+
+            material_list = link.findall('./visual/material')
+            if not len(material_list) == 0:
+                physicsUtils.add_physics_material_to_prim(stage_handle, prim, "/World/" + robot_name + "/Looks/material_" + material_list[0].attrib["name"])
+    
+            token_attr = prim.GetAttribute("physics:approximation")
+            if token_attr.IsValid():
+                # Tokenの値を取得
+                token_value = token_attr.Get()
+                if token_value == "convexDecomposition":
+                    physx_convexdecomp_api = PhysxSchema.PhysxConvexDecompositionCollisionAPI.Apply(prim)
+                    physx_convexdecomp_api.GetShrinkWrapAttr().Set(DEFAULT_CONVEX_DECOMPOSITON_COLLISION_SHRINK_WARP)
+
+                    convex_decomposition_list = collision_list[0].findall('./convex_decomposition')
+                    if not len(convex_decomposition_list) == 0:
+                        physx_convexdecomp_api.GetMaxConvexHullsAttr().Set(int(convex_decomposition_list[0].attrib["max_convex_hulls"]))
+                    else:
+                        physx_convexdecomp_api.GetMaxConvexHullsAttr().Set(DEFAULT_CONVEX_DECOMPOSITON_COLLISION_MAX_CONVEX_HULLS)
     
     obj = stage.GetPrimAtPath(stage_path)
     if obj.IsValid():
