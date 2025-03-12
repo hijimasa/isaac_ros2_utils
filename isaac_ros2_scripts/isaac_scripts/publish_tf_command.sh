@@ -1,0 +1,1 @@
+(sleep 1; echo -e 'import publish_tf\npublish_tf.main("ROBOT_NAME", "TARGET_LINK")\n'; sleep 5) | telnet localhost 8223

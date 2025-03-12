@@ -33,6 +33,7 @@ setup(
             'prepare_sensors = isaac_ros2_scripts.prepare_sensors:main',
             'prepare_robot_controller = isaac_ros2_scripts.prepare_robot_controller:main',
             'add_usd = isaac_ros2_scripts.add_usd:main',
+            'publish_tf = isaac_ros2_scripts.publish_tf:main',
         ],
     },
 )
