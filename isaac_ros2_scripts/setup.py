@@ -27,6 +27,7 @@ setup(
     entry_points={
         'console_scripts': [
             'launcher = isaac_ros2_scripts.launcher:main',
+            'launcher_with_reset = isaac_ros2_scripts.launcher_with_reset:main',
             'launcher_zero_g = isaac_ros2_scripts.launcher_zero_g:main',
             'launcher_with_headless = isaac_ros2_scripts.launcher_with_headless:main',
             'spawn_robot = isaac_ros2_scripts.spawn_robot:main',
