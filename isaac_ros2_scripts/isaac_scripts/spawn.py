@@ -13,9 +13,9 @@ import omni
 import omni.kit.commands
 import omni.usd
 from pxr import UsdGeom, Gf, UsdPhysics, PhysxSchema
-from omni.isaac.core.prims import GeometryPrim
-from omni.isaac.core.materials import PhysicsMaterial
-from omni.importer.urdf import _urdf
+from isaacsim.core.prims import GeometryPrim
+from isaacsim.core.api.materials import PhysicsMaterial
+from isaacsim.asset.importer.urdf import _urdf
 from omni.physx import utils
 from omni.physx.scripts import physicsUtils
 
@@ -69,10 +69,10 @@ def main(urdf_path:str, x=0.0, y=0.0, z=0.0, roll=0.0, pitch=0.0, yaw=0.0, fixed
                 static_friction = float(rigid_body_list[0].attrib["static_friction"])
             if "restitution" in rigid_body_list[0].attrib:
                 restitution = float(rigid_body_list[0].attrib["restitution"])
-        utils.addRigidBodyMaterial(stage, "/World/" + robot_name + "/Looks/material_" + child.attrib["name"], density=None, staticFriction=static_friction, dynamicFriction=dynamic_friction, restitution=restitution)
+        utils.addRigidBodyMaterial(stage, "/" + robot_name + "/Looks/material_" + child.attrib["name"], density=None, staticFriction=static_friction, dynamicFriction=dynamic_friction, restitution=restitution)
 
     for link in urdf_root.findall("./link"):
-        joint_prim_path = search_joint_and_link.find_prim_path_by_name(stage_handle.GetPrimAtPath("/World/" + robot_name), link.attrib["name"])
+        joint_prim_path = search_joint_and_link.find_prim_path_by_name(stage_handle.GetPrimAtPath("/" + robot_name), link.attrib["name"])
 
         collision_list = link.findall('./collision')
         if not len(collision_list) == 0:
@@ -80,7 +80,7 @@ def main(urdf_path:str, x=0.0, y=0.0, z=0.0, roll=0.0, pitch=0.0, yaw=0.0, fixed
 
             material_list = link.findall('./visual/material')
             if not len(material_list) == 0:
-                physicsUtils.add_physics_material_to_prim(stage_handle, prim, "/World/" + robot_name + "/Looks/material_" + material_list[0].attrib["name"])
+                physicsUtils.add_physics_material_to_prim(stage_handle, prim, "/" + robot_name + "/Looks/material_" + material_list[0].attrib["name"])
     
             token_attr = prim.GetAttribute("physics:approximation")
             if token_attr.IsValid():
@@ -124,7 +124,7 @@ def main(urdf_path:str, x=0.0, y=0.0, z=0.0, roll=0.0, pitch=0.0, yaw=0.0, fixed
 
     joints_prim_paths = []
     for joint in urdf_joints:
-        joint_prim_path = search_joint_and_link.find_prim_path_by_name(stage_handle.GetPrimAtPath("/World/" + robot_name), joint.attrib["name"])
+        joint_prim_path = search_joint_and_link.find_prim_path_by_name(stage_handle.GetPrimAtPath("/" + robot_name), joint.attrib["name"])
         joints_prim_paths.append(joint_prim_path)
 
     drive = []

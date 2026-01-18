@@ -12,18 +12,15 @@ import math
 import asyncio
 import xml.etree.ElementTree as ET 
 import omni.kit.commands
-from omni.importer.urdf import _urdf
+from isaacsim.asset.importer.urdf import _urdf
 
 import omni
-from omni.isaac.core.utils import stage
-from omni.isaac.core.utils.render_product import create_hydra_texture
 import omni.kit.viewport.utility
 import omni.replicator.core as rep
-from pxr import UsdGeom, PhysxSchema
+from pxr import UsdGeom, PhysxSchema, Gf
 import omni.graph.core as og
 from omni.graph.core import GraphPipelineStage
-from omni.isaac.core.utils.prims import set_targets
-from omni.isaac.sensor import ContactSensor
+from isaacsim.sensors.physics import ContactSensor
 import numpy as np
 
 import nest_asyncio
@@ -34,8 +31,6 @@ def main(urdf_path:str):
     import search_joint_and_link
 
     urdf_interface = _urdf.acquire_urdf_interface()
-
-    from pxr import Gf
 
     status, import_config = omni.kit.commands.execute("URDFCreateImportConfig")
     import_config.merge_fixed_joints = False
@@ -56,29 +51,158 @@ def main(urdf_path:str):
         robot_name = child.attrib["name"]
         break
 
+    def create_empty_link_xform(stage, robot_prim, robot_name, link_name, urdf_root):
+        """Create an Xform for an empty link that wasn't created during URDF import.
+        This happens when a link has no visual or collision geometry."""
+        # Find the joint that defines this link's parent and transform
+        for joint in urdf_root.findall('.//joint'):
+            child_elem = joint.find('child')
+            if child_elem is not None and child_elem.attrib.get('link') == link_name:
+                parent_elem = joint.find('parent')
+                origin_elem = joint.find('origin')
+                
+                if parent_elem is not None:
+                    parent_link_name = parent_elem.attrib.get('link')
+                    # Find parent prim
+                    parent_path = search_joint_and_link.find_prim_path_by_name(robot_prim, parent_link_name)
+                    
+                    if parent_path is None:
+                        print(f"[launch_sensor] Warning: Parent link '{parent_link_name}' not found for '{link_name}'")
+                        return None
+                    
+                    # Create Xform for the empty link under parent
+                    new_link_path = parent_path + "/" + link_name
+                    xform = UsdGeom.Xform.Define(stage, new_link_path)
+                    
+                    # Apply transform from joint origin
+                    if origin_elem is not None:
+                        xyz = origin_elem.attrib.get('xyz', '0 0 0').split()
+                        rpy = origin_elem.attrib.get('rpy', '0 0 0').split()
+                        
+                        translate = Gf.Vec3d(float(xyz[0]), float(xyz[1]), float(xyz[2]))
+                        
+                        xform_api = UsdGeom.XformCommonAPI(xform)
+                        xform_api.SetTranslate(translate)
+                        
+                        # Convert RPY to degrees for rotation
+                        roll = float(rpy[0]) * 180.0 / math.pi
+                        pitch = float(rpy[1]) * 180.0 / math.pi
+                        yaw = float(rpy[2]) * 180.0 / math.pi
+                        xform_api.SetRotate((roll, pitch, yaw), UsdGeom.XformCommonAPI.RotationOrderXYZ)
+                    
+                    print(f"[launch_sensor] Created Xform for empty link: {new_link_path}")
+                    return new_link_path
+        
+        return None
+
     for child in urdf_root.findall('.//isaac/sensor'):
         if child.attrib["type"] == "lidar":
-            prim_path = search_joint_and_link.search_link_prim_path(kinematics_chain, "/World/" + robot_name + "/", child.attrib["name"])
+            # Isaac Sim 5.1.0: Use find_prim_path_by_name for reliable prim lookup
+            # search_link_prim_path uses kinematics_chain which may not match actual stage structure
+            link_name = child.attrib["name"]
+            robot_prim = stage_handle.GetPrimAtPath("/" + robot_name)
+            
+            if not robot_prim.IsValid():
+                print(f"[launch_sensor] Warning: Robot prim /{robot_name} not found, skipping LiDAR sensor")
+                continue
+            
+            prim_path = search_joint_and_link.find_prim_path_by_name(robot_prim, link_name)
+            
+            if prim_path is None:
+                # Empty link without visual/collision - create Xform for it
+                print(f"[launch_sensor] Link '{link_name}' not found in stage (may be empty link), creating Xform...")
+                prim_path = create_empty_link_xform(stage_handle, robot_prim, robot_name, link_name, urdf_root)
+                if prim_path is None:
+                    print(f"[launch_sensor] Failed to create Xform for '{link_name}', skipping LiDAR sensor")
+                    continue
 
-            _, my_lidar = omni.kit.commands.execute(
-                "IsaacSensorCreateRtxLidar",
-                path="/Lidar",
-                parent=prim_path,
-                config=child.find("config").text,
-                translation=(0.0, 0, 0.0),
-                orientation=Gf.Quatd(1.0, 0.0, 0.0, 0.0),
+            # Isaac Sim 5.1.0: Validate parent prim exists before creating sensor
+            parent_prim = stage_handle.GetPrimAtPath(prim_path)
+            if not parent_prim.IsValid():
+                print(f"[launch_sensor] Warning: Parent prim {prim_path} not found, skipping LiDAR sensor")
+                continue
+
+            # Isaac Sim 5.1.0: LiDAR config format changed
+            lidar_config = child.find("config").text
+            my_lidar = None
+            
+            # Try to create the RTX LiDAR sensor
+            try:
+                _, my_lidar = omni.kit.commands.execute(
+                    "IsaacSensorCreateRtxLidar",
+                    path="/Lidar",
+                    parent=prim_path,
+                    config=lidar_config,
+                    translation=(0.0, 0, 0.0),
+                    orientation=Gf.Quatd(1.0, 0.0, 0.0, 0.0),
+                )
+            except Exception as e:
+                # Fallback: try with simplified config name (remove manufacturer prefix)
+                print(f"[launch_sensor] LiDAR config '{lidar_config}' failed, trying fallback...")
+                simplified_config = lidar_config.split("/")[-1] if "/" in lidar_config else lidar_config
+                try:
+                    _, my_lidar = omni.kit.commands.execute(
+                        "IsaacSensorCreateRtxLidar",
+                        path="/Lidar",
+                        parent=prim_path,
+                        config=simplified_config,
+                        translation=(0.0, 0, 0.0),
+                        orientation=Gf.Quatd(1.0, 0.0, 0.0, 0.0),
+                    )
+                except Exception as e2:
+                    # Last fallback: use generic rotating lidar config
+                    print(f"[launch_sensor] Fallback config '{simplified_config}' also failed, using 'Example_Rotary'")
+                    try:
+                        _, my_lidar = omni.kit.commands.execute(
+                            "IsaacSensorCreateRtxLidar",
+                            path="/Lidar",
+                            parent=prim_path,
+                            config="Example_Rotary",
+                            translation=(0.0, 0, 0.0),
+                            orientation=Gf.Quatd(1.0, 0.0, 0.0, 0.0),
+                        )
+                    except Exception as e3:
+                        print(f"[launch_sensor] Failed to create LiDAR: {e3}")
+                        continue
+
+            if my_lidar is None:
+                print(f"[launch_sensor] Failed to create LiDAR at {prim_path}, skipping...")
+                continue
+
+            # Isaac Sim 5.1.0: Use ROS2RtxLidarHelper node via OmniGraph
+            # Create render product for the lidar
+            lidar_path = my_lidar.GetPath().pathString
+            render_product = rep.create.render_product(lidar_path, [1, 1], name=child.attrib["name"])
+            render_product_path = render_product.path
+            
+            # Determine lidar type based on sensor dimension
+            lidar_type = "laser_scan" if int(child.find("sensor_dimension_num").text) == 2 else "point_cloud"
+            
+            keys = og.Controller.Keys
+            (ros_lidar_graph, _, _, _) = og.Controller.edit(
+                {
+                    "graph_path": prim_path + "/Lidar_ROS2_Graph",
+                    "evaluator_name": "execution",
+                    "pipeline_stage": GraphPipelineStage.GRAPH_PIPELINE_STAGE_ONDEMAND,
+                },
+                {
+                    keys.CREATE_NODES: [
+                        ("OnPhysicsStep", "isaacsim.core.nodes.OnPhysicsStep"),
+                        ("RtxLidarHelper", "isaacsim.ros2.bridge.ROS2RtxLidarHelper"),
+                    ],
+                    keys.CONNECT: [
+                        ("OnPhysicsStep.outputs:step", "RtxLidarHelper.inputs:execIn"),
+                    ],
+                    keys.SET_VALUES: [
+                        ("RtxLidarHelper.inputs:renderProductPath", render_product_path),
+                        ("RtxLidarHelper.inputs:topicName", prim_path + "/" + child.find("topic").text),
+                        ("RtxLidarHelper.inputs:frameId", child.attrib["name"]),
+                        ("RtxLidarHelper.inputs:type", lidar_type),
+                    ],
+                },
             )
-
-            hydra_texture = rep.create.render_product(my_lidar.GetPath(), [1, 1], name=child.attrib["name"])
-
-            if int(child.find("sensor_dimension_num").text) == 2:
-                writer = rep.writers.get("RtxLidar" + "ROS2PublishLaserScan")
-                writer.initialize(topicName=prim_path + "/" + child.find("topic").text, frameId=child.attrib["name"])
-                writer.attach([hydra_texture])
-            else:
-                writer = rep.writers.get("RtxLidar" + "ROS2PublishPointCloud")
-                writer.initialize(topicName=prim_path + "/" + child.find("topic").text, frameId=child.attrib["name"])
-                writer.attach([hydra_texture])
+            og.Controller.evaluate_sync(ros_lidar_graph)
+            print(f"[launch_sensor] Created LiDAR at {lidar_path}, type: {lidar_type}, topic: {prim_path}/{child.find('topic').text}")
 
         if child.attrib["type"] == "camera":
             image_height = int(child.find("image/height").text)
@@ -92,7 +216,18 @@ def main(urdf_path:str):
             horizontal_aperture = math.tan(horizontal_fov_rad / 2.0) * 2.0 * horizontal_focal_length
             vertical_aperture = math.tan(horizontal_fov_rad / aspect_ratio / 2.0) * 2.0 * vertical_focal_length
 
-            prim_path = search_joint_and_link.search_link_prim_path(kinematics_chain, "/World/" + robot_name + "/", child.attrib["name"])
+            # Isaac Sim 5.1.0: Use find_prim_path_by_name for reliable prim lookup
+            link_name = child.attrib["name"]
+            robot_prim = stage_handle.GetPrimAtPath("/" + robot_name)
+            prim_path = search_joint_and_link.find_prim_path_by_name(robot_prim, link_name)
+            
+            if prim_path is None:
+                # Empty link without visual/collision - create Xform for it
+                print(f"[launch_sensor] Camera link '{link_name}' not found in stage (may be empty link), creating Xform...")
+                prim_path = create_empty_link_xform(stage_handle, robot_prim, robot_name, link_name, urdf_root)
+                if prim_path is None:
+                    print(f"[launch_sensor] Failed to create Xform for '{link_name}', skipping camera sensor")
+                    continue
 
             camera_prim = UsdGeom.Camera(omni.usd.get_context().get_stage().DefinePrim(prim_path + "/Camera", "Camera"))
             xform_api = UsdGeom.XformCommonAPI(camera_prim)
@@ -114,16 +249,13 @@ def main(urdf_path:str):
                 {
                     keys.CREATE_NODES: [
                         ("OnTick", "omni.graph.action.OnPlaybackTick"),
-                        ("createRenderProduct", "omni.isaac.core_nodes.IsaacCreateRenderProduct"),
-                        ("cameraHelperRgb", "omni.isaac.ros2_bridge.ROS2CameraHelper"),
-                        ("cameraHelperInfo", "omni.isaac.ros2_bridge.ROS2CameraHelper"),
+                        ("createRenderProduct", "isaacsim.core.nodes.IsaacCreateRenderProduct"),
+                        ("cameraHelperRgb", "isaacsim.ros2.bridge.ROS2CameraHelper"),
                     ],
                     keys.CONNECT: [
                         ("OnTick.outputs:tick", "createRenderProduct.inputs:execIn"),
                         ("createRenderProduct.outputs:execOut", "cameraHelperRgb.inputs:execIn"),
-                        ("createRenderProduct.outputs:execOut", "cameraHelperInfo.inputs:execIn"),
                         ("createRenderProduct.outputs:renderProductPath", "cameraHelperRgb.inputs:renderProductPath"),
-                        ("createRenderProduct.outputs:renderProductPath", "cameraHelperInfo.inputs:renderProductPath"),
                     ],
                     keys.SET_VALUES: [
                         ("createRenderProduct.inputs:cameraPrim", prim_path + "/Camera"),
@@ -133,9 +265,6 @@ def main(urdf_path:str):
                         ("cameraHelperRgb.inputs:frameId", child.attrib["name"]),
                         ("cameraHelperRgb.inputs:topicName", prim_path + "/" + child.find("topic").text),
                         ("cameraHelperRgb.inputs:type", "rgb"),
-                        ("cameraHelperInfo.inputs:frameId", child.attrib["name"]),
-                        ("cameraHelperInfo.inputs:topicName", prim_path + "/camera_info"),
-                        ("cameraHelperInfo.inputs:type", "camera_info"),
                     ],
                 },
             )
@@ -154,7 +283,18 @@ def main(urdf_path:str):
             horizontal_aperture = math.tan(horizontal_fov_rad / 2.0) * 2.0 * horizontal_focal_length
             vertical_aperture = math.tan(horizontal_fov_rad / aspect_ratio / 2.0) * 2.0 * vertical_focal_length
 
-            prim_path = search_joint_and_link.search_link_prim_path(kinematics_chain, "/World/" + robot_name + "/", child.attrib["name"])
+            # Isaac Sim 5.1.0: Use find_prim_path_by_name for reliable prim lookup
+            link_name = child.attrib["name"]
+            robot_prim = stage_handle.GetPrimAtPath("/" + robot_name)
+            prim_path = search_joint_and_link.find_prim_path_by_name(robot_prim, link_name)
+            
+            if prim_path is None:
+                # Empty link without visual/collision - create Xform for it
+                print(f"[launch_sensor] Depth camera link '{link_name}' not found in stage (may be empty link), creating Xform...")
+                prim_path = create_empty_link_xform(stage_handle, robot_prim, robot_name, link_name, urdf_root)
+                if prim_path is None:
+                    print(f"[launch_sensor] Failed to create Xform for '{link_name}', skipping depth camera sensor")
+                    continue
 
             camera_prim = UsdGeom.Camera(omni.usd.get_context().get_stage().DefinePrim(prim_path + "/DepthCamera", "Camera"))
             xform_api = UsdGeom.XformCommonAPI(camera_prim)
@@ -177,16 +317,13 @@ def main(urdf_path:str):
                 {
                     keys.CREATE_NODES: [
                         ("OnTick", "omni.graph.action.OnPlaybackTick"),
-                        ("createRenderProduct", "omni.isaac.core_nodes.IsaacCreateRenderProduct"),
-                        ("cameraHelperDepth", "omni.isaac.ros2_bridge.ROS2CameraHelper"),
-                        ("cameraHelperInfo", "omni.isaac.ros2_bridge.ROS2CameraHelper"),
+                        ("createRenderProduct", "isaacsim.core.nodes.IsaacCreateRenderProduct"),
+                        ("cameraHelperDepth", "isaacsim.ros2.bridge.ROS2CameraHelper"),
                     ],
                     keys.CONNECT: [
                         ("OnTick.outputs:tick", "createRenderProduct.inputs:execIn"),
                         ("createRenderProduct.outputs:execOut", "cameraHelperDepth.inputs:execIn"),
-                        ("createRenderProduct.outputs:execOut", "cameraHelperInfo.inputs:execIn"),
                         ("createRenderProduct.outputs:renderProductPath", "cameraHelperDepth.inputs:renderProductPath"),
-                        ("createRenderProduct.outputs:renderProductPath", "cameraHelperInfo.inputs:renderProductPath"),
                     ],
                     keys.SET_VALUES: [
                         ("createRenderProduct.inputs:cameraPrim", prim_path + "/DepthCamera"),
@@ -196,9 +333,6 @@ def main(urdf_path:str):
                         ("cameraHelperDepth.inputs:frameId", child.attrib["name"]),
                         ("cameraHelperDepth.inputs:topicName", prim_path + "/" + child.find("topic").text),
                         ("cameraHelperDepth.inputs:type", "depth"),
-                        ("cameraHelperInfo.inputs:frameId", child.attrib["name"]),
-                        ("cameraHelperInfo.inputs:topicName", prim_path + "/camera_info"),
-                        ("cameraHelperInfo.inputs:type", "camera_info"),
                     ],
                 },
             )
@@ -206,7 +340,21 @@ def main(urdf_path:str):
             og.Controller.evaluate_sync(ros_camera_graph)
 
         if child.attrib["type"] == "contact":
-            prim_path = search_joint_and_link.search_link_prim_path(kinematics_chain, "/World/" + robot_name + "/", child.attrib["name"])
+            # Isaac Sim 5.1.0: Use find_prim_path_by_name for reliable prim lookup
+            link_name = child.attrib["name"]
+            robot_prim = stage_handle.GetPrimAtPath("/" + robot_name)
+            prim_path = search_joint_and_link.find_prim_path_by_name(robot_prim, link_name)
+            
+            if prim_path is None:
+                # Contact sensors need physics geometry, so can't be on empty links
+                print(f"[launch_sensor] Warning: Contact sensor link '{link_name}' not found, skipping contact sensor")
+                continue
+            
+            # Validate prim exists and has collision geometry for contact sensing
+            contact_prim = stage_handle.GetPrimAtPath(prim_path)
+            if not contact_prim.IsValid():
+                print(f"[launch_sensor] Warning: Contact sensor prim at '{prim_path}' is invalid, skipping")
+                continue
 
             contact_report_api = PhysxSchema.PhysxContactReportAPI.Apply(stage_handle.GetPrimAtPath(prim_path))
             contact_report_api.CreateThresholdAttr(0.0)
@@ -230,9 +378,9 @@ def main(urdf_path:str):
                 },
                 {
                     keys.CREATE_NODES: [
-                        ("OnPhysicsStep", "omni.isaac.core_nodes.OnPhysicsStep"),
-                        ("readContactSensor", "omni.isaac.sensor.IsaacReadContactSensor"),
-                        ("publishSensorValue", "omni.isaac.ros2_bridge.ROS2Publisher"),
+                        ("OnPhysicsStep", "isaacsim.core.nodes.OnPhysicsStep"),
+                        ("readContactSensor", "isaacsim.sensors.physics.IsaacReadContactSensor"),
+                        ("publishSensorValue", "isaacsim.ros2.bridge.ROS2Publisher"),
                     ],
                     keys.CONNECT: [
                         ("OnPhysicsStep.outputs:step", "readContactSensor.inputs:execIn"),

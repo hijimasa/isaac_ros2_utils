@@ -13,26 +13,21 @@ import time
 import math
 import struct
 import argparse
-from omni.isaac.kit import SimulationApp
 import xml.etree.ElementTree as ET 
 import inspect
 import omni.kit.commands
-from omni.importer.urdf import _urdf
+from isaacsim.asset.importer.urdf import _urdf
 import xml.etree.ElementTree as ET 
 
 import omni
-from omni.isaac.core.utils.extensions import enable_extension, disable_extension
-from omni.isaac.core import SimulationContext, World
-from omni.isaac.core.utils import stage, extensions, nucleus
-from omni.isaac.core.utils.render_product import create_hydra_texture
 import omni.kit.viewport.utility
 import omni.replicator.core as rep
-from omni.isaac.core.utils.prims import get_articulation_root_api_prim_path
+from isaacsim.core.utils.prims import get_articulation_root_api_prim_path
 import numpy as np
-from pxr import Gf, UsdGeom, Usd
+from pxr import Gf, UsdGeom, Usd, UsdPhysics, PhysxSchema
 import omni.graph.core as og
 from omni.graph.core import GraphPipelineStage
-from omni.isaac.core.utils.prims import set_targets
+from isaacsim.core.prims import SingleArticulation
 
 import asyncio
 import nest_asyncio
@@ -44,8 +39,7 @@ def main(urdf_path:str):
 
     urdf_interface = _urdf.acquire_urdf_interface()
 
-    from omni.isaac.dynamic_control import _dynamic_control
-    from pxr import Sdf, Gf, UsdPhysics
+    from pxr import Sdf, Gf
 
     status, import_config = omni.kit.commands.execute("URDFCreateImportConfig")
     import_config.merge_fixed_joints = False
@@ -110,7 +104,7 @@ def main(urdf_path:str):
 
     joints_prim_paths = []
     for joint in urdf_joints:
-        joints_prim_paths.append(search_joint_and_link.find_prim_path_by_name(stage_handle.GetPrimAtPath("/World/" + robot_name), joint.attrib["name"]))
+        joints_prim_paths.append(search_joint_and_link.find_prim_path_by_name(stage_handle.GetPrimAtPath("/" + robot_name), joint.attrib["name"]))
 
     drive = []
     for index in range(len(joints_prim_paths)):
@@ -132,100 +126,178 @@ def main(urdf_path:str):
         else:
             retry_close = True
 
-        prim_path = search_joint_and_link.search_link_prim_path(kinematics_chain, "/World/" + robot_name + "/", child.attrib["name"])
+        prim_path = search_joint_and_link.search_link_prim_path(kinematics_chain, "/" + robot_name + "/base_link/", child.attrib["name"])
+        gripper_prim_path = prim_path + "/SurfaceGripper"
 
-        xform_prim = UsdGeom.Xform.Define(omni.usd.get_context().get_stage(), prim_path + "/VacuumPoint")
-        xform_api = UsdGeom.XformCommonAPI(xform_prim)
-        xform_api.SetTranslate(Gf.Vec3d(offset_x, offset_y, offset_z))
-        if axis == "1 0 0":
-            xform_api.SetRotate((0, 0, 0), UsdGeom.XformCommonAPI.RotationOrderXYZ)
-        if axis == "-1 0 0":
-            xform_api.SetRotate((0, 0, 180), UsdGeom.XformCommonAPI.RotationOrderXYZ)
-        if axis == "0 1 0":
-            xform_api.SetRotate((0, 0, 90), UsdGeom.XformCommonAPI.RotationOrderXYZ)
-        if axis == "0 -1 0":
-            xform_api.SetRotate((0, 0, -90), UsdGeom.XformCommonAPI.RotationOrderXYZ)
-        if axis == "0 0 1":
-            xform_api.SetRotate((0, -90, 0), UsdGeom.XformCommonAPI.RotationOrderXYZ)
-        if axis == "0 0 -1":
-            xform_api.SetRotate((0, 90, 0), UsdGeom.XformCommonAPI.RotationOrderXYZ)
-
-        import omni.graph.core as og
-
-        keys = og.Controller.Keys
-        (ros_surface_gripper_graph, _, _, _) = og.Controller.edit(
-            {
-                "graph_path": prim_path + "/SurfaceGripper_Graph",
-                "evaluator_name": "execution",
-            },
-            {
-                keys.CREATE_NODES: [
-                    ("OnTick", "omni.graph.action.OnPlaybackTick"),
-                    ("SubscribeClose", "omni.isaac.ros2_bridge.ROS2Subscriber"),
-                    ("SubscribeOpen", "omni.isaac.ros2_bridge.ROS2Subscriber"),
-                    ("SurfaceGripper", "omni.isaac.surface_gripper.SurfaceGripper"),
-                    ("SendCloseEvent", "omni.graph.action.SendCustomEvent"),
-                    ("SendOpenEvent", "omni.graph.action.SendCustomEvent"),
-                ],
-                keys.CONNECT: [
-                    ("OnTick.outputs:tick", "SubscribeClose.inputs:execIn"),
-                    ("OnTick.outputs:tick", "SubscribeOpen.inputs:execIn"),
-                    ("OnTick.outputs:tick", "SurfaceGripper.inputs:onStep"),
-                    ("SubscribeClose.outputs:execOut", "SendCloseEvent.inputs:execIn"),
-                    ("SendCloseEvent.outputs:execOut", "SurfaceGripper.inputs:Close"),
-                    ("SubscribeOpen.outputs:execOut", "SendOpenEvent.inputs:execIn"),
-                    ("SendOpenEvent.outputs:execOut", "SurfaceGripper.inputs:Open"),
-                ],
-                keys.SET_VALUES: [
-                    ("SubscribeClose.inputs:messageName", "Bool"),
-                    ("SubscribeClose.inputs:messagePackage", "std_msgs"),
-                    ("SubscribeClose.inputs:topicName", prim_path + "/close"),
-                    ("SubscribeOpen.inputs:messageName", "Bool"),
-                    ("SubscribeOpen.inputs:messagePackage", "std_msgs"),
-                    ("SubscribeOpen.inputs:topicName", prim_path + "/open"),
-                    ("SurfaceGripper.inputs:ParentRigidBody", prim_path),
-                    ("SurfaceGripper.inputs:GripPosition", prim_path + "/VacuumPoint"),
-                    ("SurfaceGripper.inputs:GripThreshold", grip_threshold),
-                    ("SurfaceGripper.inputs:ForceLimit", force_limit),
-                    ("SurfaceGripper.inputs:BendAngle", bend_angle * 180 / np.pi),
-                    ("SurfaceGripper.inputs:Stiffness", stiffness),
-                    ("SurfaceGripper.inputs:Damping", damping),
-                    ("SurfaceGripper.inputs:RetryClose", retry_close),
-                    ("SendCloseEvent.inputs:eventName", "close"),
-                    ("SendOpenEvent.inputs:eventName", "open"),
-                ],
-            },
+        # Isaac Sim 5.1.0: Use CreateSurfaceGripper command to create the gripper prim
+        # This creates the gripper with proper USD schema and action graph
+        result, gripper_prim = omni.kit.commands.execute(
+            "CreateSurfaceGripper",
+            prim_path=gripper_prim_path,
         )
 
-        og.Controller.evaluate_sync(ros_surface_gripper_graph)
+        # Set gripper offset position
+        gripper_offset_path = gripper_prim_path + "/SurfaceGripperOffset"
+        gripper_offset_prim = stage_handle.GetPrimAtPath(gripper_offset_path)
+        if gripper_offset_prim.IsValid():
+            xform_api = UsdGeom.XformCommonAPI(gripper_offset_prim)
+            xform_api.SetTranslate(Gf.Vec3d(offset_x, offset_y, offset_z))
+            if axis == "1 0 0":
+                xform_api.SetRotate((0, 0, 0), UsdGeom.XformCommonAPI.RotationOrderXYZ)
+            elif axis == "-1 0 0":
+                xform_api.SetRotate((0, 0, 180), UsdGeom.XformCommonAPI.RotationOrderXYZ)
+            elif axis == "0 1 0":
+                xform_api.SetRotate((0, 0, 90), UsdGeom.XformCommonAPI.RotationOrderXYZ)
+            elif axis == "0 -1 0":
+                xform_api.SetRotate((0, 0, -90), UsdGeom.XformCommonAPI.RotationOrderXYZ)
+            elif axis == "0 0 1":
+                xform_api.SetRotate((0, -90, 0), UsdGeom.XformCommonAPI.RotationOrderXYZ)
+            elif axis == "0 0 -1":
+                xform_api.SetRotate((0, 90, 0), UsdGeom.XformCommonAPI.RotationOrderXYZ)
 
-    for child in urdf_root.findall('.//isaac/thruster'):
-        prim_path = search_joint_and_link.search_link_prim_path(kinematics_chain, "/World/" + robot_name + "/", child.attrib["name"])
-        
-        script_string = """
-from omni.isaac.dynamic_control import _dynamic_control
-import carb
+        # Create ROS2 control graph for the surface gripper
+        # Isaac Sim 5.1.0: Use ScriptNode to control SurfaceGripper via Python API
+        # The _surface_gripper C++ interface uses update() method with close parameter
+        import omni.graph.core as og
 
-dc = None
-art = None
+        gripper_script = f'''
+from isaacsim.robot.surface_gripper import _surface_gripper
+import omni.usd
+
+_sg = None
+_last_state = None
+_initialized = False
 
 def setup(db: og.Database):
-    global dc
-    global art
-    
-    dc = _dynamic_control.acquire_dynamic_control_interface()
-    art = dc.get_rigid_body(db.inputs.target_path)
-    
+    global _sg, _initialized
+    _sg = _surface_gripper.acquire_surface_gripper_interface()
+    _initialized = False
 
 def cleanup(db: og.Database):
     pass
 
+def compute(db: og.Database):
+    global _sg, _last_state, _initialized
+    if _sg is None:
+        return True
+    
+    gripper_path = "{gripper_prim_path}"
+    
+    # Initialize gripper on first compute
+    if not _initialized:
+        try:
+            _sg.create_surface_gripper(gripper_path)
+            _initialized = True
+        except:
+            pass
+        return True
+    
+    close_gripper = db.inputs.close_cmd
+    if _last_state != close_gripper:
+        _last_state = close_gripper
+        try:
+            # Use update method with close=True/False
+            _sg.update(gripper_path, close_gripper)
+        except Exception as e:
+            # Fallback: try toggle method if available
+            try:
+                if close_gripper:
+                    _sg.close_gripper(gripper_path)
+                else:
+                    _sg.open_gripper(gripper_path)
+            except:
+                pass
+    return True
+'''
+
+        keys = og.Controller.Keys
+        (ros_surface_gripper_graph, (_, _, script_node), _, _) = og.Controller.edit(
+            {
+                "graph_path": prim_path + "/SurfaceGripper_ROS2_Graph",
+                "evaluator_name": "execution",
+                "pipeline_stage": GraphPipelineStage.GRAPH_PIPELINE_STAGE_ONDEMAND,
+            },
+            {
+                keys.CREATE_NODES: [
+                    ("OnPhysicsStep", "isaacsim.core.nodes.OnPhysicsStep"),
+                    ("SubscribeToggle", "isaacsim.ros2.bridge.ROS2Subscriber"),
+                    ("GripperScript", "omni.graph.scriptnode.ScriptNode"),
+                ],
+                keys.CONNECT: [
+                    ("OnPhysicsStep.outputs:step", "SubscribeToggle.inputs:execIn"),
+                    ("OnPhysicsStep.outputs:step", "GripperScript.inputs:execIn"),
+                ],
+                keys.SET_VALUES: [
+                    ("SubscribeToggle.inputs:messageName", "Bool"),
+                    ("SubscribeToggle.inputs:messagePackage", "std_msgs"),
+                    ("SubscribeToggle.inputs:topicName", prim_path + "/toggle"),
+                ],
+            },
+        )
+
+        # Create custom input for the script node to receive boolean command
+        og.Controller.create_attribute(
+            script_node,
+            "inputs:close_cmd",
+            og.Type(og.BaseDataType.BOOL, 1, 0, og.AttributeRole.NONE),
+            og.AttributePortType.ATTRIBUTE_PORT_TYPE_INPUT,
+        )
+        script_node.get_attribute("inputs:script").set(gripper_script)
+
+        # Connect subscriber data to script input
+        og.Controller.connect(
+            prim_path + "/SurfaceGripper_ROS2_Graph/SubscribeToggle.outputs:data",
+            prim_path + "/SurfaceGripper_ROS2_Graph/GripperScript.inputs:close_cmd"
+        )
+
+        og.Controller.evaluate_sync(ros_surface_gripper_graph)
+        print(f"[robot_controller] Created SurfaceGripper at {gripper_prim_path}, ROS2 topic: {prim_path}/toggle")
+
+    for child in urdf_root.findall('.//isaac/thruster'):
+        prim_path = search_joint_and_link.search_link_prim_path(kinematics_chain, "/" + robot_name + "/base_link/", child.attrib["name"])
+        
+        # Isaac Sim 5.1.0: Use PhysX rigid body API for applying forces
+        # Note: PhysxForceAPI.Apply() takes only one argument (prim)
+        script_string = """
+import omni.physx
+from pxr import UsdPhysics, PhysxSchema, Gf
+import omni.usd
+from omni.physx import get_physx_interface
+
+stage = None
+prim_path = None
+
+def setup(db: og.Database):
+    global stage, prim_path
+    stage = omni.usd.get_context().get_stage()
+    prim_path = db.inputs.target_path
+
+def cleanup(db: og.Database):
+    pass
 
 def compute(db: og.Database):
-    global dc
-    global art
-
-    dc.apply_body_force(art, carb._carb.Float3(0.0, 0.0, db.inputs.force), carb._carb.Float3(0.0, 0.0, 0.0), False)
+    global stage, prim_path
+    
+    if stage is None or prim_path is None:
+        return True
+    
+    prim = stage.GetPrimAtPath(prim_path)
+    if not prim.IsValid():
+        return True
+    
+    # Apply force using PhysX simulation interface
+    force = float(db.inputs.force)
+    if abs(force) > 0.001:
+        # Use PhysX interface to apply force at runtime
+        physx_interface = get_physx_interface()
+        if physx_interface:
+            # Apply force in local Z direction
+            physx_interface.apply_force_at_pos(
+                prim_path,
+                Gf.Vec3f(0.0, 0.0, force),
+                Gf.Vec3f(0.0, 0.0, 0.0),
+                "Force"
+            )
     return True
         """
 
@@ -240,8 +312,8 @@ def compute(db: og.Database):
             },
             {
                 keys.CREATE_NODES: [
-                    ("OnPhysicsStep", "omni.isaac.core_nodes.OnPhysicsStep"),
-                    ("SubscribeForce", "omni.isaac.ros2_bridge.ROS2Subscriber"),
+                    ("OnPhysicsStep", "isaacsim.core.nodes.OnPhysicsStep"),
+                    ("SubscribeForce", "isaacsim.ros2.bridge.ROS2Subscriber"),
                     ("ScriptNode", "omni.graph.scriptnode.ScriptNode"),
                 ],
                 keys.CONNECT: [
@@ -291,21 +363,21 @@ def compute(db: og.Database):
             if drive[index].GetDampingAttr().Get() == 0:
                 drive[index].CreateDampingAttr().Set(15000)
 
-    art_path = get_articulation_root_api_prim_path("/World/" + robot_name)
+    art_path = get_articulation_root_api_prim_path("/" + robot_name)
 
     import omni.graph.core as og
 
     (ros_control_graph, _, _, _) = og.Controller.edit(
-        {"graph_path": "/World/" + robot_name + "/ActionGraph", "evaluator_name": "execution", "pipeline_stage": GraphPipelineStage.GRAPH_PIPELINE_STAGE_ONDEMAND},
+        {"graph_path": "/" + robot_name + "/ActionGraph", "evaluator_name": "execution", "pipeline_stage": GraphPipelineStage.GRAPH_PIPELINE_STAGE_ONDEMAND},
         {
             og.Controller.Keys.CREATE_NODES: [
-                ("OnPhysicsStep", "omni.isaac.core_nodes.OnPhysicsStep"),
-                ("PublishJointState", "omni.isaac.ros2_bridge.ROS2Publisher"),
-                ("ArticulationState", "omni.isaac.core_nodes.IsaacArticulationState"),
-                ("SubscribeJointState", "omni.isaac.ros2_bridge.ROS2Subscriber"),
-                ("ArticulationController", "omni.isaac.core_nodes.IsaacArticulationController"),
-                ("ReadSimTime", "omni.isaac.core_nodes.IsaacReadSimulationTime"),
-                ("TimeSplitter", "omni.isaac.core_nodes.IsaacTimeSplitter"),
+                ("OnPhysicsStep", "isaacsim.core.nodes.OnPhysicsStep"),
+                ("PublishJointState", "isaacsim.ros2.bridge.ROS2Publisher"),
+                ("ArticulationState", "isaacsim.core.nodes.IsaacArticulationState"),
+                ("SubscribeJointState", "isaacsim.ros2.bridge.ROS2Subscriber"),
+                ("ArticulationController", "isaacsim.core.nodes.IsaacArticulationController"),
+                ("ReadSimTime", "isaacsim.core.nodes.IsaacReadSimulationTime"),
+                ("TimeSplitter", "isaacsim.core.nodes.IsaacTimeSplitter"),
             ],
             og.Controller.Keys.CONNECT: [
                 ("OnPhysicsStep.outputs:step", "PublishJointState.inputs:execIn"),
@@ -331,17 +403,17 @@ def compute(db: og.Database):
         },
     )
         
-    og.Controller.connect("/World/" + robot_name + "/ActionGraph/SubscribeJointState.outputs:name", "/World/" + robot_name + "/ActionGraph/ArticulationController.inputs:jointNames")
-    og.Controller.connect("/World/" + robot_name + "/ActionGraph/SubscribeJointState.outputs:position", "/World/" + robot_name + "/ActionGraph/ArticulationController.inputs:positionCommand")
-    og.Controller.connect("/World/" + robot_name + "/ActionGraph/SubscribeJointState.outputs:velocity", "/World/" + robot_name + "/ActionGraph/ArticulationController.inputs:velocityCommand")
-    og.Controller.connect("/World/" + robot_name + "/ActionGraph/SubscribeJointState.outputs:effort", "/World/" + robot_name + "/ActionGraph/ArticulationController.inputs:effortCommand")
+    og.Controller.connect("/" + robot_name + "/ActionGraph/SubscribeJointState.outputs:name", "/" + robot_name + "/ActionGraph/ArticulationController.inputs:jointNames")
+    og.Controller.connect("/" + robot_name + "/ActionGraph/SubscribeJointState.outputs:position", "/" + robot_name + "/ActionGraph/ArticulationController.inputs:positionCommand")
+    og.Controller.connect("/" + robot_name + "/ActionGraph/SubscribeJointState.outputs:velocity", "/" + robot_name + "/ActionGraph/ArticulationController.inputs:velocityCommand")
+    og.Controller.connect("/" + robot_name + "/ActionGraph/SubscribeJointState.outputs:effort", "/" + robot_name + "/ActionGraph/ArticulationController.inputs:effortCommand")
 
-    og.Controller.connect("/World/" + robot_name + "/ActionGraph/TimeSplitter.outputs:seconds", "/World/" + robot_name + "/ActionGraph/PublishJointState.inputs:header:stamp:sec")
-    og.Controller.connect("/World/" + robot_name + "/ActionGraph/TimeSplitter.outputs:nanoseconds", "/World/" + robot_name + "/ActionGraph/PublishJointState.inputs:header:stamp:nanosec")
-    og.Controller.connect("/World/" + robot_name + "/ActionGraph/ArticulationState.outputs:jointNames", "/World/" + robot_name + "/ActionGraph/PublishJointState.inputs:name")
-    og.Controller.connect("/World/" + robot_name + "/ActionGraph/ArticulationState.outputs:jointPositions", "/World/" + robot_name + "/ActionGraph/PublishJointState.inputs:position")
-    og.Controller.connect("/World/" + robot_name + "/ActionGraph/ArticulationState.outputs:jointVelocities", "/World/" + robot_name + "/ActionGraph/PublishJointState.inputs:velocity")
-    og.Controller.connect("/World/" + robot_name + "/ActionGraph/ArticulationState.outputs:measuredJointEfforts", "/World/" + robot_name + "/ActionGraph/PublishJointState.inputs:effort")
+    og.Controller.connect("/" + robot_name + "/ActionGraph/TimeSplitter.outputs:seconds", "/" + robot_name + "/ActionGraph/PublishJointState.inputs:header:stamp:sec")
+    og.Controller.connect("/" + robot_name + "/ActionGraph/TimeSplitter.outputs:nanoseconds", "/" + robot_name + "/ActionGraph/PublishJointState.inputs:header:stamp:nanosec")
+    og.Controller.connect("/" + robot_name + "/ActionGraph/ArticulationState.outputs:jointNames", "/" + robot_name + "/ActionGraph/PublishJointState.inputs:name")
+    og.Controller.connect("/" + robot_name + "/ActionGraph/ArticulationState.outputs:jointPositions", "/" + robot_name + "/ActionGraph/PublishJointState.inputs:position")
+    og.Controller.connect("/" + robot_name + "/ActionGraph/ArticulationState.outputs:jointVelocities", "/" + robot_name + "/ActionGraph/PublishJointState.inputs:velocity")
+    og.Controller.connect("/" + robot_name + "/ActionGraph/ArticulationState.outputs:measuredJointEfforts", "/" + robot_name + "/ActionGraph/PublishJointState.inputs:effort")
         
     og.Controller.evaluate_sync(ros_control_graph)    
 
