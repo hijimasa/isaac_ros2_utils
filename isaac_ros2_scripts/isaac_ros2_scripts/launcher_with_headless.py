@@ -24,6 +24,10 @@ class SimLancher(Node):
         self.declare_parameter('time_steps_per_second', 600.0)
         time_steps_per_second = self.get_parameter('time_steps_per_second').get_parameter_value().double_value
 
+        # REST API settings
+        self.declare_parameter('api_port', 8080)
+        api_port = self.get_parameter('api_port').get_parameter_value().integer_value
+
         self.declare_parameter('isaac_path', '/isaac-sim')
         isaac_path = self.get_parameter('isaac_path').get_parameter_value().string_value
         if os.path.isfile(os.path.join(expanduser("~"), '.local/share/ov/pkg/isaac_sim-2023.1.1', 'python.sh')):
@@ -39,7 +43,7 @@ class SimLancher(Node):
         
         start_script = os.path.join(
                     get_package_share_directory('isaac_ros2_scripts'), 'start_sim.py')
-        command = ["bash", python_script, start_script, usd_path, str(fps), str(time_steps_per_second), str(real_fps), "True"]
+        command = ["bash", python_script, start_script, usd_path, str(fps), str(time_steps_per_second), str(real_fps), "True", str(api_port)]
         print(command)
         os.environ["FASTRTPS_DEFAULT_PROFILES_FILE"]=os.path.join(
                 get_package_share_directory('isaac_ros2_scripts'), 'config/fastdds.xml')
