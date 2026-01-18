@@ -1,21 +1,26 @@
 import os
+import json
+import urllib.request
+import urllib.error
 import rclpy
 from rclpy.node import Node
-import subprocess
-from ament_index_python.packages import get_package_share_directory
 
-class SimLancher(Node):
+
+class AddUsd(Node):
     def __init__(self):
-        super().__init__('sim_launcher')
+        super().__init__('add_usd')
 
         self.declare_parameter('usd_path', '')
         usd_path = self.get_parameter('usd_path').get_parameter_value().string_value
         if usd_path == '':
+            self.get_logger().error('usd_path parameter is required')
             return
+
         self.declare_parameter('usd_name', '')
         usd_name = self.get_parameter('usd_name').get_parameter_value().string_value
         if usd_name == '':
             usd_name = os.path.splitext(os.path.basename(usd_path))[0]
+
         self.declare_parameter('x', 0.0)
         robot_x = self.get_parameter('x').get_parameter_value().double_value
         self.declare_parameter('y', 0.0)
@@ -29,55 +34,68 @@ class SimLancher(Node):
         self.declare_parameter('Y', 0.0)
         robot_yaw = self.get_parameter('Y').get_parameter_value().double_value
 
-        self.sensor_proc = None
+        # REST API settings
+        self.declare_parameter('api_host', 'localhost')
+        api_host = self.get_parameter('api_host').get_parameter_value().string_value
+        self.declare_parameter('api_port', 8080)
+        api_port = self.get_parameter('api_port').get_parameter_value().integer_value
 
-        spawn_command_path = os.path.join(
-                    get_package_share_directory('isaac_ros2_scripts'), 'add_usd_command.sh')
-        temp_spawn_command_path = os.path.join("/tmp", 'add_usd_command.sh')
+        api_url = f"http://{api_host}:{api_port}/add_usd"
 
-        with open(spawn_command_path, encoding="utf-8") as f:
-            data_lines = f.read()
+        payload = {
+            "usd_path": usd_path,
+            "prim_name": usd_name,
+            "x": robot_x,
+            "y": robot_y,
+            "z": robot_z,
+            "roll": robot_roll,
+            "pitch": robot_pitch,
+            "yaw": robot_yaw
+        }
 
-            data_lines = data_lines.replace("USD_PATH", usd_path)
-            data_lines = data_lines.replace("USD_NAME", usd_name)
-            data_lines = data_lines.replace("USD_ROLL", str(robot_roll))
-            data_lines = data_lines.replace("USD_PITCH", str(robot_pitch))
-            data_lines = data_lines.replace("USD_YAW", str(robot_yaw))
-            data_lines = data_lines.replace("USD_X", str(robot_x))
-            data_lines = data_lines.replace("USD_Y", str(robot_y))
-            data_lines = data_lines.replace("USD_Z", str(robot_z))
+        self.get_logger().info(f"Adding USD from {usd_path}")
+        self.get_logger().info(f"Prim name: {usd_name}")
+        self.get_logger().info(f"Position: ({robot_x}, {robot_y}, {robot_z})")
+        self.get_logger().info(f"Orientation: ({robot_roll}, {robot_pitch}, {robot_yaw})")
 
-        with open(temp_spawn_command_path, mode="w", encoding="utf-8") as f:
-            f.write(data_lines)
+        try:
+            data = json.dumps(payload).encode('utf-8')
+            req = urllib.request.Request(
+                api_url,
+                data=data,
+                headers={'Content-Type': 'application/json'},
+                method='POST'
+            )
+            with urllib.request.urlopen(req, timeout=60.0) as response:
+                result = json.loads(response.read().decode('utf-8'))
 
-        command = ["bash", temp_spawn_command_path]
-        print(command)
-        self.get_logger().info("command start")
-        self.sensor_proc = subprocess.Popen(command)
-        self.sensor_proc.wait()
-        if not self.sensor_proc.stdout == None:
-            lines = self.sensor_proc.stdout.read()
-            for line in lines:
-                print(line)
-        self.get_logger().info("command end")
+                if result.get("success"):
+                    self.get_logger().info(f"USD added successfully: {result.get('message')}")
+                    if result.get("data"):
+                        self.get_logger().info(f"Prim path: {result['data'].get('prim_path')}")
+                else:
+                    self.get_logger().error(f"Failed to add USD: {result.get('message')}")
 
-    def __del__(self):
-        if not self.sensor_proc == None:
-            if self.sensor_proc.poll() is None:
-                killcmd = "kill {pid}".format(pid=self.sensor_proc.pid)
-                subprocess.run(killcmd,shell=True)
+        except urllib.error.URLError as e:
+            self.get_logger().error(
+                f"Could not connect to Isaac Sim REST API at {api_url}. "
+                f"Make sure Isaac Sim is running with REST API enabled. Error: {e}"
+            )
+        except TimeoutError:
+            self.get_logger().error("Request timed out while adding USD")
+        except Exception as e:
+            self.get_logger().error(f"Error adding USD: {e}")
+
 
 def main(args=None):
     rclpy.init(args=args)
 
-    minimal_publisher = SimLancher()
-    minimal_publisher.get_logger().info("node start")
+    node = AddUsd()
+    node.get_logger().info("add_usd node finished")
 
-    minimal_publisher.destroy_node()
-
+    node.destroy_node()
     rclpy.shutdown()
 
 
 if __name__ == '__main__':
     main()
-
