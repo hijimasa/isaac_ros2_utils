@@ -28,6 +28,7 @@ import uvicorn
 class CommandType(Enum):
     SPAWN_ROBOT = "spawn_robot"
     ADD_USD = "add_usd"
+    PUBLISH_TF = "publish_tf"
     PLAY = "play"
     PAUSE = "pause"
     STOP = "stop"
@@ -63,6 +64,12 @@ class AddUsdRequest(BaseModel):
     roll: float = Field(default=0.0, description="Roll angle in radians")
     pitch: float = Field(default=0.0, description="Pitch angle in radians")
     yaw: float = Field(default=0.0, description="Yaw angle in radians")
+
+
+class PublishTfRequest(BaseModel):
+    """Request model for publishing TF for a robot link."""
+    robot_name: str = Field(..., description="Name of the robot in the stage")
+    target_link: str = Field(..., description="Name of the target link to publish TF for")
 
 
 class ResponseModel(BaseModel):
@@ -145,6 +152,28 @@ class IsaacSimRestApi:
             except queue.Empty:
                 raise HTTPException(status_code=504, detail="Timeout waiting for add_usd operation")
 
+        @self.app.post("/publish_tf", response_model=ResponseModel)
+        async def publish_tf(request: PublishTfRequest):
+            """Publish TF for a specific robot link."""
+            cmd = Command(
+                cmd_type=CommandType.PUBLISH_TF,
+                params=request.model_dump()
+            )
+            self.command_queue.put(cmd)
+
+            try:
+                result = cmd.result_queue.get(timeout=30.0)
+                if result.get("success"):
+                    return ResponseModel(
+                        success=True,
+                        message=f"TF publisher created for {request.robot_name}/{request.target_link}",
+                        data=result.get("data")
+                    )
+                else:
+                    raise HTTPException(status_code=500, detail=result.get("error", "Unknown error"))
+            except queue.Empty:
+                raise HTTPException(status_code=504, detail="Timeout waiting for publish_tf operation")
+
         @self.app.post("/simulation/play", response_model=ResponseModel)
         async def simulation_play():
             """Start/resume the simulation."""
@@ -220,6 +249,8 @@ class IsaacSimRestApi:
                 return self._spawn_robot(cmd.params)
             elif cmd.cmd_type == CommandType.ADD_USD:
                 return self._add_usd(cmd.params)
+            elif cmd.cmd_type == CommandType.PUBLISH_TF:
+                return self._publish_tf(cmd.params)
             elif cmd.cmd_type == CommandType.PLAY:
                 return self._simulation_play()
             elif cmd.cmd_type == CommandType.PAUSE:
@@ -306,6 +337,30 @@ class IsaacSimRestApi:
             "success": True,
             "data": {"prim_path": prim_path}
         }
+
+    def _publish_tf(self, params: dict) -> dict:
+        """Publish TF for a specific robot link."""
+        import traceback
+
+        try:
+            print(f"[REST API] Publishing TF for {params['robot_name']}/{params['target_link']}")
+            import publish_tf
+            publish_tf.main(
+                robot_name=params["robot_name"],
+                target_link=params["target_link"]
+            )
+            print(f"[REST API] TF publisher created successfully")
+            return {
+                "success": True,
+                "data": {
+                    "robot_name": params["robot_name"],
+                    "target_link": params["target_link"]
+                }
+            }
+        except Exception as e:
+            print(f"[REST API] Error publishing TF: {e}")
+            traceback.print_exc()
+            return {"success": False, "error": f"Failed to publish TF: {e}"}
 
     def _simulation_play(self) -> dict:
         """Start the simulation timeline."""

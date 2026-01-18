@@ -2,15 +2,18 @@ import omni
 import omni.graph.core as og
 from omni.graph.core import GraphPipelineStage
 
-from omni.isaac.core.utils.prims import is_prim_path_valid
-from omni.isaac.core_nodes.scripts.utils import set_target_prims
+from isaacsim.core.utils.prims import is_prim_path_valid
+from isaacsim.core.nodes.scripts.utils import set_target_prims
 
-def main(robot_name:str, target_link:str):
+
+def main(robot_name: str, target_link: str):
     import search_joint_and_link
 
     stage_handle = omni.usd.get_context().get_stage()
 
-    target_path = search_joint_and_link.find_prim_path_by_name(stage_handle.GetPrimAtPath("/World/" + robot_name), target_link)
+    target_path = search_joint_and_link.find_prim_path_by_name(
+        stage_handle.GetPrimAtPath("/World/" + robot_name), target_link
+    )
 
     def publish_tf(prim_path):
         if not is_prim_path_valid(prim_path):
@@ -20,7 +23,7 @@ def main(robot_name:str, target_link:str):
             # Generate the frame_id. OmniActionGraph will use the last part of
             # the full camera prim path as the frame name, so we will extract it here
             # and use it for the pointcloud frame_id.
-            frame_id=prim_path.split("/")[-1]
+            frame_id = prim_path.split("/")[-1]
 
             # Generate an action graph associated with camera TF publishing.
             ros_graph_path = "/RobotTFActionGraph_" + frame_id
@@ -35,8 +38,8 @@ def main(robot_name:str, target_link:str):
                     },
                     {
                         og.Controller.Keys.CREATE_NODES: [
-                            ("OnPhysicsStep", "omni.isaac.core_nodes.OnPhysicsStep"),
-                            ("IsaacClock", "omni.isaac.core_nodes.IsaacReadSimulationTime"),
+                            ("OnPhysicsStep", "isaacsim.core.nodes.OnPhysicsStep"),
+                            ("IsaacClock", "isaacsim.core.nodes.IsaacReadSimulationTime"),
                         ]
                     }
                 )
@@ -46,13 +49,13 @@ def main(robot_name:str, target_link:str):
                 ros_graph_path,
                 {
                     og.Controller.Keys.CREATE_NODES: [
-                        ("PublishTF_"+frame_id, "omni.isaac.ros2_bridge.ROS2PublishTransformTree"),
+                        ("PublishTF_" + frame_id, "isaacsim.ros2.bridge.ROS2PublishTransformTree"),
                     ],
                     og.Controller.Keys.CONNECT: [
-                        (ros_graph_path+"/OnPhysicsStep.outputs:step",
-                            "PublishTF_"+frame_id+".inputs:execIn"),
-                        (ros_graph_path+"/IsaacClock.outputs:simulationTime",
-                            "PublishTF_"+frame_id+".inputs:timeStamp"),
+                        (ros_graph_path + "/OnPhysicsStep.outputs:step",
+                            "PublishTF_" + frame_id + ".inputs:execIn"),
+                        (ros_graph_path + "/IsaacClock.outputs:simulationTime",
+                            "PublishTF_" + frame_id + ".inputs:timeStamp"),
                     ],
                 },
             )
@@ -61,7 +64,7 @@ def main(robot_name:str, target_link:str):
 
         # Add target prims for the USD pose. All other frames are static.
         set_target_prims(
-            primPath=ros_graph_path+"/PublishTF_"+frame_id,
+            primPath=ros_graph_path + "/PublishTF_" + frame_id,
             inputName="inputs:targetPrims",
             targetPrimPaths=[prim_path],
         )
