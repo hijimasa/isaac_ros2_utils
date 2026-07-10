@@ -80,7 +80,9 @@ def main(urdf_path:str, x=0.0, y=0.0, z=0.0, roll=0.0, pitch=0.0, yaw=0.0, fixed
 
             material_list = link.findall('./visual/material')
             if not len(material_list) == 0:
-                physicsUtils.add_physics_material_to_prim(stage_handle, prim, "/" + robot_name + "/Looks/material_" + material_list[0].attrib["name"])
+                material_path = "/" + robot_name + "/Looks/material_" + material_list[0].attrib["name"]
+                if stage_handle.GetPrimAtPath(material_path).IsValid():
+                    physicsUtils.add_physics_material_to_prim(stage_handle, prim, material_path)
     
             token_attr = prim.GetAttribute("physics:approximation")
             if token_attr.IsValid():
