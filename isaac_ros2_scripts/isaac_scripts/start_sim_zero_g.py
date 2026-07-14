@@ -34,7 +34,15 @@ import sys
 import time
 import signal
 from isaacsim import SimulationApp
-from distutils.util import strtobool
+# Python 3.12 (Isaac Sim 6) removed distutils; provide strtobool locally
+def strtobool(val):
+    val = val.lower()
+    if val in ("y", "yes", "t", "true", "on", "1"):
+        return 1
+    if val in ("n", "no", "f", "false", "off", "0"):
+        return 0
+    raise ValueError(f"invalid truth value {val!r}")
+
 
 real_frame_per_second = 0.0
 internal_frame_per_second = 60.0
@@ -113,9 +121,8 @@ def main():
     enable_extension("omni.graph.window.generic")
     kit.update()
     enable_extension("isaacsim.ros2.bridge")
-    if is_headless_mode:
-        kit.update()
-        enable_extension("omni.isaac.sim.headless.native")
+    # Isaac Sim 6: omni.isaac.sim.headless.native was removed.
+    # Headless mode works without an extra extension (use WebRTC livestream for remote viewing).
 
     my_world = World(stage_units_in_meters=1.0, physics_dt=1.0 / internal_frame_per_second, rendering_dt=1.0 / internal_frame_per_second)
 

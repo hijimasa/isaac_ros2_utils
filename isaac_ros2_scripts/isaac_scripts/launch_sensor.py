@@ -12,14 +12,26 @@ import math
 import asyncio
 import xml.etree.ElementTree as ET 
 import omni.kit.commands
-from isaacsim.asset.importer.urdf import _urdf
 
 import omni
 import omni.kit.viewport.utility
 import omni.replicator.core as rep
-from pxr import UsdGeom, PhysxSchema, Gf
+from pxr import UsdGeom, UsdPhysics, PhysxSchema, Gf
 import omni.graph.core as og
 from omni.graph.core import GraphPipelineStage
+# Isaac Sim 6: isaacsim.sensors.physics was moved to extsDeprecated and is not
+# enabled by default anymore, so enable it before importing ContactSensor.
+# isaacsim.sensors.physics.nodes (enabled by default) caches
+# "isaacsim.sensors.physics" as an empty namespace package, which shadows the
+# real package until the cached entry is dropped.
+from isaacsim.core.utils.extensions import enable_extension
+enable_extension("isaacsim.sensors.physics")
+import importlib
+import sys as _sys
+_cached = _sys.modules.get("isaacsim.sensors.physics")
+if _cached is not None and getattr(_cached, "__file__", None) is None:
+    del _sys.modules["isaacsim.sensors.physics"]
+    importlib.invalidate_caches()
 from isaacsim.sensors.physics import ContactSensor
 import numpy as np
 
@@ -27,21 +39,47 @@ import nest_asyncio
 
 nest_asyncio.apply()
 
+
+def _resolve_lidar_config(requested: str, sensor_dimension_num: int) -> str:
+    """Resolve a URDF lidar config name to one supported by Isaac Sim 6.
+
+    Isaac Sim 6 removed JSON lidar profiles (and the Hokuyo configs); RTX lidars
+    are now USD sensor assets resolved by name from SUPPORTED_LIDAR_CONFIGS.
+    Unsupported names fall back to a generic rotary lidar.
+    """
+    try:
+        from isaacsim.sensors.rtx import SUPPORTED_LIDAR_CONFIGS
+    except ImportError:
+        return requested
+
+    from pathlib import PurePosixPath
+    valid_names = set()
+    for config_path in SUPPORTED_LIDAR_CONFIGS:
+        parts = PurePosixPath(config_path)
+        vendor_name = parts.parts[3]
+        config_name = parts.stem
+        valid_names.add(config_name)
+        valid_names.add(config_name.replace("_", " "))
+        if config_name.startswith(vendor_name):
+            without_vendor = config_name[len(vendor_name) + 1:]
+            valid_names.add(without_vendor)
+            valid_names.add(without_vendor.replace("_", " "))
+
+    if requested in valid_names:
+        return requested
+    short_name = requested.split("/")[-1]
+    if short_name in valid_names:
+        return short_name
+
+    fallback = "Example_Rotary_2D" if sensor_dimension_num == 2 else "Example_Rotary"
+    print(f"[launch_sensor] LiDAR config '{requested}' is not supported by this Isaac Sim version "
+          f"(JSON lidar profiles were removed in Isaac Sim 6), falling back to '{fallback}'. "
+          f"Supported configs: {sorted(valid_names)}")
+    return fallback
+
+
 def main(urdf_path:str):
     import search_joint_and_link
-
-    urdf_interface = _urdf.acquire_urdf_interface()
-
-    status, import_config = omni.kit.commands.execute("URDFCreateImportConfig")
-    import_config.merge_fixed_joints = False
-    import_config.convex_decomp = False
-    import_config.import_inertia_tensor = True
-    import_config.self_collision = False
-    import_config.fix_base = False
-    import_config.distance_scale = 1
-
-    status, urdf = omni.kit.commands.execute("URDFParseFile", urdf_path=urdf_path, import_config=import_config, )
-    kinematics_chain = urdf_interface.get_kinematic_chain(urdf)
 
     stage_handle = omni.usd.get_context().get_stage()
 
@@ -122,11 +160,13 @@ def main(urdf_path:str):
                 print(f"[launch_sensor] Warning: Parent prim {prim_path} not found, skipping LiDAR sensor")
                 continue
 
-            # Isaac Sim 5.1.0: LiDAR config format changed
-            lidar_config = child.find("config").text
+            # Isaac Sim 6: lidars are USD sensor assets resolved by name; an
+            # unknown config only logs a warning and yields a sensor without a
+            # profile (no data), so resolve/fall back before creating.
+            sensor_dimension_num = int(child.find("sensor_dimension_num").text)
+            lidar_config = _resolve_lidar_config(child.find("config").text, sensor_dimension_num)
             my_lidar = None
-            
-            # Try to create the RTX LiDAR sensor
+
             try:
                 _, my_lidar = omni.kit.commands.execute(
                     "IsaacSensorCreateRtxLidar",
@@ -137,33 +177,8 @@ def main(urdf_path:str):
                     orientation=Gf.Quatd(1.0, 0.0, 0.0, 0.0),
                 )
             except Exception as e:
-                # Fallback: try with simplified config name (remove manufacturer prefix)
-                print(f"[launch_sensor] LiDAR config '{lidar_config}' failed, trying fallback...")
-                simplified_config = lidar_config.split("/")[-1] if "/" in lidar_config else lidar_config
-                try:
-                    _, my_lidar = omni.kit.commands.execute(
-                        "IsaacSensorCreateRtxLidar",
-                        path="/Lidar",
-                        parent=prim_path,
-                        config=simplified_config,
-                        translation=(0.0, 0, 0.0),
-                        orientation=Gf.Quatd(1.0, 0.0, 0.0, 0.0),
-                    )
-                except Exception as e2:
-                    # Last fallback: use generic rotating lidar config
-                    print(f"[launch_sensor] Fallback config '{simplified_config}' also failed, using 'Example_Rotary'")
-                    try:
-                        _, my_lidar = omni.kit.commands.execute(
-                            "IsaacSensorCreateRtxLidar",
-                            path="/Lidar",
-                            parent=prim_path,
-                            config="Example_Rotary",
-                            translation=(0.0, 0, 0.0),
-                            orientation=Gf.Quatd(1.0, 0.0, 0.0, 0.0),
-                        )
-                    except Exception as e3:
-                        print(f"[launch_sensor] Failed to create LiDAR: {e3}")
-                        continue
+                print(f"[launch_sensor] Failed to create LiDAR: {e}")
+                continue
 
             if my_lidar is None:
                 print(f"[launch_sensor] Failed to create LiDAR at {prim_path}, skipping...")
@@ -176,7 +191,7 @@ def main(urdf_path:str):
             render_product_path = render_product.path
             
             # Determine lidar type based on sensor dimension
-            lidar_type = "laser_scan" if int(child.find("sensor_dimension_num").text) == 2 else "point_cloud"
+            lidar_type = "laser_scan" if sensor_dimension_num == 2 else "point_cloud"
             
             keys = og.Controller.Keys
             (ros_lidar_graph, _, _, _) = og.Controller.edit(
@@ -359,8 +374,18 @@ def main(urdf_path:str):
             contact_report_api = PhysxSchema.PhysxContactReportAPI.Apply(stage_handle.GetPrimAtPath(prim_path))
             contact_report_api.CreateThresholdAttr(0.0)
 
+            # Isaac Sim 6: the URDF importer applies the collision API to the
+            # collision geometry children of the link, not to the link prim
+            # itself. ContactSensor must be parented under a collision-enabled prim.
+            sensor_parent_path = prim_path
+            if not contact_prim.HasAPI(UsdPhysics.CollisionAPI):
+                for child_prim in contact_prim.GetChildren():
+                    if child_prim.HasAPI(UsdPhysics.CollisionAPI):
+                        sensor_parent_path = child_prim.GetPath().pathString
+                        break
+
             sensor = ContactSensor(
-                prim_path = prim_path + "/Contact_Sensor",
+                prim_path = sensor_parent_path + "/Contact_Sensor",
                 name = "Contact_Sensor",
                 frequency = 60,
                 translation = np.array([0, 0, 0]),
@@ -387,7 +412,7 @@ def main(urdf_path:str):
                         ("readContactSensor.outputs:execOut", "publishSensorValue.inputs:execIn"),
                     ],
                     keys.SET_VALUES: [
-                        ("readContactSensor.inputs:csPrim", prim_path + "/Contact_Sensor"),
+                        ("readContactSensor.inputs:csPrim", sensor_parent_path + "/Contact_Sensor"),
                         ("publishSensorValue.inputs:messageName", "Bool"),
                         ("publishSensorValue.inputs:messagePackage", "std_msgs"),
                         ("publishSensorValue.inputs:topicName", prim_path + "/" + child.find("topic").text),

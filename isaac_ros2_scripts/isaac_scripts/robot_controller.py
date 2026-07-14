@@ -16,8 +16,7 @@ import argparse
 import xml.etree.ElementTree as ET 
 import inspect
 import omni.kit.commands
-from isaacsim.asset.importer.urdf import _urdf
-import xml.etree.ElementTree as ET 
+import xml.etree.ElementTree as ET
 
 import omni
 import omni.kit.viewport.utility
@@ -37,20 +36,9 @@ nest_asyncio.apply()
 def main(urdf_path:str):
     import search_joint_and_link
 
-    urdf_interface = _urdf.acquire_urdf_interface()
-
+    # Isaac Sim 6: URDFParseFile / get_kinematic_chain were removed.
+    # Prim paths are resolved by searching the stage by name instead.
     from pxr import Sdf, Gf
-
-    status, import_config = omni.kit.commands.execute("URDFCreateImportConfig")
-    import_config.merge_fixed_joints = False
-    import_config.convex_decomp = False
-    import_config.import_inertia_tensor = True
-    import_config.self_collision = False
-    import_config.fix_base = False
-    import_config.distance_scale = 1
-
-    status, urdf = omni.kit.commands.execute("URDFParseFile", urdf_path=urdf_path, import_config=import_config, )
-    kinematics_chain = urdf_interface.get_kinematic_chain(urdf)
 
     stage_handle = omni.usd.get_context().get_stage()
 
@@ -126,87 +114,115 @@ def main(urdf_path:str):
         else:
             retry_close = True
 
-        prim_path = search_joint_and_link.search_link_prim_path(kinematics_chain, "/" + robot_name + "/base_link/", child.attrib["name"])
-        gripper_prim_path = prim_path + "/SurfaceGripper"
+        prim_path = search_joint_and_link.find_prim_path_by_name(stage_handle.GetPrimAtPath("/" + robot_name), child.attrib["name"])
+        if prim_path is None:
+            print(f"[robot_controller] Warning: link '{child.attrib['name']}' not found, skipping surface gripper")
+            continue
+        # Isaac Sim 6: SurfaceGripper is defined by the robot schema
+        # (IsaacSurfaceGripper prim + D6 attachment point joints on the parent
+        # rigid body). The CreateSurfaceGripper command appends "/SurfaceGripper"
+        # to the given path by itself.
+        from usd.schema.isaac import robot_schema
 
-        # Isaac Sim 5.1.0: Use CreateSurfaceGripper command to create the gripper prim
-        # This creates the gripper with proper USD schema and action graph
         result, gripper_prim = omni.kit.commands.execute(
             "CreateSurfaceGripper",
-            prim_path=gripper_prim_path,
+            prim_path=prim_path,
         )
+        gripper_prim_path = gripper_prim.GetPath().pathString
 
-        # Set gripper offset position
-        gripper_offset_path = gripper_prim_path + "/SurfaceGripperOffset"
-        gripper_offset_prim = stage_handle.GetPrimAtPath(gripper_offset_path)
-        if gripper_offset_prim.IsValid():
-            xform_api = UsdGeom.XformCommonAPI(gripper_offset_prim)
-            xform_api.SetTranslate(Gf.Vec3d(offset_x, offset_y, offset_z))
-            if axis == "1 0 0":
-                xform_api.SetRotate((0, 0, 0), UsdGeom.XformCommonAPI.RotationOrderXYZ)
-            elif axis == "-1 0 0":
-                xform_api.SetRotate((0, 0, 180), UsdGeom.XformCommonAPI.RotationOrderXYZ)
-            elif axis == "0 1 0":
-                xform_api.SetRotate((0, 0, 90), UsdGeom.XformCommonAPI.RotationOrderXYZ)
-            elif axis == "0 -1 0":
-                xform_api.SetRotate((0, 0, -90), UsdGeom.XformCommonAPI.RotationOrderXYZ)
-            elif axis == "0 0 1":
-                xform_api.SetRotate((0, -90, 0), UsdGeom.XformCommonAPI.RotationOrderXYZ)
-            elif axis == "0 0 -1":
-                xform_api.SetRotate((0, 90, 0), UsdGeom.XformCommonAPI.RotationOrderXYZ)
+        gripper_prim.GetAttribute(robot_schema.Attributes.MAX_GRIP_DISTANCE.name).Set(grip_threshold)
+        gripper_prim.GetAttribute(robot_schema.Attributes.COAXIAL_FORCE_LIMIT.name).Set(force_limit)
+        gripper_prim.GetAttribute(robot_schema.Attributes.SHEAR_FORCE_LIMIT.name).Set(torque_limit)
+        # retryInterval is the time the gripper keeps trying to close before timing out
+        gripper_prim.GetAttribute(robot_schema.Attributes.RETRY_INTERVAL.name).Set(60.0 if retry_close else 0.0)
+
+        # Attachment point: a D6 joint anchored on the gripper link's rigid
+        # body, locked on all axes. body0 must be a rigid body, so fall back to
+        # the nearest rigid-body ancestor when the gripper link has no geometry.
+        body_prim = stage_handle.GetPrimAtPath(prim_path)
+        while body_prim.IsValid() and not body_prim.HasAPI(UsdPhysics.RigidBodyAPI):
+            body_prim = body_prim.GetParent()
+        if not body_prim.IsValid():
+            print(f"[robot_controller] Warning: no rigid body found for gripper link '{child.attrib['name']}', skipping surface gripper")
+            continue
+        body_path = body_prim.GetPath().pathString
+
+        gripper_joint_path = prim_path + "/SurfaceGripperJoint"
+        gripper_joint = UsdPhysics.Joint.Define(stage_handle, gripper_joint_path)
+        robot_schema.ApplyAttachmentPointAPI(gripper_joint.GetPrim())
+        if axis in ("1 0 0", "-1 0 0"):
+            forward_axis_token = "X"
+        elif axis in ("0 1 0", "0 -1 0"):
+            forward_axis_token = "Y"
+        else:
+            forward_axis_token = "Z"
+        gripper_joint.GetPrim().GetAttribute(robot_schema.Attributes.FORWARD_AXIS.name).Set(forward_axis_token)
+        for limit in ["rotX", "rotY", "rotZ", "transX", "transY", "transZ"]:
+            lim_api = UsdPhysics.LimitAPI.Apply(gripper_joint.GetPrim(), limit)
+            lim_api.CreateHighAttr().Set(-1)
+            lim_api.CreateLowAttr().Set(1)
+        gripper_joint.CreateBody0Rel().SetTargets([body_path])
+
+        # Express the URDF offset (gripper link frame) in the body frame
+        link_tf = UsdGeom.Xformable(stage_handle.GetPrimAtPath(prim_path)).ComputeLocalToWorldTransform(Usd.TimeCode.Default())
+        body_tf = UsdGeom.Xformable(body_prim).ComputeLocalToWorldTransform(Usd.TimeCode.Default())
+        rel_tf = link_tf * body_tf.GetInverse()
+        local_pos = rel_tf.Transform(Gf.Vec3d(offset_x, offset_y, offset_z))
+        gripper_joint.CreateLocalPos0Attr().Set(Gf.Vec3f(local_pos))
+        if axis in ("-1 0 0", "0 -1 0"):
+            # 180 deg about Z flips +X/-X and +Y/-Y
+            axis_quat = Gf.Quatd(0.0, 0.0, 0.0, 1.0)
+        elif axis == "0 0 -1":
+            # 180 deg about X flips +Z/-Z
+            axis_quat = Gf.Quatd(0.0, 1.0, 0.0, 0.0)
+        else:
+            axis_quat = Gf.Quatd(1.0, 0.0, 0.0, 0.0)
+        rel_quat = rel_tf.RemoveScaleShear().ExtractRotationQuat()
+        gripper_joint.CreateLocalRot0Attr().Set(Gf.Quatf(rel_quat * axis_quat))
+
+        # The gripper runtime attaches objects through this joint; it must be
+        # disabled while the gripper is open, otherwise it pins the robot body
+        # to the world.
+        gripper_joint.GetPrim().CreateAttribute("physics:jointEnabled", Sdf.ValueTypeNames.Bool).Set(False)
+        gripper_joint.GetPrim().CreateAttribute("physics:excludeFromArticulation", Sdf.ValueTypeNames.Bool).Set(True)
+
+        gripper_prim.GetRelationship(robot_schema.Relations.ATTACHMENT_POINTS.name).SetTargets([gripper_joint_path])
 
         # Create ROS2 control graph for the surface gripper
-        # Isaac Sim 5.1.0: Use ScriptNode to control SurfaceGripper via Python API
-        # The _surface_gripper C++ interface uses update() method with close parameter
+        # Isaac Sim 6: control the gripper through the
+        # SurfaceGripperInterface (open_gripper/close_gripper)
         import omni.graph.core as og
 
         gripper_script = f'''
 from isaacsim.robot.surface_gripper import _surface_gripper
-import omni.usd
 
 _sg = None
 _last_state = None
-_initialized = False
 
 def setup(db: og.Database):
-    global _sg, _initialized
+    global _sg
     _sg = _surface_gripper.acquire_surface_gripper_interface()
-    _initialized = False
 
 def cleanup(db: og.Database):
     pass
 
 def compute(db: og.Database):
-    global _sg, _last_state, _initialized
+    global _sg, _last_state
     if _sg is None:
         return True
-    
+
     gripper_path = "{gripper_prim_path}"
-    
-    # Initialize gripper on first compute
-    if not _initialized:
-        try:
-            _sg.create_surface_gripper(gripper_path)
-            _initialized = True
-        except:
-            pass
-        return True
-    
+
     close_gripper = db.inputs.close_cmd
     if _last_state != close_gripper:
         _last_state = close_gripper
         try:
-            # Use update method with close=True/False
-            _sg.update(gripper_path, close_gripper)
-        except Exception as e:
-            # Fallback: try toggle method if available
-            try:
-                if close_gripper:
-                    _sg.close_gripper(gripper_path)
-                else:
-                    _sg.open_gripper(gripper_path)
-            except:
-                pass
+            if close_gripper:
+                _sg.close_gripper(gripper_path)
+            else:
+                _sg.open_gripper(gripper_path)
+        except Exception:
+            pass
     return True
 '''
 
@@ -254,49 +270,63 @@ def compute(db: og.Database):
         print(f"[robot_controller] Created SurfaceGripper at {gripper_prim_path}, ROS2 topic: {prim_path}/toggle")
 
     for child in urdf_root.findall('.//isaac/thruster'):
-        prim_path = search_joint_and_link.search_link_prim_path(kinematics_chain, "/" + robot_name + "/base_link/", child.attrib["name"])
+        prim_path = search_joint_and_link.find_prim_path_by_name(stage_handle.GetPrimAtPath("/" + robot_name), child.attrib["name"])
+        if prim_path is None:
+            print(f"[robot_controller] Warning: link '{child.attrib['name']}' not found, skipping thruster")
+            continue
         
-        # Isaac Sim 5.1.0: Use PhysX rigid body API for applying forces
-        # Note: PhysxForceAPI.Apply() takes only one argument (prim)
+        # Isaac Sim 6: apply_force_at_pos now takes (stage_id, encoded body
+        # path, force, pos, mode) and must target a rigid body. The force is
+        # applied at the thruster link's world pose, along its local Z axis.
         script_string = """
-import omni.physx
-from pxr import UsdPhysics, PhysxSchema, Gf
 import omni.usd
+from pxr import Usd, UsdGeom, UsdPhysics, Gf, PhysicsSchemaTools
 from omni.physx import get_physx_interface
 
 stage = None
+stage_id = None
 prim_path = None
+body_path = None
 
 def setup(db: og.Database):
-    global stage, prim_path
-    stage = omni.usd.get_context().get_stage()
+    global stage, stage_id, prim_path, body_path
+    ctx = omni.usd.get_context()
+    stage = ctx.get_stage()
+    stage_id = ctx.get_stage_id()
     prim_path = db.inputs.target_path
+    # The thruster link may have no geometry, in which case it is not a rigid
+    # body; apply the force to the nearest rigid-body ancestor instead.
+    body_prim = stage.GetPrimAtPath(prim_path)
+    while body_prim.IsValid() and not body_prim.HasAPI(UsdPhysics.RigidBodyAPI):
+        body_prim = body_prim.GetParent()
+    body_path = body_prim.GetPath().pathString if body_prim.IsValid() else None
 
 def cleanup(db: og.Database):
     pass
 
 def compute(db: og.Database):
-    global stage, prim_path
-    
-    if stage is None or prim_path is None:
+    global stage, stage_id, prim_path, body_path
+
+    if stage is None or prim_path is None or body_path is None:
         return True
-    
+
     prim = stage.GetPrimAtPath(prim_path)
     if not prim.IsValid():
         return True
-    
-    # Apply force using PhysX simulation interface
+
     force = float(db.inputs.force)
     if abs(force) > 0.001:
-        # Use PhysX interface to apply force at runtime
         physx_interface = get_physx_interface()
         if physx_interface:
-            # Apply force in local Z direction
+            world_tf = UsdGeom.Xformable(prim).ComputeLocalToWorldTransform(Usd.TimeCode.Default())
+            force_dir = world_tf.TransformDir(Gf.Vec3d(0.0, 0.0, 1.0)).GetNormalized()
+            pos = world_tf.ExtractTranslation()
             physx_interface.apply_force_at_pos(
-                prim_path,
-                Gf.Vec3f(0.0, 0.0, force),
-                Gf.Vec3f(0.0, 0.0, 0.0),
-                "Force"
+                stage_id,
+                PhysicsSchemaTools.sdfPathToInt(body_path),
+                (force_dir[0] * force, force_dir[1] * force, force_dir[2] * force),
+                (pos[0], pos[1], pos[2]),
+                "Force",
             )
     return True
         """

@@ -8,15 +8,18 @@
 #
 
 import math
+import tempfile
 import xml.etree.ElementTree as ET
 import omni
 import omni.kit.commands
 import omni.usd
-from pxr import UsdGeom, Gf, UsdPhysics, PhysxSchema
-from isaacsim.core.prims import GeometryPrim
-from isaacsim.core.api.materials import PhysicsMaterial
-from isaacsim.asset.importer.urdf import _urdf
-from omni.physx import utils
+from pxr import Usd, UsdGeom, Gf, UsdPhysics, PhysxSchema
+# Isaac Sim 6: URDF import commands (URDFCreateImportConfig/URDFParseAndImportFile)
+# were removed. Use the new URDFImporter API and reference the generated USD.
+from isaacsim.asset.importer.urdf import URDFImporter, URDFImporterConfig
+import isaacsim.core.utils.stage as stage_utils
+# Isaac Sim 6: omni.physx no longer re-exports utils at top level
+from omni.physx.scripts import utils
 from omni.physx.scripts import physicsUtils
 
 DEFAULT_CONVEX_DECOMPOSITON_COLLISION_SHRINK_WARP = True
@@ -25,35 +28,86 @@ DEFAULT_CONVEX_DECOMPOSITON_COLLISION_MAX_CONVEX_HULLS = 32
 def main(urdf_path:str, x=0.0, y=0.0, z=0.0, roll=0.0, pitch=0.0, yaw=0.0, fixed=False):
     import search_joint_and_link
 
-    urdf_interface = _urdf.acquire_urdf_interface()
-    
-    status, import_config = omni.kit.commands.execute("URDFCreateImportConfig")
-    import_config.merge_fixed_joints = False
-    import_config.convex_decomp = True
-    import_config.import_inertia_tensor = True
-    import_config.self_collision = False
-    import_config.fix_base = fixed
-    import_config.default_drive_strength = 0.0
-    import_config.default_position_drive_damping = 0.0
-    import_config.distance_scale = 1
-
-    status, stage_path = omni.kit.commands.execute(
-        "URDFParseAndImportFile", 
-        urdf_path=urdf_path, 
-        import_config=import_config,
-        get_articulation_root=True,
-        )
-
-    status, urdf = omni.kit.commands.execute("URDFParseFile", urdf_path=urdf_path, import_config=import_config, )
-    kinematics_chain = urdf_interface.get_kinematic_chain(urdf)
-
-    stage_handle = omni.usd.get_context().get_stage()
-
     urdf_root = ET.parse(urdf_path).getroot()
     robot_name = None
     for child in urdf_root.iter("robot"):
         robot_name = child.attrib["name"]
         break
+
+    import_config = URDFImporterConfig(
+        urdf_path=urdf_path,
+        usd_path=tempfile.mkdtemp(prefix="isaac_ros2_spawn_"),
+        merge_fixed_joints=False,
+        collision_type="Convex Decomposition",
+        fix_base=None,
+        override_joint_stiffness=0.0,
+        override_joint_damping=0.0,
+    )
+    robot_usd_path = URDFImporter(import_config).import_urdf()
+
+    stage_path = "/" + robot_name
+    stage_utils.add_reference_to_stage(robot_usd_path, stage_path)
+
+    stage_handle = omni.usd.get_context().get_stage()
+
+    # Isaac Sim 6: URDF links without geometry (e.g. a dummy root link) are not
+    # imported as rigid bodies. Joints on such links get anchored to the robot
+    # root Xform (a non-body) and every rigid body receives its own
+    # ArticulationRootAPI, which breaks the robot into disconnected
+    # articulations. Restore the classic single-articulation structure.
+    child_links = set()
+    for joint_elem in urdf_root.findall("./joint"):
+        child_elem = joint_elem.find("child")
+        if child_elem is not None:
+            child_links.add(child_elem.attrib["link"])
+    urdf_root_link_name = None
+    for link_elem in urdf_root.findall("./link"):
+        if link_elem.attrib["name"] not in child_links:
+            urdf_root_link_name = link_elem.attrib["name"]
+            break
+
+    root_link_path = None
+    if urdf_root_link_name is not None:
+        root_link_path = search_joint_and_link.find_prim_path_by_name(
+            stage_handle.GetPrimAtPath(stage_path), urdf_root_link_name)
+
+    if root_link_path is not None:
+        root_link_prim = stage_handle.GetPrimAtPath(root_link_path)
+        if not root_link_prim.HasAPI(UsdPhysics.RigidBodyAPI):
+            UsdPhysics.RigidBodyAPI.Apply(root_link_prim)
+            mass_api = UsdPhysics.MassAPI.Apply(root_link_prim)
+            mass_api.CreateMassAttr().Set(0.001)
+            mass_api.CreateDiagonalInertiaAttr().Set(Gf.Vec3f(1.0e-6, 1.0e-6, 1.0e-6))
+
+        # Joints anchored to the robot root Xform belong to the root link
+        physics_scope = stage_handle.GetPrimAtPath(stage_path + "/Physics")
+        if physics_scope.IsValid():
+            for joint_prim in Usd.PrimRange(physics_scope):
+                if not joint_prim.IsA(UsdPhysics.Joint):
+                    continue
+                joint_api = UsdPhysics.Joint(joint_prim)
+                for rel in (joint_api.GetBody0Rel(), joint_api.GetBody1Rel()):
+                    targets = rel.GetTargets()
+                    if targets and targets[0].pathString == stage_path:
+                        rel.SetTargets([root_link_path])
+
+        # Keep a single articulation root on the root link
+        for prim in Usd.PrimRange(stage_handle.GetPrimAtPath(stage_path)):
+            if prim.HasAPI(UsdPhysics.ArticulationRootAPI) and prim.GetPath().pathString != root_link_path:
+                prim.RemoveAPI(UsdPhysics.ArticulationRootAPI)
+                prim.RemoveAppliedSchema("NewtonArticulationRootAPI")
+        if not root_link_prim.HasAPI(UsdPhysics.ArticulationRootAPI):
+            UsdPhysics.ArticulationRootAPI.Apply(root_link_prim)
+
+        # fix_base: anchor the root link to the world at the spawn pose
+        if fixed:
+            world_joint = UsdPhysics.FixedJoint.Define(stage_handle, stage_path + "/Physics/root_joint")
+            world_joint.CreateBody1Rel().SetTargets([root_link_path])
+            world_joint.CreateLocalPos0Attr().Set(Gf.Vec3f(x, y, z))
+            spawn_rot = (Gf.Rotation(Gf.Vec3d.ZAxis(), yaw * 180.0 / math.pi)
+                         * Gf.Rotation(Gf.Vec3d.YAxis(), pitch * 180.0 / math.pi)
+                         * Gf.Rotation(Gf.Vec3d.XAxis(), roll * 180.0 / math.pi))
+            world_joint.CreateLocalRot0Attr().Set(Gf.Quatf(spawn_rot.GetQuat()))
 
     stage = omni.usd.get_context().get_stage()
 
@@ -72,31 +126,39 @@ def main(urdf_path:str, x=0.0, y=0.0, z=0.0, roll=0.0, pitch=0.0, yaw=0.0, fixed
         utils.addRigidBodyMaterial(stage, "/" + robot_name + "/Looks/material_" + child.attrib["name"], density=None, staticFriction=static_friction, dynamicFriction=dynamic_friction, restitution=restitution)
 
     for link in urdf_root.findall("./link"):
-        joint_prim_path = search_joint_and_link.find_prim_path_by_name(stage_handle.GetPrimAtPath("/" + robot_name), link.attrib["name"])
+        link_prim_path = search_joint_and_link.find_prim_path_by_name(stage_handle.GetPrimAtPath("/" + robot_name), link.attrib["name"])
+        if link_prim_path is None:
+            continue
 
         collision_list = link.findall('./collision')
         if not len(collision_list) == 0:
-            prim = stage_handle.GetPrimAtPath(joint_prim_path + "/collisions")
+            # Isaac Sim 6: the importer no longer creates a "collisions" child prim.
+            # Collision geometries are direct children of the link prim with
+            # PhysicsCollisionAPI applied.
+            link_prim = stage_handle.GetPrimAtPath(link_prim_path)
+            collision_prims = [child_prim for child_prim in link_prim.GetChildren()
+                               if child_prim.HasAPI(UsdPhysics.CollisionAPI)]
 
             material_list = link.findall('./visual/material')
-            if not len(material_list) == 0:
-                material_path = "/" + robot_name + "/Looks/material_" + material_list[0].attrib["name"]
-                if stage_handle.GetPrimAtPath(material_path).IsValid():
-                    physicsUtils.add_physics_material_to_prim(stage_handle, prim, material_path)
-    
-            token_attr = prim.GetAttribute("physics:approximation")
-            if token_attr.IsValid():
-                # Tokenの値を取得
-                token_value = token_attr.Get()
-                if token_value == "convexDecomposition":
-                    physx_convexdecomp_api = PhysxSchema.PhysxConvexDecompositionCollisionAPI.Apply(prim)
-                    physx_convexdecomp_api.GetShrinkWrapAttr().Set(DEFAULT_CONVEX_DECOMPOSITON_COLLISION_SHRINK_WARP)
+            for prim in collision_prims:
+                if not len(material_list) == 0:
+                    material_path = "/" + robot_name + "/Looks/material_" + material_list[0].attrib["name"]
+                    if stage_handle.GetPrimAtPath(material_path).IsValid():
+                        physicsUtils.add_physics_material_to_prim(stage_handle, prim, material_path)
 
-                    convex_decomposition_list = collision_list[0].findall('./convex_decomposition')
-                    if not len(convex_decomposition_list) == 0:
-                        physx_convexdecomp_api.GetMaxConvexHullsAttr().Set(int(convex_decomposition_list[0].attrib["max_convex_hulls"]))
-                    else:
-                        physx_convexdecomp_api.GetMaxConvexHullsAttr().Set(DEFAULT_CONVEX_DECOMPOSITON_COLLISION_MAX_CONVEX_HULLS)
+                token_attr = prim.GetAttribute("physics:approximation")
+                if token_attr.IsValid():
+                    # Tokenの値を取得
+                    token_value = token_attr.Get()
+                    if token_value == "convexDecomposition":
+                        physx_convexdecomp_api = PhysxSchema.PhysxConvexDecompositionCollisionAPI.Apply(prim)
+                        physx_convexdecomp_api.GetShrinkWrapAttr().Set(DEFAULT_CONVEX_DECOMPOSITON_COLLISION_SHRINK_WARP)
+
+                        convex_decomposition_list = collision_list[0].findall('./convex_decomposition')
+                        if not len(convex_decomposition_list) == 0:
+                            physx_convexdecomp_api.GetMaxConvexHullsAttr().Set(int(convex_decomposition_list[0].attrib["max_convex_hulls"]))
+                        else:
+                            physx_convexdecomp_api.GetMaxConvexHullsAttr().Set(DEFAULT_CONVEX_DECOMPOSITON_COLLISION_MAX_CONVEX_HULLS)
     
     obj = stage.GetPrimAtPath(stage_path)
     if obj.IsValid():

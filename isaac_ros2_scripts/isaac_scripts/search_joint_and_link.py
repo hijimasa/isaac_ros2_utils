@@ -1,4 +1,4 @@
-from omni.isaac.dynamic_control import _dynamic_control
+from pxr import UsdPhysics
 
 def search_joint_prim_path(target_dict:dict, path:str, target_name:str):
     if target_dict["A_joint"] == target_name:
@@ -44,12 +44,10 @@ def find_prim_path_by_name(start_stage, prim_name):
     return None
 
 def find_articulation_root(start_stage):
-    dc = _dynamic_control.acquire_dynamic_control_interface()
-
+    # omni.isaac.dynamic_control was removed in Isaac Sim 6; use the USD schema instead
     for prim in start_stage.GetAllChildren():
-        art = dc.get_articulation(prim.GetPath().pathString)
-        if not art == _dynamic_control.INVALID_HANDLE:
-            return (art, prim.GetPath().pathString)
+        if prim.HasAPI(UsdPhysics.ArticulationRootAPI):
+            return (prim, prim.GetPath().pathString)
         else:
             ret = find_articulation_root(prim)
             if not ret == None:

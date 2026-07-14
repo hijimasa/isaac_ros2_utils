@@ -12,7 +12,7 @@ import omni
 import omni.kit.commands
 import omni.usd
 from pxr import UsdGeom
-import omni.isaac.core.utils.stage as stage_utils
+import isaacsim.core.utils.stage as stage_utils
 
 import os
 
