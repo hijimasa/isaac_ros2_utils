@@ -1,6 +1,6 @@
 # チュートリアル
 
-- [URDFへのros2_cotnrolタグの記述方法](./setup_urdf_for_ros2_control.md)
+- [URDFへのros2_controlタグの記述方法](./setup_urdf_for_ros2_control.md)
 
 - [URDFへのセンサ情報の記述方法](./setup_urdf_for_sensors.md)
 

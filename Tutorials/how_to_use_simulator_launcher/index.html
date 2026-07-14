@@ -15,8 +15,15 @@
         <link rel="next" href="../setup_urdf_for_ros2_control/">
       
       
+        
+          <link rel="alternate" href="/isaac_ros2_utils/" hreflang="en">
+        
+          <link rel="alternate" href="/isaac_ros2_utils/ja/" hreflang="ja">
+        
+      
+      
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.12">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.2">
     
     
       
@@ -24,10 +31,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.7e359304.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -46,11 +53,10 @@
       
     
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
-    
     
     
   </head>
@@ -91,12 +97,12 @@
     <a href="../.." title="ROS 2 utilities for Isaac Sim" class="md-header__button md-logo" aria-label="ROS 2 utilities for Isaac Sim" data-md-component="logo">
       
   
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
       
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
     </label>
     <div class="md-header__title" data-md-component="header-title">
       <div class="md-header__ellipsis">
@@ -124,7 +130,7 @@
     <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
     
       <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m14.3 16-.7-2h-3.2l-.7 2H7.8L11 7h2l3.2 9h-1.9M20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69m-9.15 3.96h2.3L12 9l-1.15 3.65Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m14.3 16-.7-2h-3.2l-.7 2H7.8L11 7h2l3.2 9zM20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12zm-9.15 3.96h2.3L12 9z"/></svg>
       </label>
     
   
@@ -134,7 +140,7 @@
     <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="light-green" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
     
       <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
       </label>
     
   
@@ -144,7 +150,7 @@
     <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="light-green" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
     
       <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
       </label>
     
   
@@ -152,14 +158,14 @@
       
     
     
-      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
     
     
       <div class="md-header__option">
   <div class="md-select">
     
     <button class="md-header__button md-icon" aria-label="Select language">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04M18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12m-2.62 7 1.62-4.33L19.12 17h-3.24Z"/></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
     </button>
     <div class="md-select__inner">
       <ul class="md-select__list">
@@ -182,32 +188,34 @@
 </div>
     
     
-      <label class="md-header__button md-icon" for="__search">
-        
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
-      </label>
-      <div class="md-search" data-md-component="search" role="dialog">
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
     <form class="md-search__form" name="search">
       <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
       <label class="md-search__icon md-icon" for="__search">
         
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
         
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
       </label>
       <nav class="md-search__options" aria-label="Search">
         
         <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
           
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
         </button>
       </nav>
       
     </form>
     <div class="md-search__output">
-      <div class="md-search__scrollwrap" data-md-scrollfix>
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
         <div class="md-search-result" data-md-component="search-result">
           <div class="md-search-result__meta">
             Initializing search
@@ -218,6 +226,7 @@
     </div>
   </div>
 </div>
+      
     
     
   </nav>
@@ -248,7 +257,7 @@
     <a href="../.." title="ROS 2 utilities for Isaac Sim" class="md-nav__button md-logo" aria-label="ROS 2 utilities for Isaac Sim" data-md-component="logo">
       
   
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
     ROS 2 utilities for Isaac Sim
@@ -266,9 +275,16 @@
       <a href="../.." class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     Introduction
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -286,9 +302,16 @@
       <a href="../../LICENSE/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     LICENSE
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -306,6 +329,7 @@
     
     
     
+    
     <li class="md-nav__item md-nav__item--nested">
       
         
@@ -316,9 +340,16 @@
           <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
             
   
+  
   <span class="md-ellipsis">
+    
+  
     Demos
+  
+
+    
   </span>
+  
   
 
             <span class="md-nav__icon md-icon"></span>
@@ -327,7 +358,11 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
-            Demos
+            
+  
+    Demos
+  
+
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -341,9 +376,16 @@
       <a href="../../Demos/demo_for_arm_robot/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     Demo For Arm Robot
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -362,9 +404,16 @@
       <a href="../../Demos/demo_for_mobile_robot/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     Demo For Mobile Robot
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -392,6 +441,7 @@
     
     
     
+    
     <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
@@ -402,9 +452,16 @@
           <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
             
   
+  
   <span class="md-ellipsis">
+    
+  
     Tutorials
+  
+
+    
   </span>
+  
   
 
             <span class="md-nav__icon md-icon"></span>
@@ -413,7 +470,11 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
-            Tutorials
+            
+  
+    Tutorials
+  
+
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -427,9 +488,16 @@
       <a href="../how_to_spawn_robot/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     How to Spawn Robot
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -457,9 +525,16 @@
         <label class="md-nav__link md-nav__link--active" for="__toc">
           
   
+  
   <span class="md-ellipsis">
+    
+  
     How to Use Simulation Launcher
+  
+
+    
   </span>
+  
   
 
           <span class="md-nav__icon md-icon"></span>
@@ -468,9 +543,16 @@
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     How to Use Simulation Launcher
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -493,7 +575,31 @@
         <li class="md-nav__item">
   <a href="#use-from-command-line" class="md-nav__link">
     <span class="md-ellipsis">
-      Use from Command Line
+      
+        Use from Command Line
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parameters
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#launcher-variants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Launcher variants
+      
     </span>
   </a>
   
@@ -502,7 +608,20 @@
         <li class="md-nav__item">
   <a href="#use-from-launch-file" class="md-nav__link">
     <span class="md-ellipsis">
-      Use from Launch File
+      
+        Use from Launch File
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rest-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REST API
+      
     </span>
   </a>
   
@@ -527,9 +646,16 @@
       <a href="../setup_urdf_for_ros2_control/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     Set up URDF for ros2_control
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -548,9 +674,16 @@
       <a href="../setup_urdf_for_sensors/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     Set up URDF for Sensors
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -569,9 +702,16 @@
       <a href="../tutorial/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     Tutorials
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -597,6 +737,7 @@
     
     
     
+    
     <li class="md-nav__item md-nav__item--nested">
       
         
@@ -607,9 +748,16 @@
           <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
             
   
+  
   <span class="md-ellipsis">
+    
+  
     Ja
+  
+
+    
   </span>
+  
   
 
             <span class="md-nav__icon md-icon"></span>
@@ -618,7 +766,11 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
-            Ja
+            
+  
+    Ja
+  
+
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -632,9 +784,16 @@
       <a href="../../ja/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     はじめに
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -653,9 +812,16 @@
       <a href="../../ja/LICENSE/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     ライセンス
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -674,6 +840,7 @@
     
     
     
+    
     <li class="md-nav__item md-nav__item--nested">
       
         
@@ -684,9 +851,16 @@
           <label class="md-nav__link" for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
             
   
+  
   <span class="md-ellipsis">
+    
+  
     チュートリアル
+  
+
+    
   </span>
+  
   
 
             <span class="md-nav__icon md-icon"></span>
@@ -695,7 +869,11 @@
         <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_5_3">
             <span class="md-nav__icon md-icon"></span>
-            チュートリアル
+            
+  
+    チュートリアル
+  
+
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -709,9 +887,16 @@
       <a href="../../ja/%E3%83%81%E3%83%A5%E3%83%BC%E3%83%88%E3%83%AA%E3%82%A2%E3%83%AB/how_to_spawn_robot/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     ロボットの生成方法
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -730,9 +915,16 @@
       <a href="../../ja/%E3%83%81%E3%83%A5%E3%83%BC%E3%83%88%E3%83%AA%E3%82%A2%E3%83%AB/how_to_use_simulator_launcher/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     シミュレーションランチャーの使い方
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -751,9 +943,16 @@
       <a href="../../ja/%E3%83%81%E3%83%A5%E3%83%BC%E3%83%88%E3%83%AA%E3%82%A2%E3%83%AB/setup_urdf_for_ros2_control/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
-    URDFへのros2_cotnrolタグの記述方法
+    
+  
+    URDFへのros2_controlタグの記述方法
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -772,9 +971,16 @@
       <a href="../../ja/%E3%83%81%E3%83%A5%E3%83%BC%E3%83%88%E3%83%AA%E3%82%A2%E3%83%AB/setup_urdf_for_sensors/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     URDFへのセンサ情報の記述方法
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -793,9 +999,16 @@
       <a href="../../ja/%E3%83%81%E3%83%A5%E3%83%BC%E3%83%88%E3%83%AA%E3%82%A2%E3%83%AB/tutorial/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     チュートリアル
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -822,6 +1035,7 @@
     
     
     
+    
     <li class="md-nav__item md-nav__item--nested">
       
         
@@ -832,9 +1046,16 @@
           <label class="md-nav__link" for="__nav_5_4" id="__nav_5_4_label" tabindex="0">
             
   
+  
   <span class="md-ellipsis">
+    
+  
     デモ
+  
+
+    
   </span>
+  
   
 
             <span class="md-nav__icon md-icon"></span>
@@ -843,7 +1064,11 @@
         <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_5_4">
             <span class="md-nav__icon md-icon"></span>
-            デモ
+            
+  
+    デモ
+  
+
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -857,9 +1082,16 @@
       <a href="../../ja/%E3%83%87%E3%83%A2/demo_for_arm_robot/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     アームロボット向けデモ
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -878,9 +1110,16 @@
       <a href="../../ja/%E3%83%87%E3%83%A2/demo_for_mobile_robot/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     移動ロボット向けデモ
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -933,7 +1172,31 @@
         <li class="md-nav__item">
   <a href="#use-from-command-line" class="md-nav__link">
     <span class="md-ellipsis">
-      Use from Command Line
+      
+        Use from Command Line
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parameters
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#launcher-variants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Launcher variants
+      
     </span>
   </a>
   
@@ -942,7 +1205,20 @@
         <li class="md-nav__item">
   <a href="#use-from-launch-file" class="md-nav__link">
     <span class="md-ellipsis">
-      Use from Launch File
+      
+        Use from Launch File
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rest-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REST API
+      
     </span>
   </a>
   
@@ -958,47 +1234,180 @@
           
           
             <div class="md-content" data-md-component="content">
+              
               <article class="md-content__inner md-typeset">
                 
                   
 
 
+
 <h1 id="how-to-use-simulation-launcher">How to Use Simulation Launcher</h1>
-<p>Just as Gazebo Classic was able to launch the simulator from the ROS 2 launch file, this repository allows you to launch Isaac Sim using the simulation launcher.</p>
+<p>Just as Gazebo Classic can be launched from a ROS 2 launch file, this
+repository lets you launch Isaac Sim with the simulation launcher node.</p>
+<p>The launcher starts Isaac Sim (which takes several minutes on the first run),
+loads a stage (a USD file describing the environment), and starts a small
+<strong>REST API server</strong> inside Isaac Sim. Robots and objects are later added
+through this API — see <a href="../how_to_spawn_robot/">How to Spawn Robot</a>.</p>
 <h2 id="use-from-command-line">Use from Command Line</h2>
-<p>The simulation launcher can be run with the following command.</p>
 <pre><code class="language-bash">ros2 run isaac_ros2_scripts launcher
 </code></pre>
 <p>This command loads the default environment with the ground plane.</p>
+<p>Once "Simulation ready" appears in the log, the REST API is available at
+<code>http://localhost:8080</code>. Press the <strong>Play</strong> button in the Isaac Sim window
+(or <code>POST /simulation/play</code>) to start the physics simulation.</p>
+<h2 id="parameters">Parameters</h2>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>usd_path</code></td>
+<td>ground plane stage</td>
+<td>USD file to load as the environment</td>
+</tr>
+<tr>
+<td><code>fps</code></td>
+<td>60.0</td>
+<td>Rendering / physics update rate of the simulator [Hz]</td>
+</tr>
+<tr>
+<td><code>time_steps_per_second</code></td>
+<td>600.0</td>
+<td>Physics solver steps per second. Larger values make contact and joint simulation more stable but heavier</td>
+</tr>
+<tr>
+<td><code>real_fps</code></td>
+<td>same as <code>fps</code></td>
+<td>How often the simulation is updated in wall-clock time [Hz]. Setting it lower than <code>fps</code> slows the simulation down relative to real time</td>
+</tr>
+<tr>
+<td><code>api_port</code></td>
+<td>8080</td>
+<td>Port of the REST API server</td>
+</tr>
+<tr>
+<td><code>isaac_path</code></td>
+<td><code>/isaac-sim</code></td>
+<td>Isaac Sim installation directory</td>
+</tr>
+</tbody>
+</table>
+<h2 id="launcher-variants">Launcher variants</h2>
+<table>
+<thead>
+<tr>
+<th>Executable</th>
+<th>Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>launcher</code></td>
+<td>Standard: gravity 9.81 m/s², GUI</td>
+</tr>
+<tr>
+<td><code>launcher_with_headless</code></td>
+<td>Same as <code>launcher</code> but without the GUI window</td>
+</tr>
+<tr>
+<td><code>launcher_zero_g</code></td>
+<td>Zero gravity (for space / underwater robots)</td>
+</tr>
+<tr>
+<td><code>launcher_with_reset</code></td>
+<td>Adds a shared-memory trigger that stops and restarts the simulation timeline (used to reset the world without relaunching Isaac Sim)</td>
+</tr>
+</tbody>
+</table>
 <h2 id="use-from-launch-file">Use from Launch File</h2>
-<p>The ROS 2 launch file can be used to load and launch any USD file.
-An example of a launch file is shown below.</p>
+<p>The ROS 2 launch file can load any USD file as the environment:</p>
 <pre><code class="language-python">import os
 
 from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.substitutions import LaunchConfiguration
 
 def generate_launch_description():
-    core_stage_description_path = os.path.join(
+    stage_description_path = os.path.join(
         get_package_share_directory('stage_description'))
 
-    core_stage_usd_path = os.path.join(stage_description_path,
+    stage_usd_path = os.path.join(stage_description_path,
                               'meshes', 'USD',
                               'stage.usd')
 
     isaac_launcher = Node(
         package=&quot;isaac_ros2_scripts&quot;,
         executable=&quot;launcher&quot;,
-        parameters=[{'usd_path': str(core_stage_usd_path)}],
+        parameters=[{'usd_path': str(stage_usd_path)}],
     )
 
     return LaunchDescription([
         isaac_launcher,
     ])
 </code></pre>
-<p>In the above example, the simulation launcher is launched by reading the file "stage_description/meshes/USD/stage.usd".</p>
+<p>In the example above, the launcher starts Isaac Sim with the environment
+"stage_description/meshes/USD/stage.usd".</p>
+<h2 id="rest-api">REST API</h2>
+<p>The launcher exposes the following endpoints (Swagger UI is available at
+<code>http://localhost:8080/docs</code>). Usually you do not call them directly —
+the <code>spawn_robot</code> / <code>add_usd</code> / <code>publish_tf</code> nodes described in
+<a href="../how_to_spawn_robot/">How to Spawn Robot</a> call them for you.</p>
+<table>
+<thead>
+<tr>
+<th>Endpoint</th>
+<th>Method</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/health</code></td>
+<td>GET</td>
+<td>Health check</td>
+</tr>
+<tr>
+<td><code>/spawn_robot</code></td>
+<td>POST</td>
+<td>Import a URDF and set up its controller and sensors</td>
+</tr>
+<tr>
+<td><code>/add_usd</code></td>
+<td>POST</td>
+<td>Add a USD asset to the stage</td>
+</tr>
+<tr>
+<td><code>/publish_tf</code></td>
+<td>POST</td>
+<td>Publish TF for a link of an added asset</td>
+</tr>
+<tr>
+<td><code>/simulation/play</code></td>
+<td>POST</td>
+<td>Start the simulation</td>
+</tr>
+<tr>
+<td><code>/simulation/pause</code></td>
+<td>POST</td>
+<td>Pause the simulation</td>
+</tr>
+<tr>
+<td><code>/simulation/stop</code></td>
+<td>POST</td>
+<td>Stop the simulation</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Note:</strong> for the first time, launching Isaac Sim takes a very long time
+(shaders are compiled and assets are downloaded). Isaac Sim must be fully
+launched before a robot can be spawned.</p>
+</blockquote>
 
 
 
@@ -1045,10 +1454,13 @@ def generate_launch_description():
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.c8d2eff1.min.js"></script>
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>

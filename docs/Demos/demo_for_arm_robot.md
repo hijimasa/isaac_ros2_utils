@@ -2,7 +2,9 @@
 
 ![demo movie](../figs/arm_robot_test.gif)
 
-1. Install Docker and pull [Isaac Sim Docker Image](https://docs.omniverse.nvidia.com/app_isaacsim/app_isaacsim/install_container.html).
+The demo requires an NVIDIA GPU with driver 575 or later.
+
+1. Install Docker and pull [Isaac Sim Docker Image](https://docs.isaacsim.omniverse.nvidia.com/latest/installation/install_container.html) (`nvcr.io/nvidia/isaac-sim:6.0.1`).
 
 2. Clone the repo to your ros2 workspace<br/>
    ```bash
@@ -41,6 +43,9 @@
    docker exec -it isaac-sim /bin/bash
    ros2 launch franka_moveit_config demo.launch.py 
    ```
+
+9. Press the **Play** button (▶) in the Isaac Sim window to start the
+   simulation.
    <br/>You can control the robot from RViz.
    
 > [!NOTE]

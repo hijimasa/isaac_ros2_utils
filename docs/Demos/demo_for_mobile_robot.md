@@ -2,7 +2,10 @@
 
 ![demo movie](../figs/shm_movie-2023-08-05_13.14.29.gif)
 
-1. Install Docker and pull [Isaac Sim Docker Image](https://docs.omniverse.nvidia.com/app_isaacsim/app_isaacsim/install_container.html).
+The demo requires an NVIDIA GPU with driver 575 or later (Isaac Sim 6 is
+built with CUDA 12.9; with older drivers the LiDAR publishes no data).
+
+1. Install Docker and pull [Isaac Sim Docker Image](https://docs.isaacsim.omniverse.nvidia.com/latest/installation/install_container.html) (`nvcr.io/nvidia/isaac-sim:6.0.1`).
 
 2. Clone the repo to your ros2 workspace<br/>
    ```bash
@@ -42,7 +45,10 @@
    ros2 launch isaac_diffbot_sim diffbot_spawn.launch.py
    ```
 
-9. Launch teleop_twist_keyboard (another terminal)<br/>
+9. Press the **Play** button (▶) in the Isaac Sim window to start the
+   simulation.
+
+10. Launch teleop_twist_keyboard (another terminal)<br/>
    ```bash
    docker exec -it isaac-sim /bin/bash
    ros2 run teleop_twist_keyboard teleop_twist_keyboard

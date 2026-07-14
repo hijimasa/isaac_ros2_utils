@@ -15,8 +15,15 @@
         <link rel="next" href="../setup_urdf_for_sensors/">
       
       
+        
+          <link rel="alternate" href="/isaac_ros2_utils/" hreflang="en">
+        
+          <link rel="alternate" href="/isaac_ros2_utils/ja/" hreflang="ja">
+        
+      
+      
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.12">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.2">
     
     
       
@@ -24,10 +31,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.7e359304.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -46,11 +53,10 @@
       
     
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
-    
     
     
   </head>
@@ -91,12 +97,12 @@
     <a href="../.." title="ROS 2 utilities for Isaac Sim" class="md-header__button md-logo" aria-label="ROS 2 utilities for Isaac Sim" data-md-component="logo">
       
   
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
       
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
     </label>
     <div class="md-header__title" data-md-component="header-title">
       <div class="md-header__ellipsis">
@@ -124,7 +130,7 @@
     <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
     
       <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m14.3 16-.7-2h-3.2l-.7 2H7.8L11 7h2l3.2 9h-1.9M20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69m-9.15 3.96h2.3L12 9l-1.15 3.65Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m14.3 16-.7-2h-3.2l-.7 2H7.8L11 7h2l3.2 9zM20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12zm-9.15 3.96h2.3L12 9z"/></svg>
       </label>
     
   
@@ -134,7 +140,7 @@
     <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="light-green" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
     
       <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
       </label>
     
   
@@ -144,7 +150,7 @@
     <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="light-green" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
     
       <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
       </label>
     
   
@@ -152,14 +158,14 @@
       
     
     
-      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
     
     
       <div class="md-header__option">
   <div class="md-select">
     
     <button class="md-header__button md-icon" aria-label="Select language">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04M18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12m-2.62 7 1.62-4.33L19.12 17h-3.24Z"/></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
     </button>
     <div class="md-select__inner">
       <ul class="md-select__list">
@@ -182,32 +188,34 @@
 </div>
     
     
-      <label class="md-header__button md-icon" for="__search">
-        
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
-      </label>
-      <div class="md-search" data-md-component="search" role="dialog">
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
     <form class="md-search__form" name="search">
       <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
       <label class="md-search__icon md-icon" for="__search">
         
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
         
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
       </label>
       <nav class="md-search__options" aria-label="Search">
         
         <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
           
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
         </button>
       </nav>
       
     </form>
     <div class="md-search__output">
-      <div class="md-search__scrollwrap" data-md-scrollfix>
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
         <div class="md-search-result" data-md-component="search-result">
           <div class="md-search-result__meta">
             Initializing search
@@ -218,6 +226,7 @@
     </div>
   </div>
 </div>
+      
     
     
   </nav>
@@ -248,7 +257,7 @@
     <a href="../.." title="ROS 2 utilities for Isaac Sim" class="md-nav__button md-logo" aria-label="ROS 2 utilities for Isaac Sim" data-md-component="logo">
       
   
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
     ROS 2 utilities for Isaac Sim
@@ -266,9 +275,16 @@
       <a href="../.." class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     Introduction
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -286,9 +302,16 @@
       <a href="../../LICENSE/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     LICENSE
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -306,6 +329,7 @@
     
     
     
+    
     <li class="md-nav__item md-nav__item--nested">
       
         
@@ -316,9 +340,16 @@
           <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
             
   
+  
   <span class="md-ellipsis">
+    
+  
     Demos
+  
+
+    
   </span>
+  
   
 
             <span class="md-nav__icon md-icon"></span>
@@ -327,7 +358,11 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
-            Demos
+            
+  
+    Demos
+  
+
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -341,9 +376,16 @@
       <a href="../../Demos/demo_for_arm_robot/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     Demo For Arm Robot
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -362,9 +404,16 @@
       <a href="../../Demos/demo_for_mobile_robot/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     Demo For Mobile Robot
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -392,6 +441,7 @@
     
     
     
+    
     <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
@@ -402,9 +452,16 @@
           <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
             
   
+  
   <span class="md-ellipsis">
+    
+  
     Tutorials
+  
+
+    
   </span>
+  
   
 
             <span class="md-nav__icon md-icon"></span>
@@ -413,7 +470,11 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
-            Tutorials
+            
+  
+    Tutorials
+  
+
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -427,9 +488,16 @@
       <a href="../how_to_spawn_robot/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     How to Spawn Robot
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -448,9 +516,16 @@
       <a href="../how_to_use_simulator_launcher/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     How to Use Simulation Launcher
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -478,9 +553,16 @@
         <label class="md-nav__link md-nav__link--active" for="__toc">
           
   
+  
   <span class="md-ellipsis">
+    
+  
     Set up URDF for ros2_control
+  
+
+    
   </span>
+  
   
 
           <span class="md-nav__icon md-icon"></span>
@@ -489,9 +571,16 @@
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     Set up URDF for ros2_control
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -514,7 +603,9 @@
         <li class="md-nav__item">
   <a href="#introduction-to-ros2_control" class="md-nav__link">
     <span class="md-ellipsis">
-      Introduction to ros2_control
+      
+        Introduction to ros2_control
+      
     </span>
   </a>
   
@@ -523,7 +614,9 @@
         <li class="md-nav__item">
   <a href="#set-up-joint-information" class="md-nav__link">
     <span class="md-ellipsis">
-      Set up Joint Information
+      
+        Set up Joint Information
+      
     </span>
   </a>
   
@@ -532,7 +625,9 @@
         <li class="md-nav__item">
   <a href="#set-up-joint-stiffness-damping-and-joint-friction" class="md-nav__link">
     <span class="md-ellipsis">
-      Set up Joint Stiffness, Damping and Joint Friction
+      
+        Set up Joint Stiffness, Damping and Joint Friction
+      
     </span>
   </a>
   
@@ -541,7 +636,20 @@
         <li class="md-nav__item">
   <a href="#set-up-friction-of-link" class="md-nav__link">
     <span class="md-ellipsis">
-      Set up Friction of Link
+      
+        Set up Friction of Link
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#collision-approximation-convex-decomposition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Collision approximation (convex decomposition)
+      
     </span>
   </a>
   
@@ -566,9 +674,16 @@
       <a href="../setup_urdf_for_sensors/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     Set up URDF for Sensors
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -587,9 +702,16 @@
       <a href="../tutorial/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     Tutorials
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -615,6 +737,7 @@
     
     
     
+    
     <li class="md-nav__item md-nav__item--nested">
       
         
@@ -625,9 +748,16 @@
           <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
             
   
+  
   <span class="md-ellipsis">
+    
+  
     Ja
+  
+
+    
   </span>
+  
   
 
             <span class="md-nav__icon md-icon"></span>
@@ -636,7 +766,11 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
-            Ja
+            
+  
+    Ja
+  
+
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -650,9 +784,16 @@
       <a href="../../ja/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     はじめに
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -671,9 +812,16 @@
       <a href="../../ja/LICENSE/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     ライセンス
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -692,6 +840,7 @@
     
     
     
+    
     <li class="md-nav__item md-nav__item--nested">
       
         
@@ -702,9 +851,16 @@
           <label class="md-nav__link" for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
             
   
+  
   <span class="md-ellipsis">
+    
+  
     チュートリアル
+  
+
+    
   </span>
+  
   
 
             <span class="md-nav__icon md-icon"></span>
@@ -713,7 +869,11 @@
         <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_5_3">
             <span class="md-nav__icon md-icon"></span>
-            チュートリアル
+            
+  
+    チュートリアル
+  
+
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -727,9 +887,16 @@
       <a href="../../ja/%E3%83%81%E3%83%A5%E3%83%BC%E3%83%88%E3%83%AA%E3%82%A2%E3%83%AB/how_to_spawn_robot/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     ロボットの生成方法
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -748,9 +915,16 @@
       <a href="../../ja/%E3%83%81%E3%83%A5%E3%83%BC%E3%83%88%E3%83%AA%E3%82%A2%E3%83%AB/how_to_use_simulator_launcher/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     シミュレーションランチャーの使い方
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -769,9 +943,16 @@
       <a href="../../ja/%E3%83%81%E3%83%A5%E3%83%BC%E3%83%88%E3%83%AA%E3%82%A2%E3%83%AB/setup_urdf_for_ros2_control/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
-    URDFへのros2_cotnrolタグの記述方法
+    
+  
+    URDFへのros2_controlタグの記述方法
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -790,9 +971,16 @@
       <a href="../../ja/%E3%83%81%E3%83%A5%E3%83%BC%E3%83%88%E3%83%AA%E3%82%A2%E3%83%AB/setup_urdf_for_sensors/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     URDFへのセンサ情報の記述方法
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -811,9 +999,16 @@
       <a href="../../ja/%E3%83%81%E3%83%A5%E3%83%BC%E3%83%88%E3%83%AA%E3%82%A2%E3%83%AB/tutorial/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     チュートリアル
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -840,6 +1035,7 @@
     
     
     
+    
     <li class="md-nav__item md-nav__item--nested">
       
         
@@ -850,9 +1046,16 @@
           <label class="md-nav__link" for="__nav_5_4" id="__nav_5_4_label" tabindex="0">
             
   
+  
   <span class="md-ellipsis">
+    
+  
     デモ
+  
+
+    
   </span>
+  
   
 
             <span class="md-nav__icon md-icon"></span>
@@ -861,7 +1064,11 @@
         <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_5_4">
             <span class="md-nav__icon md-icon"></span>
-            デモ
+            
+  
+    デモ
+  
+
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -875,9 +1082,16 @@
       <a href="../../ja/%E3%83%87%E3%83%A2/demo_for_arm_robot/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     アームロボット向けデモ
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -896,9 +1110,16 @@
       <a href="../../ja/%E3%83%87%E3%83%A2/demo_for_mobile_robot/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
+    
+  
     移動ロボット向けデモ
+  
+
+    
   </span>
+  
   
 
       </a>
@@ -951,7 +1172,9 @@
         <li class="md-nav__item">
   <a href="#introduction-to-ros2_control" class="md-nav__link">
     <span class="md-ellipsis">
-      Introduction to ros2_control
+      
+        Introduction to ros2_control
+      
     </span>
   </a>
   
@@ -960,7 +1183,9 @@
         <li class="md-nav__item">
   <a href="#set-up-joint-information" class="md-nav__link">
     <span class="md-ellipsis">
-      Set up Joint Information
+      
+        Set up Joint Information
+      
     </span>
   </a>
   
@@ -969,7 +1194,9 @@
         <li class="md-nav__item">
   <a href="#set-up-joint-stiffness-damping-and-joint-friction" class="md-nav__link">
     <span class="md-ellipsis">
-      Set up Joint Stiffness, Damping and Joint Friction
+      
+        Set up Joint Stiffness, Damping and Joint Friction
+      
     </span>
   </a>
   
@@ -978,7 +1205,20 @@
         <li class="md-nav__item">
   <a href="#set-up-friction-of-link" class="md-nav__link">
     <span class="md-ellipsis">
-      Set up Friction of Link
+      
+        Set up Friction of Link
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#collision-approximation-convex-decomposition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Collision approximation (convex decomposition)
+      
     </span>
   </a>
   
@@ -994,48 +1234,94 @@
           
           
             <div class="md-content" data-md-component="content">
+              
               <article class="md-content__inner md-typeset">
                 
                   
 
 
+
 <h1 id="set-up-urdf-for-ros2_control">Set up URDF for ros2_control</h1>
+<p>This document explains how to prepare your robot's URDF so that it can be
+driven through <a href="https://control.ros.org/">ros2_control</a> on Isaac Sim, and
+what isaac_ros2_utils does with each part of the description behind the
+scenes.</p>
 <h2 id="introduction-to-ros2_control">Introduction to ros2_control</h2>
-<p>The ros2_control offers a developers a common API that allows your software to switch between many different robot types, and the sensors they have built in, by simply changing some launch arguments. For example if we inspect the Panda Robot’s ros2_control.xacro we can see it uses a flag use_fake_hardware to switch between being simulated or connecting to a physical robot.</p>
-<pre><code class="language-xml">&lt;ros2_control&gt;
+<p>ros2_control offers developers a common API that allows your software to
+switch between many different robot types (and simulators) by simply changing
+a plugin in the URDF. The controller side (e.g. <code>diff_drive_controller</code>,
+<code>joint_trajectory_controller</code>) stays exactly the same; only the <em>hardware
+interface</em> that talks to the actual robot or simulator is replaced.</p>
+<p>To use ros2_control with Isaac Sim, this repository uses
+<a href="https://github.com/hijimasa/topic_based_ros2_control">topic_based_ros2_control</a>.
+This hardware interface exchanges <code>sensor_msgs/JointState</code> messages with the
+simulator over two ROS 2 topics:</p>
+<ul>
+<li>It <strong>subscribes</strong> to a joint states topic. Isaac Sim publishes the actual
+  position / velocity / effort of every joint there.</li>
+<li>It <strong>publishes</strong> to a joint commands topic. Isaac Sim subscribes to it and
+  forwards the commands to the joint drives.</li>
+</ul>
+<p>The topic names are declared as hardware parameters:</p>
+<pre><code class="language-xml">&lt;ros2_control name=&quot;diffbot&quot; type=&quot;system&quot;&gt;
   &lt;hardware&gt;
-    &lt;xacro:if value=&quot;${use_fake_hardware}&quot;&gt;
-      &lt;plugin&gt;mock_components/GenericSystem&lt;/plugin&gt;
-    &lt;/xacro:if&gt;
-    &lt;xacro:unless value=&quot;${use_fake_hardware}&quot;&gt;
-      &lt;plugin&gt;franka_hardware/FrankaHardwareInterface&lt;/plugin&gt;
-      &lt;param name=&quot;robot_ip&quot;&gt;${robot_ip}&lt;/param&gt;
-    &lt;/xacro:unless&gt;
+    &lt;plugin&gt;topic_based_ros2_control/TopicBasedSystem&lt;/plugin&gt;
+    &lt;param name=&quot;joint_commands_topic&quot;&gt;/diffbot/joint_command&lt;/param&gt;
+    &lt;param name=&quot;joint_states_topic&quot;&gt;/diffbot/joint_states&lt;/param&gt;
+    &lt;param name=&quot;sum_wrapped_joint_states&quot;&gt;true&lt;/param&gt;
   &lt;/hardware&gt;
+  ...
 &lt;/ros2_control&gt;
 </code></pre>
-<p>Hardware Components can be of different types, but the plugin "mock_components/GenericSystem" is very a simple System that forwards the incoming command_interface values to the tracked state_interface of the joints (i.e., perfect control of the simulated joints).</p>
-<p>To use ros2_control with Isaac Sim, we have to introduce isaac_ros2_control. This Hardware Interface is a System that read / write joint state / command from shared memory.
-There is another method using topic_based_ros2_control, but this one did not work well with mobile robots due to problems with positional commands.
-isaac_ros2_control retrieves the shared memory associated with the name attribute of the robot tag and reads and writes information about the joint.
-Therefore, when operating multiple robots, it is necessary to change the name attribute value of the robot tag of the URDF to be read.
-The following is an example of introducing isaac_ros2_control.</p>
-<pre><code class="language-xml">&lt;ros2_control&gt;
-  &lt;hardware&gt;
-    &lt;xacro:if value=&quot;${use_fake_hardware}&quot;&gt;
-      &lt;plugin&gt;fake_components/GenericSystem&lt;/plugin&gt;
-    &lt;/xacro:if&gt;
-    &lt;xacro:if value=&quot;${use_sim}&quot;&gt;
-      &lt;plugin&gt;isaac_ros2_control/IsaacSystem&lt;/plugin&gt;
-    &lt;/xacro:if&gt;
-  &lt;/hardware&gt;
-&lt;/ros2_control&gt;
+<p><strong>How isaac_ros2_utils handles this:</strong> when the robot is spawned,
+<code>robot_controller.py</code> reads the <code>joint_commands_topic</code> and
+<code>joint_states_topic</code> parameters from the URDF and builds an OmniGraph
+(a node network evaluated on every physics step) inside Isaac Sim:</p>
+<pre><code>OnPhysicsStep ─┬─&gt; ArticulationState ──&gt; ROS2Publisher  ──&gt; joint_states_topic
+               └─&gt; ROS2Subscriber(joint_commands_topic) ──&gt; ArticulationController
 </code></pre>
+<p>So from the ROS 2 side, Isaac Sim looks like a piece of hardware that reports
+its joint states and accepts joint commands — which is exactly what
+<code>TopicBasedSystem</code> expects.</p>
+<p>Available hardware parameters:</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>joint_commands_topic</code></td>
+<td>Topic that Isaac Sim receives joint commands on</td>
+</tr>
+<tr>
+<td><code>joint_states_topic</code></td>
+<td>Topic that Isaac Sim publishes joint states on</td>
+</tr>
+<tr>
+<td><code>sum_wrapped_joint_states</code></td>
+<td>Set <code>true</code> for robots with continuous joints (e.g. wheels). Isaac Sim reports wrapped angles in the range of ±2π; with this option the hardware interface accumulates them into a continuous angle, which controllers like <code>diff_drive_controller</code> require for odometry.</td>
+</tr>
+<tr>
+<td><code>trigger_joint_command_threshold</code></td>
+<td>Publish a command message only when the command changes by more than this value (optional).</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Note:</strong> the joint state topic is tied to the topic names in the URDF, not
+to the robot name. When operating multiple robots, give each robot its own
+topic names (e.g. prefix them with the robot name).</p>
+</blockquote>
 <h2 id="set-up-joint-information">Set up Joint Information</h2>
-<p>Within the ros2_control tag in the URDF, joint information must be included in addition to the ros2_control plugin information.
-The following is an example of description of joint information.</p>
-<pre><code class="language-xml">&lt;ros2_control&gt;
-  &lt;joint&gt;
+<p>Inside the <code>ros2_control</code> tag, list every joint that ros2_control should
+manage, with one <code>command_interface</code> (either <code>position</code> or <code>velocity</code>) and
+three <code>state_interface</code>s (<code>position</code>, <code>velocity</code> and <code>effort</code>):</p>
+<pre><code class="language-xml">&lt;ros2_control name=&quot;diffbot&quot; type=&quot;system&quot;&gt;
+  &lt;hardware&gt;...&lt;/hardware&gt;
+  &lt;joint name=&quot;left_wheel_joint&quot;&gt;
     &lt;command_interface name=&quot;velocity&quot;&gt;
       &lt;param name=&quot;min&quot;&gt;-1&lt;/param&gt;
       &lt;param name=&quot;max&quot;&gt; 1&lt;/param&gt;
@@ -1046,35 +1332,69 @@ The following is an example of description of joint information.</p>
   &lt;/joint&gt;
 &lt;/ros2_control&gt;
 </code></pre>
-<p>Note that the joint information used in isaac_ros2_control must contain one command_interface (position or velocity) and three state_interface (position and velocity and effort).</p>
-<h2 id="set-up-joint-stiffness-damping-and-joint-friction">Set up Joint Stiffness, Damping and Joint Friction</h2>
-<p>In Isaac Sim, the force output by the joint is given by</p>
-<pre><code>force=stiffness*(position－targetposition)+damping*(velocity－targetvelocity)
+<p>You can also give a joint an initial position:</p>
+<pre><code class="language-xml">&lt;state_interface name=&quot;position&quot;&gt;
+  &lt;param name=&quot;initial_value&quot;&gt;1.57&lt;/param&gt;
+&lt;/state_interface&gt;
 </code></pre>
-<p>The stiffness, damping and joint friction are not defined in default URDF.
-In this package, they are defined in isaac_drive_api tag in joint tag like below.</p>
-<pre><code>&lt;robot&gt;
-  &lt;joint&gt;
-    &lt;isaac_drive_api stiffness=&quot;0&quot; damping=&quot;150000&quot; joint_friction=&quot;1000&quot;/&gt;
+<p><strong>How isaac_ros2_utils handles this:</strong> for each joint listed here,
+<code>robot_controller.py</code> finds the corresponding joint in the imported USD stage
+and configures its <em>drive</em>:</p>
+<ul>
+<li>Joints with a <code>position</code> command interface get a position drive. If the URDF
+  does not specify a stiffness (see below), a large default stiffness
+  (<code>1e8</code>) is set so the joint tracks position commands rigidly.</li>
+<li>Joints with a <code>velocity</code> command interface get a velocity drive. If the URDF
+  does not specify a damping, a default damping (<code>15000</code>) is set.</li>
+<li><code>initial_value</code> is written to the drive target at spawn time, so the robot
+  starts in the given pose.</li>
+</ul>
+<h2 id="set-up-joint-stiffness-damping-and-joint-friction">Set up Joint Stiffness, Damping and Joint Friction</h2>
+<p>In Isaac Sim, a joint drive outputs the following force (this is how both
+position control and velocity control are realized — with a high <code>stiffness</code>
+the joint acts as a position servo, with <code>stiffness=0</code> and a high <code>damping</code>
+it acts as a velocity servo):</p>
+<pre><code>force = stiffness * (target_position - position) + damping * (target_velocity - velocity)
+</code></pre>
+<p>Stiffness, damping and joint friction cannot be expressed in standard URDF.
+This package defines them in an <code>isaac_drive_api</code> tag placed <strong>inside the
+normal <code>joint</code> tag</strong> (not the one inside <code>ros2_control</code>):</p>
+<pre><code class="language-xml">&lt;robot&gt;
+  &lt;joint name=&quot;left_wheel_joint&quot; type=&quot;continuous&quot;&gt;
+    &lt;parent link=&quot;base_link&quot;/&gt;
+    &lt;child link=&quot;left_wheel_link&quot;/&gt;
+    &lt;axis xyz=&quot;0 0 1&quot;/&gt;
+    &lt;isaac_drive_api stiffness=&quot;0&quot; damping=&quot;30000&quot; joint_friction=&quot;10000&quot;/&gt;
   &lt;/joint&gt;
 &lt;/robot&gt;
 </code></pre>
-<p>Note that the joint tag that include the isaac_drive_api tag is not exist in ros2_control tag.</p>
-<p>In default behaviour, the stiffness and damping are set zero.</p>
+<p><strong>How isaac_ros2_utils handles this:</strong> <code>spawn.py</code> reads the tag after the URDF
+import and writes the values to the joint prim in USD:</p>
+<ul>
+<li><code>stiffness</code> / <code>damping</code> → the joint's <code>PhysicsDriveAPI</code> attributes</li>
+<li><code>joint_friction</code> → the joint's <code>PhysxJointAPI</code> friction attribute</li>
+</ul>
+<p>Rough tuning guide:</p>
+<ul>
+<li>Velocity-controlled wheels: <code>stiffness="0"</code>, large <code>damping</code></li>
+<li>Position-controlled arm joints: large <code>stiffness</code>, moderate <code>damping</code></li>
+<li>If you omit the tag, the defaults described in the previous section are
+  applied depending on the command interface.</li>
+</ul>
 <h2 id="set-up-friction-of-link">Set up Friction of Link</h2>
-<p>Unlike Gazebo, Isaac Sim allows the user to set the static and dynamic friction coefficients.
-Since these parameters are tied to the material, URDF adds friction information to the material tag, which is normally used to set the color.
-The following is an example of a description of a material with friction set:</p>
-<pre><code>&lt;robot&gt;
+<p>Unlike Gazebo, Isaac Sim ties friction coefficients to a <em>physics material</em>
+rather than to a link. This package therefore extends the URDF <code>material</code> tag
+(normally only used for color) with an <code>isaac_rigid_body</code> tag:</p>
+<pre><code class="language-xml">&lt;robot&gt;
   &lt;material name=&quot;white&quot;&gt;
     &lt;color rgba=&quot;1.0 1.0 1.0 1.0&quot;/&gt;
-    &lt;isaac_rigid_body static_friction=&quot;1.0&quot; dynamic_friction=&quot;1.0&quot;/&gt;
+    &lt;isaac_rigid_body static_friction=&quot;1.0&quot; dynamic_friction=&quot;1.0&quot; restitution=&quot;0.0&quot;/&gt;
   &lt;/material&gt;
 &lt;/robot&gt;
 </code></pre>
-<p>As with regular URDF, you can set friction on the link by setting the material in the visual tag.
-Example:</p>
-<pre><code>&lt;robot&gt;
+<p>Assign the material to a link with the <code>visual</code> tag as usual (there is no need
+to duplicate the material in the <code>collision</code> tag):</p>
+<pre><code class="language-xml">&lt;robot&gt;
   &lt;link name=&quot;body_link&quot;&gt;
     &lt;inertial&gt;
       &lt;origin xyz=&quot;0 0 0&quot; rpy=&quot;0 0 0&quot;/&gt;
@@ -1097,7 +1417,31 @@ Example:</p>
   &lt;/link&gt;
 &lt;/robot&gt;
 </code></pre>
-<p>Note that there is no need to duplicate the material in the collision tag.</p>
+<p><strong>How isaac_ros2_utils handles this:</strong> for every <code>material</code> with an
+<code>isaac_rigid_body</code> tag, <code>spawn.py</code> creates a USD physics material
+(<code>/&lt;robot&gt;/Looks/material_&lt;name&gt;</code>) with the given friction/restitution
+values. Then, for every link whose <code>visual</code> uses that material, the physics
+material is bound to the link's collision geometry, so the friction acts on
+contacts of that link.</p>
+<h2 id="collision-approximation-convex-decomposition">Collision approximation (convex decomposition)</h2>
+<p>Isaac Sim's GPU physics cannot collide raw triangle meshes directly; mesh
+collisions are approximated. By default this package imports collision
+meshes with the <strong>convex decomposition</strong> approximation (the mesh is split
+into multiple convex pieces).</p>
+<p>You can tune the maximum number of convex pieces per link with a
+<code>convex_decomposition</code> tag inside the <code>collision</code> tag:</p>
+<pre><code class="language-xml">&lt;collision&gt;
+  &lt;geometry&gt;
+    &lt;mesh filename=&quot;package://my_robot/meshes/body.stl&quot;/&gt;
+  &lt;/geometry&gt;
+  &lt;convex_decomposition max_convex_hulls=&quot;16&quot;/&gt;
+&lt;/collision&gt;
+</code></pre>
+<p><strong>How isaac_ros2_utils handles this:</strong> after the import, <code>spawn.py</code> finds the
+collision geometry of each link and applies
+<code>PhysxConvexDecompositionCollisionAPI</code> with the given
+<code>max_convex_hulls</code> (default: 32). More hulls follow concave shapes more
+accurately at the cost of performance.</p>
 
 
 
@@ -1144,10 +1488,13 @@ Example:</p>
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.c8d2eff1.min.js"></script>
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>

@@ -1,19 +1,32 @@
 # How to Spawn Robot
 
-This document describes the procedure for generating a robot on the simulator.
-The generation of a robot model can be divided into the following three major steps: 1.
+This document describes how to place a robot into the running simulator.
 
-1. generation of the physical model of the robot
-2. generation of the robot's sensor model
-3. generation of the robot controller
+Spawning is done by the `spawn_robot` node. It sends your URDF to the REST
+API of the simulator launched beforehand (see
+[How to Use Simulator Launcher](./how_to_use_simulator_launcher.md)), and the
+simulator side then performs three steps in one request:
 
-The three steps are described in detail below.
+1. **Import the physical model** — the URDF is converted to USD with Isaac
+   Sim's URDF importer and placed on the stage at the requested pose. The
+   `isaac_drive_api`, `isaac_rigid_body` and `convex_decomposition` tags are
+   applied here (see
+   [Set up URDF for ros2_control](./setup_urdf_for_ros2_control.md)).
+2. **Set up the robot controller** — the OmniGraph that exchanges
+   `sensor_msgs/JointState` with ros2_control is generated from the
+   `ros2_control` tag, and grippers/thrusters in the `isaac` tag are created.
+3. **Set up the sensors** — LiDARs, cameras and contact sensors in the
+   `isaac` tag are created together with their publisher graphs (see
+   [Set up URDF for Sensors](./setup_urdf_for_sensors.md)).
 
-## Generate the physical model of the robot
+## Spawning a robot from a launch file
 
-The following is an example of creating a node to generate a physical model of a robot.
+A robot description is usually written as a xacro file, so expand it into a
+URDF file first, then pass the file path to `spawn_robot`:
 
 ```python
+    import xacro
+
     isaac_diffbot_description_path = os.path.join(
         get_package_share_directory('diffbot_description'))
 
@@ -44,59 +57,71 @@ The following is an example of creating a node to generate a physical model of a
     )
 ```
 
-As shown in the example above, spawn_robot from the isaac_ros2_scripts package is used to generate the physical model.
-spawn_robot requires as arguments the URDF file of the robot to be generated, its position (X,Y,Z) and orientation (Roll,Pitch,Yaw), and whether the robot is fixed or not.
-The argument if the robot is fixed or not is used if the arm robot is fixed to the environment.
+Parameters of `spawn_robot`:
 
-## Generate sensor model of the robot
+| Parameter | Meaning |
+|----|----|
+| `urdf_path` | Path to the URDF file (required) |
+| `x`, `y`, `z` | Spawn position [m] |
+| `R`, `P`, `Y` | Spawn orientation (roll / pitch / yaw) [rad] |
+| `fixed` | `True`: fix the robot base to the world (for arm robots bolted to the environment) |
+| `api_host`, `api_port` | Address of the simulator's REST API (default: `localhost:8080`) |
 
-The following is an example of creating a node to generate a sensor model of a robot.
+The node exits when the spawn is complete, so you can chain further actions
+with `RegisterEventHandler` + `OnProcessExit` if needed. Since a single
+request performs all three setup steps, no special ordering is required —
+simply include `spawn_robot` in the same launch file as your ros2_control
+nodes (see the
+[mobile robot demo](../Demos/demo_for_mobile_robot.md) for a complete
+example).
+
+## Adding objects (USD assets) to the scene
+
+Besides robots, you can add any USD asset (e.g. props, shelves, work pieces)
+with the `add_usd` node:
 
 ```python
-    isaac_prepare_sensors = Node(
+    isaac_add_usd = Node(
         package="isaac_ros2_scripts",
-        executable="prepare_sensors",
-        parameters=[{'urdf_path': str(urdf_path)}],
+        executable="add_usd",
+        parameters=[{'usd_path': str(usd_path),
+                    'usd_name': 'target_object',
+                    'x' : 1.0,
+                    'y' : 0.0,
+                    'z' : 0.0,
+                    'R' : 0.0,
+                    'P' : 0.0,
+                    'Y' : 0.0,
+                    }],
     )
 ```
 
-Since the generation of the robot's sensor model requires the information in the isaac tag in the URDF file, prepare_sensors requires the URDF file of the robot to be generated as an argument.
+| Parameter | Meaning |
+|----|----|
+| `usd_path` | Path to the USD file (required) |
+| `usd_name` | Name of the object on the stage; it is placed at `/World/<usd_name>` |
+| `x` ... `Y` | Pose of the object |
+| `api_host`, `api_port` | Address of the simulator's REST API |
 
+## Publishing TF of an added object
 
-## Generate robot controllers
-
-The following is an example of creating a node to generate a controller for a robot.
-The controller here refers to the internal controller that drives the robot on the simulator based on shared memory values, not ros2_controller.
+To know where an added object is (e.g. to grasp it), the `publish_tf` node
+sets up a TF publisher for a link of the object:
 
 ```python
-    isaac_prepare_robot_controller = Node(
+    isaac_publish_tf = Node(
         package="isaac_ros2_scripts",
-        executable="prepare_robot_controller",
-        parameters=[{'urdf_path': str(urdf_path)}],
+        executable="publish_tf",
+        parameters=[{'robot_name': 'target_object',
+                    'target_link': 'body_link',
+                    }],
     )
 ```
 
-The information in the ros2_control tag in the URDF file is needed to generate the robot's controller, so prepare_robot_controller requires the URDF file of the robot to be generated as an argument.
+| Parameter | Meaning |
+|----|----|
+| `robot_name` | The `usd_name` used in `add_usd` |
+| `target_link` | Name of the link (prim) whose pose should be published as TF |
+| `api_host`, `api_port` | Address of the simulator's REST API |
 
-## How to start up a node
-
-To generate additional robot models for Isaac Sim once it is up and running, this repository uses the Python REPL extension for Isaac Sim.
-This extension cannot be given multiple processes at the same time, so when launching a node, use RegisterEventHandler to process the nodes in order.
-
-```python
-    return LaunchDescription([
-        RegisterEventHandler(
-            event_handler=OnProcessExit(
-                target_action=isaac_spawn_robot,
-                on_exit=[isaac_prepare_sensors],
-            )
-        ),
-        RegisterEventHandler(
-            event_handler=OnProcessExit(
-                target_action=isaac_prepare_sensors,
-                on_exit=[isaac_prepare_robot_controller],
-            )
-        ),
-        isaac_spawn_robot,
-    ])
-```
+The pose is published on `/tf` on every physics step.
